@@ -1,0 +1,1023 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>getReal3D</name>
+    </assembly>
+    <members>
+        <member name="T:getReal3D.InputManager">
+            <summary>
+            The getReal.InputManager takes care of updating the trackd input data on a regular basis.  
+            </summary>
+        </member>
+        <member name="T:Utils">
+            <summary>
+            Used by Mechdyne scripts in getReal3D for Unity Standalone. No true end-user calls.
+            </summary>
+        </member>
+        <member name="T:getReal3D.LogLevel">
+            <summary>
+            Levels of log message importantce. Used to choose the amount run-time logging or denote the importance of a log message.
+            </summary>
+        </member>
+        <member name="F:getReal3D.LogLevel.Debug">
+            <summary>
+            Debug log-level denotes detailed messages used in tracking the application flow and state. These messages are often so frequent as to impact performance.
+            </summary>
+        </member>
+        <member name="F:getReal3D.LogLevel.Info">
+            <summary>
+            Info log-level denotes messages about occasional flow and state changes. These messages are safely ignored in typical use.
+            </summary>
+        </member>
+        <member name="F:getReal3D.LogLevel.Warning">
+            <summary>
+            Warning log-level denotes messages about unexpected conditions that were caught and are not considered detremental to application performance or execution.
+            </summary>
+        </member>
+        <member name="F:getReal3D.LogLevel.Error">
+            <summary>
+            Error log-level denotes messages about unexpected conditions that were caught but may impede application performance or execution.
+            </summary>
+        </member>
+        <member name="F:getReal3D.LogLevel.None">
+            <summary>
+            None log-level denotes disabled logging.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "F:getReal3D.WindowSettings.y" -->
+        <!-- Badly formed XML comment ignored for member "F:getReal3D.WindowSettings.width" -->
+        <!-- Badly formed XML comment ignored for member "F:getReal3D.WindowSettings.height" -->
+        <!-- Badly formed XML comment ignored for member "F:getReal3D.WindowSettings.useAffinity" -->
+        <!-- Badly formed XML comment ignored for member "F:getReal3D.WindowSettings.isTopmost" -->
+        <!-- Badly formed XML comment ignored for member "F:getReal3D.WindowSettings.border" -->
+        <!-- Badly formed XML comment ignored for member "F:getReal3D.WindowSettings.hidden" -->
+        <member name="T:getReal3D.Plugin">
+            <summary>
+            The base wrapper class for the getReal3D plugin. Many of the functions here are low-level and need not be called directly by end-users.
+            </summary>
+            
+        </member>
+        <member name="M:getReal3D.Plugin.#cctor">
+            <summary>
+            Static initializer.
+            </summary>
+        </member>
+        <member name="M:getReal3D.Plugin.initVR">
+            <summary>
+            Initialize VR configuration. Reads config file and initializes components.
+            </summary>
+            <returns>True if properly initialized.</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.deinit">
+            <summary>
+            Cleanup plugin when ready to exit the game. Call this if using the Plugin directly instead of Mechdyne supplied scripts.
+            </summary>
+        </member>
+        <member name="M:getReal3D.Plugin.initialized">
+            <summary>
+            Check if the plugin has been successfully initialized.
+            </summary>
+            <returns>True if the plugin is initialized.</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.updateData">
+            <summary>
+            Update trackd inputs. Synchronize trackd inputs across the cluster, if appropriate.
+            </summary>
+            <returns>Returns false if a node in the cluster has exited.</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getAppWindowHidden">
+            <summary>
+            Check if the configuration file requests that the main Unity window be hidden. Standalone only.
+            </summary>
+            <returns>The value of the confiuration option.</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getAppWindowHeight">
+            <summary>
+            Get the height of the Unity instance window.
+            </summary>
+            <returns>The height in pixels</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getAppWindowWidth">
+            <summary>
+            Get the width of the Unity instance window.
+            </summary>
+            <returns>The width in pixels</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getNumberOfCameras">
+            <summary>
+            Query the number of cameras configured in this Unity instance.
+            </summary>
+            <returns>The number of cameras</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getCameraShowsUI(System.UInt32)">
+            <summary>
+            Query if a given camera should show the game UI.
+            </summary>
+            <param name="_cameraIndex">The index of the camrea for this Unity instance.</param>
+            <returns>True if UI should be shown</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getCameraWidth(System.UInt32)">
+            <summary>
+            Query the width in pixels of a given camera
+            </summary>
+            <param name="_cameraIndex">The index of the camrea for this Unity instance.</param>
+            <returns>Width in pixels. -1 if cameraIndex is not valid.</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getCameraHeight(System.UInt32)">
+            <summary>
+            Query the height in pixels of a given camera
+            </summary>
+            <param name="_cameraIndex">The index of the camrea for this Unity instance.</param>
+            <returns>Height in pixels. -1 if cameraIndex is not valid.</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getCameraViewport(System.UInt32,UnityEngine.Rect@)">
+            <summary>
+            Get the normalized viewport Rect for a given camera
+            </summary>
+            <param name="_cameraIndex">The index of the camera for this Unity instance.</param>
+            <param name="_viewport">A reference to the Rect to hold the viewport.</param>
+            <returns>1 if the camera index is valid, 0 for an invalid index</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getCameraProjectionMatrix(System.UInt32,System.Single,System.Single,UnityEngine.Matrix4x4@)">
+            <summary>
+            Get the user-centric projection matrix for a given camera (does not consider navigation).
+            </summary>
+            <param name="_cameraIndex">The index of the camera for this Unity instance.</param>
+            <param name="near">The near plane distance in meters.</param>
+            <param name="far">The far plane distance in meters.</param>
+            <param name="_matrix">A reference to the Matrix4x4 to hold the projection.</param>
+            <returns>Returns 1 on success, 0 on failure (invalid cameraIndex).</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getCameraRotation(System.UInt32,UnityEngine.Quaternion@)">
+            <summary>
+            Get the rotation of the given camera that aligns it with its configured screen geometry.
+            </summary>
+            <param name="_cameraIndex">The index of the camera for this Unity instance.</param>
+            <param name="_quat">A reference to a Quaternion that will hold the camera rotation.</param>
+            <returns>Returns 1 on success, 0 on failure (invalid cameraIndex).</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getCameraPosition(System.UInt32,UnityEngine.Vector3@)">
+            <summary>
+            Get the position of the given camera (does not consider navigation).
+            </summary>
+            <param name="_cameraIndex">The index of the camera for this Unity instance.</param>
+            <param name="_vector">A reference to a Vector3 that will hold the camera position.</param>
+            <returns>Returns 1 on success, 0 on failure (invalid cameraIndex).</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getCameraSensors">
+            <summary>
+            Get the transforms for all cameras (managed by getReal3D) in this instance (does not consider navigation).
+            </summary>
+            <returns>A list of getReal3D Sensors (similar to a UnityEngine.Transform with scale 1).</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getCameraColor(System.UInt32,UnityEngine.Color@)">
+            <summary>
+            Required only for getReal3D for Unity Standalone. Not intended for end-users.
+            </summary>
+        </member>
+        <member name="M:getReal3D.Plugin.getHeadPositionRotation(UnityEngine.Vector3@,UnityEngine.Quaternion@)">
+            <summary>
+            Get the position and rotation of the trackd sensor set as the Head in the getReal3D configuration file.
+            </summary>
+            <param name="_headPosition">A reference to a Vector3 which will hold the head position</param>
+            <param name="_headRotation">A reference to a Quaternion which will hold the head rotation</param>
+            <returns>Returns 1 on success, 0 on failure.</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getWandPositionRotation(UnityEngine.Vector3@,UnityEngine.Quaternion@)">
+            <summary>
+            Get the position and rotation of the trackd sensor set as the Wand in the getReal3D configuration file.
+            </summary>
+            <param name="_wandPosition">A reference to a Vector3 which will hold the wand position</param>
+            <param name="_wandRotation">A reference to a Quaternion which will hold the wand rotation</param>
+            <returns>Returns 1 on success, 0 on failure.</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getNumSensors">
+            <summary>
+            Get the number of tracked sensors reported by trackd.
+            </summary>
+            <returns>Returns the number of sensors.</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getSensors">
+            <summary>
+            Get the transforms for all sensors reported by trackd.
+            </summary>
+            <returns>A list of getReal3D Sensors (similar to a UnityEngine.Transform with scale 1).</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getSensorPositionRotation(System.Int32,UnityEngine.Vector3@,UnityEngine.Quaternion@)">
+            <summary>
+            Get the position and rotation of the given trackd sensor.
+            </summary>
+            <param name="_sensorIdx">The sensor index</param>
+            <param name="_sensorPosition">A reference to a Vector3 which will hold the position</param>
+            <param name="_sensorRotation">A reference to a Quaternion which will hold the rotation</param>
+            <returns>Returns 1 on success, 0 on failure.</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getControllerButtons">
+            <summary>
+            Get a list of controller button states reported by trackd.
+            </summary>
+            <returns>The list of states. 1 is button down.</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getControllerValuators">
+            <summary>
+            Get a list of controller valuator states (e.g. joystick axes) reported by trackd.
+            </summary>
+            <returns>A list of float values. Values typically range -1 to 1.</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.GetScale">
+            <summary>
+            Get the scale value (VR_WORLD_SCALE) from the getReal3D configuration (or last value set) for this Unity instance.
+            </summary>
+            <returns>The VR_WORLD_SCALE value.</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.SetScale(System.Single)">
+            <summary>
+            Override the scale value (VR_WORLD_SCALE) from the getReal3D configuration for this Unity instance.
+            </summary>
+            <param name="scale">The override value.</param>
+        </member>
+        <member name="M:getReal3D.Plugin.GetEyeSeparation">
+            <summary>
+            Get the stereo eye-separation from the getReal3D configuration (or last value set) for this Unity instance.
+            </summary>
+        </member>
+        <member name="M:getReal3D.Plugin.SetEyeSeparation(System.Single)">
+            <summary>
+            Change the stereo eye-separation.
+            </summary>
+            <param name="separation">The override value.</param>
+        </member>
+        <member name="M:getReal3D.Plugin.syncBarrier">
+            <summary>
+            Not intended for end-users.
+            </summary>
+        </member>
+        <member name="M:getReal3D.Plugin.swapBarrier">
+            <summary>
+            Wait on the distributed end-of-frame barrier (if enabled).
+            </summary>
+            <returns>false if any Unity instance has exited</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.enableSwapBarrier(System.Boolean)">
+            <summary>
+            Enable/disable the distributed end-of-frame barrier.
+            </summary>
+            <param name="enable">Whether the barrier should be enabled or not.</param>
+        </member>
+        <member name="M:getReal3D.Plugin.isDistrib">
+            <summary>
+            Is the Unity game running in a cluster.
+            </summary>
+            <returns>True if clustered</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getHostName">
+            <summary>
+            Get the hostname of the machine this Unity instance is running on.
+            </summary>
+            <returns>A string containing the hostname</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getServerHostName">
+            <summary>
+            Get the hostname of the machine running the master instance of the Unity cluster.
+            </summary>
+            <returns>Returns the server hostname if running in a cluster, or this hostname if not.</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.stopDistrib">
+            <summary>
+            This Unity instance leaves the cluster, causing all other Unity instances to exit.
+            </summary>
+        </member>
+        <member name="M:getReal3D.Plugin.getApplicationConfig">
+            <summary>
+            Get the Unity-specific portion of the getReal3D configuration for this session.
+            </summary>
+            <returns>A string containing the &lt;unity&gt; element of the config.</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.setReadyForCompositing">
+            <summary>
+            Enables compisiting. The compositor does not activate (copy textures) until enabled.
+            </summary>
+        </member>
+        <member name="M:getReal3D.Plugin.isReadyForCompositing">
+            <summary>
+            Check if compositing has been enabled.
+            </summary>
+            <returns>True if compositing is enabled.</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getNodeUsesCompositor">
+            <summary>
+            Check if compositor is running on this node.
+            </summary>
+            <returns>True if a compositor is running on this node.</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getClusterID">
+            <summary>
+            A unique Id of this Unity instance within the cluster.
+            </summary>
+            <returns>The Id</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.sendBytes(System.IO.MemoryStream)">
+            <summary>
+            Sends bytestream from this instance to all other instances. Used in Mechdyne Cluster.
+            </summary>
+            <param name="stream">The bytestream</param>
+            <returns>True if successful.</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.recvBytes(System.IO.MemoryStream,System.Boolean)">
+            <summary>
+            Receives bytestream from the sender, if any. Used in Mechdyne Cluster.
+            </summary>
+            <param name="stream">The bytestream</param>
+            <param name="waitForData">If True, blocks until data is received.</param>
+            <returns>True if no errors.</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getNodeCount">
+            <summary>
+            The number of machines used in the cluster.
+            </summary>
+            <returns>The node count</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getConfigCount">
+            <summary>
+            The number of Unity instances in the cluster.
+            </summary>
+            <returns>The instance count</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getNodeConfigCount(System.Int32)">
+            <summary>
+            The number of Unity instances on the given node
+            </summary>
+            <param name="nodeId">The node Id</param>
+            <returns>The instance count</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getScreenCount(System.Int32,System.Int32)">
+            <summary>
+            Get the number of screens (cameras) in the configuration of each Unity instance.
+            </summary>
+            <param name="nodeId">The node (machine) Id.</param>
+            <param name="displayId">The display (instance) Id.</param>
+            <returns>The number of screens.</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getScreenCoordinates(System.UInt32,System.UInt32,System.UInt32)">
+            <summary>
+            Get the coordinates of a given screen.
+            </summary>
+            <param name="nodeId">The node (machine) Id.</param>
+            <param name="displayId">The display (instance) Id.</param>
+            <param name="screenId">The screen (camera) Id.</param>
+            <returns>The 4 corners of the screen (in the same space as head/wand/sensor cooridnates).</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.Log(getReal3D.LogLevel,System.String)">
+            <summary>
+            Write messages to the getReal3D log file.
+            </summary>
+            <param name="logLevel">The level of this message.</param>
+            <param name="msg">The message.</param>
+        </member>
+        <member name="M:getReal3D.Plugin.debug(System.String)">
+            <summary>
+            A convenience function for debug logging. 
+            </summary>
+            <param name="msg">The log message</param>
+        </member>
+        <member name="M:getReal3D.Plugin.info(System.String)">
+            <summary>
+            A convenience function for info logging. 
+            </summary>
+            <param name="msg">The log message</param>
+        </member>
+        <member name="M:getReal3D.Plugin.warning(System.String)">
+            <summary>
+            A convenience function for warning logging. 
+            </summary>
+            <param name="msg">The log message</param>
+        </member>
+        <member name="M:getReal3D.Plugin.error(System.String)">
+            <summary>
+            A convenience function for error logging. 
+            </summary>
+            <param name="msg">The log message</param>
+        </member>
+        <member name="M:getReal3D.Plugin.getHeadIndex">
+            <summary>
+            The sensor index of the Head as set in the getReal3D configuration.
+            </summary>
+            <returns>The Head index</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getWandIndex">
+            <summary>
+            The sensor index of the Wand as set in the getReal3D configuration.
+            </summary>
+            <returns>The Wand index</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getFrameCount">
+            <summary>
+            The getReal3D frame count on the master node in the cluster. This may not be the same as UnityEngine.Time.frameCount
+            </summary>
+            <returns>The frame count</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.isAudioPlayer">
+            <summary>
+            Is this Unity instance configured to provide audio playback.
+            </summary>
+            <returns>True if this instance should provide sound</returns>
+        </member>
+        <member name="T:getReal3D.Sensor">
+            <summary>
+            A representation similar to the UnityEngine.Transform used by trackd sensors in getReal3D for Unity.
+            Consists of a position, rotation, and fixed scale.
+            </summary>
+        </member>
+        <member name="F:getReal3D.Sensor.position">
+            <summary>
+            The sensor position in Unity units.
+            </summary>
+        </member>
+        <member name="F:getReal3D.Sensor.rotation">
+            <summary>
+            The sensor orientation.
+            </summary>
+        </member>
+        <member name="P:getReal3D.Sensor.scale">
+            <summary>
+            The sensor scale. Always Vector3.one
+            </summary>
+        </member>
+        <member name="T:getReal3D.Input">
+            <summary>
+            This class loosely emulates the built-in Unity Input class.  
+            </summary>
+        </member>
+        <member name="M:getReal3D.Input.Init">
+            <summary>
+            Initializes getReal3D Input classes.
+            </summary>
+            <returns>True if successful</returns>
+        </member>
+        <member name="M:getReal3D.Input.Update">
+            <summary>
+            Update trackd state. Called internally by getReal3D scripts.
+            </summary>
+        </member>
+        <member name="M:getReal3D.Input.GetButton(System.String)">
+            <summary>
+            Get a Button by name (see getReal3D configuration).
+            </summary>
+            <param name="name">The button name</param>
+            <returns>True if down</returns>
+        </member>
+        <member name="M:getReal3D.Input.GetButtonUp(System.String)">
+            <summary>
+            Get a Button by name (see getReal3D configuration).
+            </summary>
+            <param name="name">The button name</param>
+            <returns>True if the button went up this frame</returns>
+        </member>
+        <member name="M:getReal3D.Input.GetButtonDown(System.String)">
+            <summary>
+            Get a Button by name (see getReal3D configuration).
+            </summary>
+            <param name="name">The button name</param>
+            <returns>True if the button went down this frame</returns>
+        </member>
+        <member name="M:getReal3D.Input.GetAxis(System.String)">
+            <summary>
+            Get a Axis (trackd valuator) by name (see getReal3D configuration).
+            </summary>
+            <param name="name">The axis name</param>
+            <returns>The value</returns>
+        </member>
+        <member name="M:getReal3D.Input.GetAxisRaw(System.String)">
+            <summary>
+            Get a Axis (trackd valuator) by name (see getReal3D configuration).
+            </summary>
+            <param name="name">The axis name</param>
+            <returns>The value without configured deadzone or invertion</returns>
+        </member>
+        <member name="M:getReal3D.Input.GetSensor(System.String)">
+            <summary>
+            Get a trackd sensor by name (see getReal3D configuration).
+            </summary>
+            <param name="name">The sensor name</param>
+            <returns>The sensor transform</returns>
+        </member>
+        <member name="M:getReal3D.Input.GetCameraSensor(System.UInt32)">
+            <summary>
+            Get a camera sensor by index (for this Unity instance, see getReal3D configuration).
+            </summary>
+            <param name="i">The camera index</param>
+            <returns>The camera transform</returns>
+        </member>
+        <member name="M:getReal3D.Input.GetCameraProjection(System.UInt32,System.Single,System.Single)">
+            <summary>
+            Get a camera user-centered projection matrix by index (for this Unity instance, see getReal3D configuration).
+            </summary>
+            <param name="i">The camera index</param>
+            <param name="far">The distance to the camera far plane</param>
+            <param name="near">The distance to the camera new plane</param>
+            <returns>The camera projection matrix</returns>
+        </member>
+        <member name="P:getReal3D.Input.sensors">
+            <summary>
+            The trackd sensors
+            </summary>
+        </member>
+        <member name="P:getReal3D.Input.cameras">
+            <summary>
+            The cameras configured for this Unity instance
+            </summary>
+        </member>
+        <member name="P:getReal3D.Input.valuators">
+            <summary>
+            The trackd controller valuators
+            </summary>
+        </member>
+        <member name="P:getReal3D.Input.buttons">
+            <summary>
+            The trackd controller button states (1 == down)
+            </summary>
+        </member>
+        <member name="P:getReal3D.Input.wandIndex">
+            <summary>
+            The sensor index of the wand.
+            </summary>
+        </member>
+        <member name="P:getReal3D.Input.headIndex">
+            <summary>
+            The sensor index of the head.
+            </summary>
+        </member>
+        <member name="P:getReal3D.Input.wand">
+            <summary>
+            The current wand transform
+            </summary>
+        </member>
+        <member name="P:getReal3D.Input.head">
+            <summary>
+            The current head transform
+            </summary>
+        </member>
+        <member name="T:getReal3D.Input.NavOptions">
+            <summary>
+            Utility class holding configuration values for controlling navigation, such as TranslationSpeed or RotationSpeed.
+            </summary>
+        </member>
+        <member name="M:getReal3D.Input.NavOptions.HasValue(System.String)">
+            <summary>
+            Check if an option has a set value.
+            </summary>
+            <param name="optionName">The name of the option.</param>
+            <returns>True if a value has been set for that option</returns>
+        </member>
+        <member name="M:getReal3D.Input.NavOptions.GetValue``1(System.String,``0@)">
+            <summary>
+            Get the value of a named option as the specified Type.
+            </summary>
+            <typeparam name="T">The Type of the option</typeparam>
+            <param name="optionName">The name of the option</param>
+            <param name="optionValue">The value of the option if it can be converted to the given Type</param>
+            <returns>True if the option converted to Type</returns>
+        </member>
+        <member name="M:getReal3D.Input.NavOptions.GetString(System.String)">
+            <summary>
+            Get the value of a named option as a string. Useful for Types with no TypeConverter.
+            </summary>
+            <param name="optionName">The name of the option</param>
+            <returns>The string value of the named option</returns>
+        </member>
+        <member name="M:getReal3D.Input.NavOptions.SetValue``1(System.String,``0)">
+            <summary>
+            Set the named option to the specified value.
+            </summary>
+            <typeparam name="T">The Type of the option</typeparam>
+            <param name="optionName">The name of the option</param>
+            <param name="optionValue">The value of the option</param>
+            <returns>True of the option value could be stored</returns>
+        </member>
+        <member name="M:getReal3D.Input.NavOptions.SetString(System.String,System.String)">
+            <summary>
+            Set an option to a string value. Useful for Types with no TypeConverter.
+            </summary>
+            <param name="optionName">The option name</param>
+            <param name="optionValue">The option value as a string</param>
+        </member>
+        <member name="T:getReal3D.Scale">
+            <summary>
+            A utility class for converting units, and dealing with scaling Unity worlds.
+            For VR applications, it is best to define Unity worlds in meters, and this is the default assumption for most of getReal3D (eye separation defaults to inches).
+            However, Unity does not require any particular unit; existing games may be in any unit, and due to source material scale is may be convenient to use other units.
+            </summary>
+        </member>
+        <member name="M:getReal3D.Scale.GetUnitScale(getReal3D.Scale.Units)">
+            <summary>
+            Get the scale factor for a Unit
+            </summary>
+            <param name="u">The Unit</param>
+            <returns>The scale factor</returns>
+        </member>
+        <member name="M:getReal3D.Scale.GetUnitString(getReal3D.Scale.Units)">
+            <summary>
+            Get the short string for a Unit
+            </summary>
+            <param name="u">The Unit</param>
+            <returns>The short string</returns>
+        </member>
+        <member name="P:getReal3D.Scale.eyeSeparationUnits">
+            <summary>
+            The current Units for eye separation. While most of getReal3D defaults to meters, eye separation defaults to inches.
+            </summary>
+        </member>
+        <member name="P:getReal3D.Scale.eyeSeparationUnitString">
+            <summary>
+            The current Units for eye separation as a (short) string
+            </summary>
+        </member>
+        <member name="P:getReal3D.Scale.eyeSeparation">
+            <summary>
+            The current eye separation value
+            </summary>
+        </member>
+        <member name="P:getReal3D.Scale.worldScale">
+            <summary>
+            The current world scale (Unity units)
+            </summary>
+        </member>
+        <member name="P:getReal3D.Scale.referenceUnits">
+            <summary>
+            The Units of the reference object
+            </summary>
+        </member>
+        <member name="P:getReal3D.Scale.referenceUnitScale">
+            <summary>
+            The scale factor for the reference Unit
+            </summary>
+        </member>
+        <member name="P:getReal3D.Scale.referenceUnitString">
+            <summary>
+            The short string for the reference Unit
+            </summary>
+        </member>
+        <member name="P:getReal3D.Scale.referenceScale">
+            <summary>
+            The scale of the reference object
+            </summary>
+        </member>
+        <member name="P:getReal3D.Scale.userScale">
+            <summary>
+            The user conrolled scale factor
+            </summary>
+        </member>
+        <member name="T:getReal3D.Scale.Units">
+            <summary>
+            Supported Units for scale conversion.
+            </summary>
+        </member>
+        <member name="F:getReal3D.Scale.Units.meters">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:getReal3D.Scale.Units.centimeters">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:getReal3D.Scale.Units.millimeters">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:getReal3D.Scale.Units.inches">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:getReal3D.Scale.Units.feet">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:getReal3D.GUI">
+            <summary>
+            A utilty class for dealing with OnGUI setup across a getReal3D cluster.
+            </summary>
+        </member>
+        <member name="M:getReal3D.GUI.BeginGUI">
+            <summary>
+            For cluster use.
+            Call at the start of OnGUI callbacks to ensure GUI elements are hidden where configured.
+            Also keeps OnGUI layout consistent, enabling hidden GUIs to receive input in the cluster.
+            </summary>
+        </member>
+        <member name="M:getReal3D.GUI.EndGUI">
+            <summary>
+            For cluster use.
+            Call at the end of OnGUI callbacks to ensure GUI elements are hidden where configured.
+            </summary>
+        </member>
+        <member name="P:getReal3D.GUI.width">
+            <summary>
+            Use to override the default GUI width (800 pixels)
+            </summary>
+        </member>
+        <member name="P:getReal3D.GUI.height">
+            <summary>
+            Use to override the default GUI height (600 pixels)
+            </summary>
+        </member>
+        <member name="P:getReal3D.GUI.enabled">
+            <summary>
+            Should this Unity instance show its GUI
+            </summary>
+        </member>
+        <member name="P:getReal3D.GUI.isReady">
+            <summary>
+            Are the getReal3D GUI Utility initialized and the Unity instance resized
+            </summary>
+        </member>
+        <member name="T:getReal3D.Config">
+            <summary>
+            The getReal3D Config class provides runtime access to Unity specific configuration settings.
+            </summary>
+        </member>
+        <member name="P:getReal3D.Config.renderingPath">
+            <summary>
+            Get the desired UnityEngine.RenderingPath for getReal3D cameras.
+            </summary>
+        </member>
+        <member name="P:getReal3D.Config.targetFrameRate">
+            <summary>
+            Get the desired framerate for Unity instances.
+            </summary>
+        </member>
+        <member name="P:getReal3D.Config.qualityLevel">
+            <summary>
+            Get the desired UnityEngine.QualityLevel for Unity instances.
+            </summary>
+        </member>
+        <member name="T:getReal3D.Cluster">
+            <summary>
+            A utility class for getReal3D Mechdyne-Cluster.
+            </summary>
+        </member>
+        <member name="M:getReal3D.Cluster.Destroy(UnityEngine.GameObject,System.Single)">
+            <summary>
+            Destroy a GameObject on all instances in the cluster. GameObject must have a ClusterView ...
+            </summary>
+            <param name="go">The GameObject to destroy.</param>
+            <param name="delay">Time in seconds before destruction</param>
+        </member>
+        <member name="M:getReal3D.Cluster.LoadLevel(System.String)">
+            <summary>
+            All Unity instances in the Cluster change to the named level.
+            </summary>
+            <param name="levelName">Name of the level</param>
+        </member>
+        <member name="M:getReal3D.Cluster.LoadLevel(System.Int32)">
+            <summary>
+            All Unity instances in the Cluster change to the named level.
+            </summary>
+            <param name="levelName">ID of the level</param>
+        </member>
+        <member name="M:getReal3D.Cluster.LoadLevelAdditive(System.String)">
+            <summary>
+            All Unity instances in the Cluster load named level. The current level is not unloaded; the new level is added.
+            </summary>
+            <param name="levelName">Name of the level</param>
+        </member>
+        <member name="M:getReal3D.Cluster.LoadLevelAdditive(System.Int32)">
+            <summary>
+            All Unity instances in the Cluster load named level. The current level is not unloaded; the new level is added.
+            </summary>
+            <param name="levelName">ID of the level</param>
+        </member>
+        <member name="M:getReal3D.Cluster.GetClusterViewByID(System.UInt32)">
+            <summary>
+            Get a ClusterView by its unique ID.
+            </summary>
+            <param name="id">The unique ID</param>
+            <returns>The ClusterView, or null if no such ClusterView exists.</returns>
+        </member>
+        <member name="P:getReal3D.Cluster.isMaster">
+            <summary>
+            Is this instance the master instance in a getReal3D for Unity Mechdyne-Cluster
+            </summary>
+        </member>
+        <member name="P:getReal3D.Cluster.isOn">
+            <summary>
+            Is the ClusterManager needed in a getReal3D for Unity Mechdyne-Cluster
+            </summary>
+        </member>
+        <member name="P:getReal3D.Cluster.isClientAndClusterOn">
+            <summary>
+            Is this instance a client in a getReal3D for Unity Mechdyne-Cluster
+            </summary>
+        </member>
+        <member name="P:getReal3D.Cluster.time">
+            <summary>
+            UnityEngine.Time.time from the master instance in a getReal3D for Unity Mechdyne-Cluster
+            </summary>
+        </member>
+        <member name="P:getReal3D.Cluster.deltaTime">
+            <summary>
+            UnityEngine.Time.deltaTime from the master instance in a getReal3D for Unity Mechdyne-Cluster
+            </summary>
+        </member>
+        <member name="P:getReal3D.Cluster.frameCount">
+            <summary>
+            Same as getReal3D.Plugin.getFrameCount()
+            The getReal3D cluster frame count; may not be the same as UnityEngine.Time.frameCount
+            </summary>
+        </member>
+        <member name="T:getReal3D.RPC">
+            <summary>
+            getReal3D RPC methods should be decorated with this attribute. This enables getReal3D clustering to recognize remote calls in MonoBehavior scripts.
+            </summary>
+        </member>
+        <member name="T:getReal3D.ClusterStream">
+            <summary>
+            A Stream-based class for sending messages from the getReal3D-Cluster master instance to the client instances.
+            The master instance always writes to the ClusterStream; the client instances always read from the stream.
+            Used automatically by ClusterView-observed Components (e.g. Transform, Rigidbody, Animation), or in MonoBehavior.OnSerializeClusterView callbacks.
+            These types can be serialized: string, char, bool, byte, uint, int, short, float, Vector2, Vector3, Quaternion, Color
+            </summary>
+        </member>
+        <member name="T:getReal3D.ClusterManagerCaller">
+            <summary>
+            A utility class for getReal3D Mechdyne-Cluster.
+            </summary>
+        </member>
+        <member name="T:getReal3D.ClusterManager">
+            <summary>
+            A behind-the-scenes manager for the getReal3D Mechdyne-Cluster. It is not intended for end-users.
+            </summary>
+        </member>
+        <member name="M:getReal3D.ClusterManager.GetClusterViewByID(System.UInt32)">
+            <summary>
+            Get a ClusterView by its unique ID.
+            </summary>
+            <param name="id">The unique ID</param>
+            <returns>The ClusterView, or null if no such ClusterView exists.</returns>
+        </member>
+        <member name="M:getReal3D.ClusterManager.RegisterSerializer(getReal3D.ClusterView)">
+            <summary>
+            Register a ClusterView for frame-by-frame synchronization across the getReal3D cluster.
+            ClusterViews call this on themselves automatically.
+            </summary>
+            <param name="cv">A ClusterView object</param>
+            <returns>True if added.</returns>
+        </member>
+        <member name="M:getReal3D.ClusterManager.DeregisterSerializer(getReal3D.ClusterView)">
+            <summary>
+            Deregister a ClusterView for frame-by-frame synchronization across the getReal3D cluster.
+            ClusterViews call this on themselves automatically.
+            </summary>
+            <param name="cv">A ClusterView object</param>
+            <returns>True if removed.</returns>
+        </member>
+        <member name="P:getReal3D.ClusterManager.isMaster">
+            <summary>
+            Is this instance the master instance in a getReal3D for Unity Mechdyne-Cluster
+            Deprecated: Please use getReal3D.Cluster.isMaster
+            </summary>
+        </member>
+        <member name="P:getReal3D.ClusterManager.isOn">
+            <summary>
+            Is the ClusterManager needed in a getReal3D for Unity Mechdyne-Cluster
+            Deprecated: Please use getReal3D.Cluster.isOn
+            </summary>
+        </member>
+        <member name="P:getReal3D.ClusterManager.isClientAndClusterOn">
+            <summary>
+            Is this instance a client in a getReal3D for Unity Mechdyne-Cluster
+            Deprecated: Please use getReal3D.Cluster.isClientAndClusterOn
+            </summary>
+        </member>
+        <member name="P:getReal3D.ClusterManager.time">
+            <summary>
+            UnityEngine.Time.time from the master instance in a getReal3D for Unity Mechdyne-Cluster
+            Deprecated: Please use getReal3D.Cluster.time
+            </summary>
+        </member>
+        <member name="P:getReal3D.ClusterManager.deltaTime">
+            <summary>
+            UnityEngine.Time.deltaTime from the master instance in a getReal3D for Unity Mechdyne-Cluster
+            Deprecated: Please use getReal3D.Cluster.deltaTime
+            </summary>
+        </member>
+        <member name="P:getReal3D.ClusterManager.frameCount">
+            <summary>
+            Same is getReal3D.Plugin.getFrameCount()
+            The getReal3D cluster frame count; may not be the same as UnityEngine.Time.frameCount
+            Deprecated: Please use getReal3D.Cluster.frameCount
+            </summary>
+        </member>
+        <member name="P:getReal3D.ClusterManager.exitOnClusterViewError">
+            <summary>
+            Any ClusterView serialization error causes the application to exit.
+            </summary>
+        </member>
+        <member name="T:getReal3D.ClusterView">
+            <summary>
+            A Component for registering a GameObject with getReal3D Mechdyne-Cluster.
+            </summary>
+        </member>
+        <member name="F:getReal3D.ClusterView.observed">
+            <summary>
+            The observed (synchronized) component.
+            </summary>
+        </member>
+        <member name="M:getReal3D.ClusterView.Destroy(System.Single)">
+            <summary>
+            Destroy the attached GameObject on all instances in the cluster.
+            </summary>
+            <param name="delay"></param>
+        </member>
+        <member name="M:getReal3D.ClusterView.Instantiate(System.String,System.Boolean)">
+            <summary>
+            Instantiate a GameObject on all Unity instances in the cluster.
+            </summary>
+            <param name="memberName">The name of the field in the calling script containing the GameObject prefab to instantiate.</param>
+            <param name="recursive">Should ClusterViews be added recusively or only on the top level GameObject.</param>
+            <returns>The instanced GameObject.</returns>
+        </member>
+        <member name="M:getReal3D.ClusterView.Instantiate(System.String,UnityEngine.Vector3,System.Boolean)">
+            <summary>
+            Instantiate a GameObject on all Unity instances in the cluster.
+            </summary>
+            <param name="memberName">The name of the field in the calling script containing the GameObject prefab to instantiate.</param>
+            <param name="position">The initial position of the instanced GameObject.</param>
+            <param name="recursive">Should ClusterViews be added recusively or only on the top level GameObject.</param>
+            <returns>The instanced GameObject.</returns>
+        </member>
+        <member name="M:getReal3D.ClusterView.Instantiate(System.String,UnityEngine.Vector3,UnityEngine.Quaternion,System.Boolean)">
+            <summary>
+            Instantiate a GameObject on all Unity instances in the cluster.
+            </summary>
+            <param name="memberName">The name of the field in the calling script containing the GameObject prefab to instantiate.</param>
+            <param name="position">The initial position of the instanced GameObject.</param>
+            <param name="orientation">The initial orientation of the instanced GameObject.</param>
+            <param name="recursive">Should ClusterViews be added recusively or only on the top level GameObject.</param>
+            <returns>The instanced GameObject.</returns>
+        </member>
+        <member name="M:getReal3D.ClusterView.RPC(System.String,System.Object[])">
+            <summary>
+            Make a remote call. Use only on the master instance. Will execute on all nodes in the cluster in the current frame.
+            Only called on the matching registered GameObject, containing the matching MonoBehavior, implementing a method decorated with the getReal3D.RPC attribute.
+            These types can be used as arguments: string, char, bool, byte, uint, int, short, float, Vector2, Vector3, Quaternion, Color
+            </summary>
+            <param name="funcName">The function to call. Must be implemented in the calling script and decorated with the getReal3D.RPC attribute.</param>
+            <param name="args">The arguments to the function.</param>
+        </member>
+        <member name="P:getReal3D.ClusterView.clusterViewID">
+            <summary>
+            The clusterViewID is a unique identifier for this ClusterView. All Unity instances use a uniquely identifiable ClusterView to synchronize the same Component on the same GameObject.
+            </summary>
+        </member>
+        <member name="P:getReal3D.ClusterView.isAutoDetected">
+            <summary>
+            A flag indicating if the ClusterView was added automatically (via menu or ClusterView.AddClusterViewToObject) or manually in the Editor.
+            </summary>
+        </member>
+        <member name="T:getReal3D.ClusterMonoBehaviour">
+            <summary>
+            A Version of UnityEngine.MonoBehavior with a clusterView property.
+            </summary>
+        </member>
+        <member name="P:getReal3D.ClusterMonoBehaviour.clusterView">
+            <summary>
+            Quick access to the ClusterView component.
+            </summary>
+        </member>
+        <member name="T:getReal3D.Version">
+            <summary>
+            getReal3D version.
+            </summary>
+        </member>
+        <member name="P:getReal3D.Version.major">
+            <summary>
+            getReal3D major version.
+            </summary>
+        </member>
+        <member name="P:getReal3D.Version.minor">
+            <summary>
+            getReal3D minor version.
+            </summary>
+        </member>
+        <member name="P:getReal3D.Version.release">
+            <summary>
+            getReal3D release version.
+            </summary>
+        </member>
+        <member name="P:getReal3D.Version.build">
+            <summary>
+            getReal3D build version.
+            </summary>
+        </member>
+        <member name="T:getReal3D.DebuggerUI">
+            <summary>
+            The getReal.InputManager takes care of updating the trackd input data on a regular basis.  
+            </summary>
+        </member>
+    </members>
+</doc>

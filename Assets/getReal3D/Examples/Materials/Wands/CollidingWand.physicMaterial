@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!header
+SerializedFile:
+  m_TargetPlatform: 4294967294
+  m_UserInformation: 
+--- !u!134 &13400000
+PhysicMaterial:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: CollidingWand
+  dynamicFriction: 0.400000
+  staticFriction: 0.400000
+  bounciness: 0.000000
+  frictionCombine: 0
+  bounceCombine: 0
+  frictionDirection2: {x: 0.000000, y: 0.000000, z: 0.000000}
+  dynamicFriction2: 0.000000
+  staticFriction2: 0.000000

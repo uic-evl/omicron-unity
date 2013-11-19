@@ -1,0 +1,105 @@
+<?xml version='1.0'?>
+<!-- Configuration file for getReal3D for Unity VR Plugin. -->
+<!-- Mechdyne (c) 2011 -->
+<!-- VR_CLUSTER settings:
+  name: name of the configuration, used in the launcher (optional, string, "Unknown")
+  connection_timeout: connection timeout in seconds (optional, unsigned integer, 10 seconds)
+  remote_call_timeout: timeout when doing a remote call in seconds (optional, unsigned integer, 60*5 = 5 minutes)
+  log_level: force the log level to use (optional, one of (Debug, Info, Warning, Error, None)). If not set, the
+      log level specified in the launcher is used.
+-->
+<vr_cluster version="4" name="Unity sample configuration">
+  <!-- STARTUP settings for cluster
+        working_dir: working directory when launching the application
+        bin: full qualified path to the application
+        do_fork (optional, boolean): If daemon launches the application, if false, it will print commands to launch.
+        console (optional, boolean): If daemon spawn a console for the process (default false)
+        ENV_VAR node: add an environment variable to the application
+            name: name of the environment variable
+            value: value of the environment variable
+		ARG node: add an argument to the command
+			value: value of the argument to add
+        All of these can use the following variable which will be replaced:
+            %TEMP% get replaced by windows temporary directory
+            %PROGRAM_FILES_32% get replaced by 'c:\Program Files(x86)' or 'c:\Program Files' depending on the OS architecture
+            %PROGRAM_FILES% get replaced by 'c:\Program Files'
+            %INSTANCE_ID% get replaced by the instance ID of the application
+            %INSTANCE_TEMP_PATH% temporary path specific to the isntance          
+	-->
+  <startup bin="%UNITY_BIN_SET_BY_LAUNCHER%" working_dir="%UNITY_DIR_SET_BY_LAUNCHER%">
+    <env_var value="SGXLOG_INFO" name="SGXLOG_LEVEL"/>
+  </startup>
+  <app_config name="Unity Cluster">
+    <unity>
+          <map_button index="1" name="WandButton" unity_button="Fire1" /> <!-- X --> 
+          <map_button index="2" name="Activate" unity_button="Fire2" /> <!-- A -->
+          <map_button index="3" name="Reset" unity_button="Fire3" /> <!-- B -->
+          <map_button index="4" name="Jump" unity_button="Jump" /> <!-- Y -->
+          <map_button index="5" name="LB" /> <!-- LB -->
+          <map_button index="6" name="RB" /> <!-- RB -->
+          <map_button index="7" name="Back" /> <!-- Back -->
+          <map_button index="8" name="Start" /> <!-- Start -->
+          <map_button index="9" name="L3" /> <!-- L3 (Left analog button)-->
+          <map_button index="10" name="R3" /> <!-- R3 (Right analog button)-->
+          
+          <map_button index="11" name="P2_WandButton" unity_button="Fire1" /> <!-- X -->
+          <map_button index="12" name="P2_Activate" unity_button="Fire2" /> <!-- A -->
+          <map_button index="13" name="P2_Reset" unity_button="Fire3" /> <!-- B -->
+          <map_button index="14" name="P2_Jump" unity_button="Jump" /> <!-- Y -->
+          <map_button index="15" name="P2_LB" /> <!-- LB -->
+          <map_button index="16" name="P2_RB" /> <!-- RB -->
+          <map_button index="17" name="P2_Back" /> <!-- Back -->
+          <map_button index="18" name="P2_Start" /> <!-- Start -->
+          <map_button index="19" name="P2_L3" /> <!-- L3 (Left analog button)-->
+          <map_button index="20" name="P2_R3" /> <!-- R3 (Right analog button)-->
+          
+          <map_valuator dead_zone=".1" index="3" name="Yaw" />
+          <map_valuator dead_zone=".1" index="2" name="Forward" unity_axis="Vertical" />
+          <map_valuator dead_zone=".1" index="1" name="Strafe" unity_axis="Horizontal" />
+          <map_valuator dead_zone=".1" index="5" name="Pitch" />
+          <map_valuator dead_zone=".1" index="6" name="AnalogTrigger" /> <!-- Analog Trigger -LT/+RT -->
+          <map_valuator dead_zone=".1" index="7" name="DPadUD" /> <!-- DPad +Up/-Down -->
+          <map_valuator dead_zone=".1" index="8" name="DPadRL" /> <!-- DPad +Right/-Left -->
+          
+          <map_valuator dead_zone=".1" index="11" name="P2_Yaw" />
+          <map_valuator dead_zone=".1" index="10" name="P2_Forward" unity_axis="Vertical" />
+          <map_valuator dead_zone=".1" index="9" name="P2_Strafe" unity_axis="Horizontal" />
+          <map_valuator dead_zone=".1" index="13" name="P2_Pitch" />
+          <map_valuator dead_zone=".1" index="14" name="P2_AnalogTrigger" /> <!-- Analog Trigger -LT/+RT -->
+          <map_valuator dead_zone=".1" index="15" name="P2_DPadUD" /> <!-- DPad +Up/-Down -->
+          <map_valuator dead_zone=".1" index="16" name="P2_DPadRL" /> <!-- DPad +Right/-Left -->
+		
+		<map_tracker index="1" name="Head" />
+          <map_tracker index="5" name="Head2" />
+    </unity>
+  </app_config>
+  <devices>
+    <tracker key="4126">
+      <head index="0"/>
+      <left_eye x="-1.375" y="0.0" z="0.0"/>
+      <right_eye x=" 1.375" y="0.0" z="0.0"/>
+      <wand index="1"/>
+    </tracker>
+    <controller key="4127"/>
+  </devices>
+  <display world_to_vr_scale="1.0">
+    <screen space="HEAD" name="screen">
+      <ul x="-24" y=" 18" z="-36"/>
+      <ll x="-24" y="-18" z="-36"/>
+      <lr x=" 24" y="-18" z="-36"/>
+    </screen>
+  </display>
+  <sync_config port="6001" host="127.0.0.1"/>
+  <vr_node port="8676" host="127.0.0.1">
+    <!--
+          x,y: position of the window. Optional, default is (0,0)
+          w,h: size the window.
+          gpu_affinity: if the window should be bound to a specific GPU. Optional boolean value, default is true.
+          border: if the window should be created with a border. Optional boolean value, default is false.
+          topmost: if the window should be created topmost. Optional boolean value, default is false.
+        -->
+    <vr_config w="800" x="250" h="600" y="250" shows_ui="1" border="false" topmost="false" gpu_affinity="1">
+      <screen_ref eye="mono" name="screen"/>
+    </vr_config>
+  </vr_node>
+</vr_cluster>
