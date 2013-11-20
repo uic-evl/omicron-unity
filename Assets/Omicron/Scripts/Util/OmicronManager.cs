@@ -128,14 +128,14 @@ class OmicronManager : MonoBehaviour
 	OmicronConnectorClient omicronManager;
 	public bool connectToServer = false;
 	public string serverIP = "localhost";
-	public int serverMsgPort = 27000;
+	public int serverMsgPort = 28000;
 	public int dataPort = 7013;
 	
 	public bool debug = false;
 	
 		
 	// Use mouse clicks to emulate touches
-	public bool mouseTouchEmulation = true;
+	public bool mouseTouchEmulation = false;
 	
 	// List storing events since we have multiple threads
 	private ArrayList eventList;
