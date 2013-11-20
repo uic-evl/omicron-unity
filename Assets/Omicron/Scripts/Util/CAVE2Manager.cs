@@ -1,4 +1,31 @@
-﻿using UnityEngine;
+﻿/**************************************************************************************************
+* THE OMICRON PROJECT
+*-------------------------------------------------------------------------------------------------
+* Copyright 2010-2013             Electronic Visualization Laboratory, University of Illinois at Chicago
+* Authors:                                                                                
+* Arthur Nishimoto                anishimoto42@gmail.com
+*-------------------------------------------------------------------------------------------------
+* Copyright (c) 2010-2013, Electronic Visualization Laboratory, University of Illinois at Chicago
+* All rights reserved.
+* Redistribution and use in source and binary forms, with or without modification, are permitted
+* provided that the following conditions are met:
+*
+* Redistributions of source code must retain the above copyright notice, this list of conditions
+* and the following disclaimer. Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in the documentation and/or other
+* materials provided with the distribution.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
+* IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+* FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+* CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+* DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+* USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+* WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+* ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*************************************************************************************************/
+
+using UnityEngine;
 using System.Collections;
 using omicron;
 using omicronConnector;
@@ -238,13 +265,16 @@ public class WandState
 			buttonSP3 = ButtonState.Idle;
 	}
 	
-	public void Update( Vector3 position, Quaternion orientation, uint flags, Vector2 leftAnalogStick, Vector2 rightAnalogStick, Vector2 analogTrigger )
+	public void UpdateMocap( Vector3 position, Quaternion orientation )
 	{
-		updateTime = Time.time;
-		
 		this.position = position;
 		this.rotation = orientation;
-		
+	}
+	
+	public void UpdateController( uint flags, Vector2 leftAnalogStick, Vector2 rightAnalogStick, Vector2 analogTrigger )
+	{
+		updateTime = Time.time;
+
 		this.leftAnalogStick = leftAnalogStick;
 		this.rightAnalogStick = rightAnalogStick;
 		this.analogTrigger = analogTrigger;
@@ -340,19 +370,27 @@ public class CAVE2Manager : OmicronEventClient {
 	public WandState wand1;
 	public WandState wand2;
 	
-	public enum Axis { LeftAnalogStickLR, LeftAnalogStickUD, RightAnalogStickLR, RightAnalogStickUD, AnalogTriggerL, AnalogTriggerR };
-	public enum Button { Button1, Button2, Button3, Button4, Button5, Button6, Button7, Button8, Button9, SpecialButton1, SpecialButton2, SpecialButton3, ButtonUp, ButtonDown, ButtonLeft, ButtonRight };
+	public enum Axis { None, LeftAnalogStickLR, LeftAnalogStickUD, RightAnalogStickLR, RightAnalogStickUD, AnalogTriggerL, AnalogTriggerR };
+	public enum Button { None, Button1, Button2, Button3, Button4, Button5, Button6, Button7, Button8, Button9, SpecialButton1, SpecialButton2, SpecialButton3, ButtonUp, ButtonDown, ButtonLeft, ButtonRight };
 	
+	// Note these represent Omicron sourceIDs
+	public int Head1 = 0; 
+	public int Wand1 = 1; // Controller ID
+	public int Wand1Mocap = 3; // 3 = Xbox
+	
+	public int Head2 = 4; // 4 = Head_Tracker2
+	public int Wand2 = 2;
+	public int Wand2Mocap = 2;
 	
 	// Use this for initialization
 	new void Start () {
 		base.Start();
 		
-		head1 = new HeadTrackerState(0);
-		head2 = new HeadTrackerState(4);
+		head1 = new HeadTrackerState(Head1);
+		head2 = new HeadTrackerState(Head2);
 		
-		wand1 = new WandState(1);
-		wand2 = new WandState(2);
+		wand1 = new WandState(Wand1);
+		wand2 = new WandState(Wand2);
 	}
 	
 	// Update is called once per frame
@@ -385,20 +423,35 @@ public class CAVE2Manager : OmicronEventClient {
 			Vector3 unityPos = new Vector3(e.posx, e.posy, -e.posz);
 			Quaternion unityRot = new Quaternion(-e.orx, -e.ory, e.orz, e.orw);
 			
-			Vector2 leftAnalogStick = new Vector2( e.getExtraDataFloat(0), e.getExtraDataFloat(1) );
-			Vector2 rightAnalogStick = new Vector2( e.getExtraDataFloat(2), e.getExtraDataFloat(3) );
+			// Flip Up/Down analog stick values
+			Vector2 leftAnalogStick = new Vector2( e.getExtraDataFloat(0), -e.getExtraDataFloat(1) );
+			Vector2 rightAnalogStick = new Vector2( e.getExtraDataFloat(2), -e.getExtraDataFloat(3) );
 			Vector2 analogTrigger = new Vector2( e.getExtraDataFloat(4), e.getExtraDataFloat(5) );
 			
 			if( e.sourceId == wand1.sourceID )
 			{
-				wand1.Update( unityPos, unityRot, e.flags, leftAnalogStick, rightAnalogStick, analogTrigger );
+				wand1.UpdateController( e.flags, leftAnalogStick, rightAnalogStick, analogTrigger );
 			}
 			else if( e.sourceId == wand2.sourceID )
 			{
-				wand2.Update( unityPos, unityRot, e.flags, leftAnalogStick, rightAnalogStick, analogTrigger );
+				wand2.UpdateController( e.flags, leftAnalogStick, rightAnalogStick, analogTrigger );
 			}
 		}
-		
+		else if( e.serviceType == EventBase.ServiceType.ServiceTypeMocap )
+		{
+			// -zPos -xRot -yRot for Omicron->Unity coordinate conversion)
+			Vector3 unityPos = new Vector3(e.posx, e.posy, -e.posz);
+			Quaternion unityRot = new Quaternion(-e.orx, -e.ory, e.orz, e.orw);
+			
+			if( e.sourceId == wand1.sourceID )
+			{
+				wand1.UpdateMocap( unityPos, unityRot );
+			}
+			else if( e.sourceId == wand2.sourceID )
+			{
+				wand2.UpdateMocap( unityPos, unityRot );
+			}
+		}
 	}
 	
 	public HeadTrackerState getHead(int ID)
