@@ -42,8 +42,8 @@ public class OmicronWandUpdater : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		
-		//transform.localPosition = cave2Manager.getHead(wandID).position;
-		//transform.localRotation = cave2Manager.getHead(wandID).orientation;
+		transform.localPosition = cave2Manager.getWand(wandID).position;
+		transform.localRotation = cave2Manager.getWand(wandID).rotation;
 	}
 	
 }

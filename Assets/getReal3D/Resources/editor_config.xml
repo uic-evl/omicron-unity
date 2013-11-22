@@ -31,46 +31,47 @@
   </startup>
   <app_config name="Unity Cluster">
     <unity>
-          <map_button index="1" name="WandButton" unity_button="Fire1" /> <!-- X --> 
-          <map_button index="2" name="Activate" unity_button="Fire2" /> <!-- A -->
-          <map_button index="3" name="Reset" unity_button="Fire3" /> <!-- B -->
-          <map_button index="4" name="Jump" unity_button="Jump" /> <!-- Y -->
-          <map_button index="5" name="LB" /> <!-- LB -->
-          <map_button index="6" name="RB" /> <!-- RB -->
-          <map_button index="7" name="Back" /> <!-- Back -->
-          <map_button index="8" name="Start" /> <!-- Start -->
-          <map_button index="9" name="L3" /> <!-- L3 (Left analog button)-->
-          <map_button index="10" name="R3" /> <!-- R3 (Right analog button)-->
+			<map_button index="1" name="Reset" unity_button="Fire3" /> <!-- B -->
+          <map_button index="2" name="WandButton" unity_button="Fire1" /> <!-- X --> 
+       <map_button index="3" name="Activate" unity_button="Fire2" /> <!-- A -->
           
-          <map_button index="11" name="P2_WandButton" unity_button="Fire1" /> <!-- X -->
-          <map_button index="12" name="P2_Activate" unity_button="Fire2" /> <!-- A -->
-          <map_button index="13" name="P2_Reset" unity_button="Fire3" /> <!-- B -->
-          <map_button index="14" name="P2_Jump" unity_button="Jump" /> <!-- Y -->
-          <map_button index="15" name="P2_LB" /> <!-- LB -->
-          <map_button index="16" name="P2_RB" /> <!-- RB -->
-          <map_button index="17" name="P2_Back" /> <!-- Back -->
-          <map_button index="18" name="P2_Start" /> <!-- Start -->
-          <map_button index="19" name="P2_L3" /> <!-- L3 (Left analog button)-->
-          <map_button index="20" name="P2_R3" /> <!-- R3 (Right analog button)-->
+        <map_button index="4" name="Jump" unity_button="Jump" /> <!-- Y -->
+		<map_button index="5" name="RB" /> <!-- RB -->
+        <map_button index="6" name="LB" /> <!-- LB -->
+        <map_button index="9" name="L3" /> <!-- L3 (Left analog button)-->
+		<map_button index="10" name="R3" /> <!-- R3 (Right analog button)-->
+          <map_button index="11" name="Back" /> <!-- Back -->
+          <map_button index="12" name="Start" /> <!-- Start -->
           
-          <map_valuator dead_zone=".1" index="3" name="Yaw" />
+          
+          
+		 
+			
+			<map_button index="17" name="Reset" unity_button="Fire3" /> <!-- B -->
+          <map_button index="18" name="WandButton" unity_button="Fire1" /> <!-- X --> 
+       <map_button index="19" name="Activate" unity_button="Fire2" /> <!-- A -->
+          
+        <map_button index="20" name="Jump2" /> <!-- Y -->
+		<map_button index="21" name="RB2" /> <!-- RB -->
+        <map_button index="22" name="LB2" /> <!-- LB -->
+        <map_button index="24" name="L32" /> <!-- L3 (Left analog button)-->
+		<map_button index="25" name="R32" /> <!-- R3 (Right analog button)-->
+          <map_button index="26" name="Back2" /> <!-- Back -->
+          <map_button index="27" name="Start2" /> <!-- Start -->
+
+ <map_valuator dead_zone=".1" index="3" name="Yaw" />
           <map_valuator dead_zone=".1" index="2" name="Forward" unity_axis="Vertical" />
           <map_valuator dead_zone=".1" index="1" name="Strafe" unity_axis="Horizontal" />
-          <map_valuator dead_zone=".1" index="5" name="Pitch" />
-          <map_valuator dead_zone=".1" index="6" name="AnalogTrigger" /> <!-- Analog Trigger -LT/+RT -->
-          <map_valuator dead_zone=".1" index="7" name="DPadUD" /> <!-- DPad +Up/-Down -->
-          <map_valuator dead_zone=".1" index="8" name="DPadRL" /> <!-- DPad +Right/-Left -->
+          <map_valuator dead_zone=".1" index="4" name="Pitch" />
+			
+          <map_valuator dead_zone=".1" index="7" name="Yaw2" />
+          <map_valuator dead_zone=".1" index="6" name="Forward2"/>
+          <map_valuator dead_zone=".1" index="5" name="Strafe2" />
+          <map_valuator dead_zone=".1" index="8" name="Pitch2" />
+
           
-          <map_valuator dead_zone=".1" index="11" name="P2_Yaw" />
-          <map_valuator dead_zone=".1" index="10" name="P2_Forward" unity_axis="Vertical" />
-          <map_valuator dead_zone=".1" index="9" name="P2_Strafe" unity_axis="Horizontal" />
-          <map_valuator dead_zone=".1" index="13" name="P2_Pitch" />
-          <map_valuator dead_zone=".1" index="14" name="P2_AnalogTrigger" /> <!-- Analog Trigger -LT/+RT -->
-          <map_valuator dead_zone=".1" index="15" name="P2_DPadUD" /> <!-- DPad +Up/-Down -->
-          <map_valuator dead_zone=".1" index="16" name="P2_DPadRL" /> <!-- DPad +Right/-Left -->
-		
-		<map_tracker index="1" name="Head" />
-          <map_tracker index="5" name="Head2" />
+          <map_tracker index="1" name="Head" />
+          <map_tracker index="2" name="Wand" />
     </unity>
   </app_config>
   <devices>

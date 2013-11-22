@@ -53,6 +53,7 @@ public class HeadTrackerState
 public class WandState
 {
 	public int sourceID;
+	public int mocapID;
 	public Vector3 position;
 	public Quaternion rotation;
 	uint flags;
@@ -83,9 +84,10 @@ public class WandState
 	// Time new data was received
 	float updateTime = 0;
 	
-	public WandState(int ID)
+	public WandState(int ID, int mocapID)
 	{
 		sourceID = ID;
+		this.mocapID = mocapID;
 		position = new Vector3();
 		rotation = new Quaternion();
 	}
@@ -380,7 +382,7 @@ public class CAVE2Manager : OmicronEventClient {
 	
 	public int Head2 = 4; // 4 = Head_Tracker2
 	public int Wand2 = 2;
-	public int Wand2Mocap = 2;
+	public int Wand2Mocap = 5;
 	
 	// Use this for initialization
 	new void Start () {
@@ -389,8 +391,8 @@ public class CAVE2Manager : OmicronEventClient {
 		head1 = new HeadTrackerState(Head1);
 		head2 = new HeadTrackerState(Head2);
 		
-		wand1 = new WandState(Wand1);
-		wand2 = new WandState(Wand2);
+		wand1 = new WandState(Wand1, Wand1Mocap);
+		wand2 = new WandState(Wand2, Wand2Mocap);
 	}
 	
 	// Update is called once per frame
@@ -416,6 +418,14 @@ public class CAVE2Manager : OmicronEventClient {
 			{
 				head2.Update( unityPos, unityRot );
 			}
+			else if( e.sourceId == wand1.mocapID )
+			{
+				wand1.UpdateMocap( unityPos, unityRot );
+			}
+			else if( e.sourceId == wand2.mocapID )
+			{
+				wand2.UpdateMocap( unityPos, unityRot );
+			}
 		}
 		else if( e.serviceType == EventBase.ServiceType.ServiceTypeWand )
 		{
@@ -435,21 +445,6 @@ public class CAVE2Manager : OmicronEventClient {
 			else if( e.sourceId == wand2.sourceID )
 			{
 				wand2.UpdateController( e.flags, leftAnalogStick, rightAnalogStick, analogTrigger );
-			}
-		}
-		else if( e.serviceType == EventBase.ServiceType.ServiceTypeMocap )
-		{
-			// -zPos -xRot -yRot for Omicron->Unity coordinate conversion)
-			Vector3 unityPos = new Vector3(e.posx, e.posy, -e.posz);
-			Quaternion unityRot = new Quaternion(-e.orx, -e.ory, e.orz, e.orw);
-			
-			if( e.sourceId == wand1.sourceID )
-			{
-				wand1.UpdateMocap( unityPos, unityRot );
-			}
-			else if( e.sourceId == wand2.sourceID )
-			{
-				wand2.UpdateMocap( unityPos, unityRot );
 			}
 		}
 	}
