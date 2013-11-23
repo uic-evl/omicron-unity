@@ -102,6 +102,14 @@ public class WandState
 			case( CAVE2Manager.Axis.RightAnalogStickUD ): return rightAnalogStick.y;
 			case( CAVE2Manager.Axis.AnalogTriggerL ): return analogTrigger.x;
 			case( CAVE2Manager.Axis.AnalogTriggerR ): return analogTrigger.y;
+			
+			case( CAVE2Manager.Axis.LeftAnalogStickLR_Inverted ): return -leftAnalogStick.x;
+			case( CAVE2Manager.Axis.LeftAnalogStickUD_Inverted ): return -leftAnalogStick.y;
+			case( CAVE2Manager.Axis.RightAnalogStickLR_Inverted ): return -rightAnalogStick.x;
+			case( CAVE2Manager.Axis.RightAnalogStickUD_Inverted ): return -rightAnalogStick.y;
+			case( CAVE2Manager.Axis.AnalogTriggerL_Inverted ): return -analogTrigger.x;
+			case( CAVE2Manager.Axis.AnalogTriggerR_Inverted ): return -analogTrigger.y;
+			
 			default: return 0;
 		}
 	}
@@ -372,7 +380,9 @@ public class CAVE2Manager : OmicronEventClient {
 	public WandState wand1;
 	public WandState wand2;
 	
-	public enum Axis { None, LeftAnalogStickLR, LeftAnalogStickUD, RightAnalogStickLR, RightAnalogStickUD, AnalogTriggerL, AnalogTriggerR };
+	public enum Axis { None, LeftAnalogStickLR, LeftAnalogStickUD, RightAnalogStickLR, RightAnalogStickUD, AnalogTriggerL, AnalogTrigger,
+		LeftAnalogStickLR_Inverted, LeftAnalogStickUD_Inverted, RightAnalogStickLR_Inverted, RightAnalogStickUD_Inverted, AnalogTriggerL_Inverted, AnalogTrigger_Inverted
+	};
 	public enum Button { None, Button1, Button2, Button3, Button4, Button5, Button6, Button7, Button8, Button9, SpecialButton1, SpecialButton2, SpecialButton3, ButtonUp, ButtonDown, ButtonLeft, ButtonRight };
 	
 	// Note these represent Omicron sourceIDs
