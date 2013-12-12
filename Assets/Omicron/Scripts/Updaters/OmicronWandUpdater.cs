@@ -31,19 +31,25 @@ using omicron;
 using omicronConnector;
 
 public class OmicronWandUpdater : MonoBehaviour {
-	CAVE2Manager cave2Manager;
+	public CAVE2Manager cave2Manager;
 	public int wandID = 1;
+	public WandState wand;
+	
+	public void InitOmicron()
+	{
+		cave2Manager = GameObject.FindGameObjectWithTag("OmicronManager").GetComponent<CAVE2Manager>();
+		wand = cave2Manager.getWand(wandID);
+	}
 	
 	// Use this for initialization
 	public void Start () {
-		cave2Manager = GameObject.FindGameObjectWithTag("OmicronManager").GetComponent<CAVE2Manager>();
+		InitOmicron();
 	}
 	
 	// Update is called once per frame
-	void Update () {
-		
-		transform.localPosition = cave2Manager.getWand(wandID).position;
-		transform.localRotation = cave2Manager.getWand(wandID).rotation;
+	void Update() {
+		transform.localPosition = wand.position;
+		transform.localRotation = wand.rotation;
 	}
 	
 }

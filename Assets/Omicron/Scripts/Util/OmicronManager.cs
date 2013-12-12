@@ -152,7 +152,7 @@ class OmicronManager : MonoBehaviour
 		
 		gameObject.tag = "OmicronManager";
 		
-		if( connectToServer )
+		if( connectToServer && getReal3D.Cluster.isMaster )
 		{
 			omicronManager.Connect( serverIP, serverMsgPort, dataPort );
 		}
@@ -186,74 +186,77 @@ class OmicronManager : MonoBehaviour
 	
 	public void Update()
 	{
-		if( mouseTouchEmulation )
+		if( getReal3D.Cluster.isMaster )
 		{
-			Vector2 position = new Vector3( Input.mousePosition.x, Input.mousePosition.y );
-					
-			// Ray extending from main camera into screen from touch point
-			Ray touchRay = Camera.main.ScreenPointToRay(position);
-			Debug.DrawRay(touchRay.origin, touchRay.direction * 10, Color.white);
-					
-			TouchPoint touch = new TouchPoint(position, -1);
-			
-			if( Input.GetMouseButtonDown(0) )
-				touch.SetGesture( EventBase.Type.Down );
-			else if( Input.GetMouseButtonUp(0) )
-				touch.SetGesture( EventBase.Type.Up );
-			else if( Input.GetMouseButton(0) )
-				touch.SetGesture( EventBase.Type.Move );
-			
-			//GameObject[] touchObjects = GameObject.FindGameObjectsWithTag("OmicronListener");
-			//foreach (GameObject touchObj in touchObjects) {
-			//	touchObj.BroadcastMessage("OnTouch",touch,SendMessageOptions.DontRequireReceiver);
-			//}
-		}
-		
-		lock(eventList.SyncRoot)
-		{
-			foreach( EventData e in eventList )
+			if( mouseTouchEmulation )
 			{
-				foreach( OmicronEventClient c in omicronClients )
-				{
-					c.BroadcastMessage("OnEvent",e,SendMessageOptions.DontRequireReceiver);
-				}
-				/*
-				if( (EventBase.ServiceType)e.serviceType == EventBase.ServiceType.ServiceTypePointer )
-				{
-					// 2D position of the touch, flipping y-coordinates
-					Vector2 position = new Vector3( e.posx * Screen.width, Screen.height - e.posy * Screen.height );
-					
-					// Ray extending from main camera into screen from touch point
-					Ray touchRay = Camera.main.ScreenPointToRay(position);
-					Debug.DrawRay(touchRay.origin, touchRay.direction * 10, Color.white);
-					
-					TouchPoint touch = new TouchPoint(position, (int)e.sourceId);
-					touch.SetGesture( (EventBase.Type)e.type ); 
-					
-					//GameObject[] touchObjects = GameObject.FindGameObjectsWithTag("OmicronListener");
-					//foreach (GameObject touchObj in touchObjects) {
-					//	touchObj.BroadcastMessage("OnTouch",touch,SendMessageOptions.DontRequireReceiver);
-					//}
-				}
+				Vector2 position = new Vector3( Input.mousePosition.x, Input.mousePosition.y );
+						
+				// Ray extending from main camera into screen from touch point
+				Ray touchRay = Camera.main.ScreenPointToRay(position);
+				Debug.DrawRay(touchRay.origin, touchRay.direction * 10, Color.white);
+						
+				TouchPoint touch = new TouchPoint(position, -1);
 				
-				else
-				{
-					//GameObject[] omicronObjects = GameObject.FindGameObjectsWithTag("OmicronListener");
-					//foreach (GameObject obj in omicronObjects) {
-					//	obj.BroadcastMessage("OnEvent",e,SendMessageOptions.DontRequireReceiver);
-					//}
-				}
-				*/
+				if( Input.GetMouseButtonDown(0) )
+					touch.SetGesture( EventBase.Type.Down );
+				else if( Input.GetMouseButtonUp(0) )
+					touch.SetGesture( EventBase.Type.Up );
+				else if( Input.GetMouseButton(0) )
+					touch.SetGesture( EventBase.Type.Move );
+				
+				//GameObject[] touchObjects = GameObject.FindGameObjectsWithTag("OmicronListener");
+				//foreach (GameObject touchObj in touchObjects) {
+				//	touchObj.BroadcastMessage("OnTouch",touch,SendMessageOptions.DontRequireReceiver);
+				//}
 			}
 			
-			// Clear the list (TODO: probably should set the Processed flag instead and cleanup elsewhere)
-			eventList.Clear();
+			lock(eventList.SyncRoot)
+			{
+				foreach( EventData e in eventList )
+				{
+					foreach( OmicronEventClient c in omicronClients )
+					{
+						c.BroadcastMessage("OnEvent",e,SendMessageOptions.DontRequireReceiver);
+					}
+					/*
+					if( (EventBase.ServiceType)e.serviceType == EventBase.ServiceType.ServiceTypePointer )
+					{
+						// 2D position of the touch, flipping y-coordinates
+						Vector2 position = new Vector3( e.posx * Screen.width, Screen.height - e.posy * Screen.height );
+						
+						// Ray extending from main camera into screen from touch point
+						Ray touchRay = Camera.main.ScreenPointToRay(position);
+						Debug.DrawRay(touchRay.origin, touchRay.direction * 10, Color.white);
+						
+						TouchPoint touch = new TouchPoint(position, (int)e.sourceId);
+						touch.SetGesture( (EventBase.Type)e.type ); 
+						
+						//GameObject[] touchObjects = GameObject.FindGameObjectsWithTag("OmicronListener");
+						//foreach (GameObject touchObj in touchObjects) {
+						//	touchObj.BroadcastMessage("OnTouch",touch,SendMessageOptions.DontRequireReceiver);
+						//}
+					}
+					
+					else
+					{
+						//GameObject[] omicronObjects = GameObject.FindGameObjectsWithTag("OmicronListener");
+						//foreach (GameObject obj in omicronObjects) {
+						//	obj.BroadcastMessage("OnEvent",e,SendMessageOptions.DontRequireReceiver);
+						//}
+					}
+					*/
+				}
+				
+				// Clear the list (TODO: probably should set the Processed flag instead and cleanup elsewhere)
+				eventList.Clear();
+			}
 		}
 	}
 	
 	void OnApplicationQuit()
     {
-		if( connectToServer ){
+		if( connectToServer && getReal3D.Cluster.isMaster ){
 			omicronManager.Dispose();
 			
 			Debug.Log("InputService: Disconnected");

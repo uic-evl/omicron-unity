@@ -8,7 +8,6 @@ public class getRealHeadUpdater
 	: MonoBehaviour
 {
 	private Transform m_transform;
-	public string headSensor = "Head";
 	
 	void Awake()
 	{
@@ -17,9 +16,8 @@ public class getRealHeadUpdater
 
 	void Update()
 	{
-		//Vector3 locPos = new Vector3( getReal3D.Input.GetSensor(headSensor).position.x, getReal3D.Input.GetSensor(headSensor).position.y, -getReal3D.Input.GetSensor(headSensor).position.z );
-		m_transform.localPosition = getReal3D.Input.GetSensor(headSensor).position;
-		m_transform.localRotation = getReal3D.Input.GetSensor(headSensor).rotation;
+		m_transform.localPosition = getReal3D.Input.head.position;
+		m_transform.localRotation = getReal3D.Input.head.rotation;
 	}
 
     void OnDrawGizmos()

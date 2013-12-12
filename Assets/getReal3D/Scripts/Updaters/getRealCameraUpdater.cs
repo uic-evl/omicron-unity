@@ -24,7 +24,7 @@ public class getRealCameraUpdater
     private bool m_pluginInitialized = false;
 	
 	public GameObject CameraPrefab = null;
-	
+
 	void Awake()
 	{
 		m_transform = transform;
