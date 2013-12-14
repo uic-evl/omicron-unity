@@ -30,13 +30,6 @@
  * Currently supported input servers:
  * 		- Omicron oinputserver
  *		- OmicronInputConnector
- *
- * Scripts that handle events: These scripts should be attached to the receiving game object. These scripts handle messages with the input data.
- * You should write your own scripts that inherit from these.
- *		- OmicronKinectScript.cs
- *		- OmicronMindwaveScript.cs
- *
- * To run make sure ConnectToServer is checked and the correct Server and Msg Ports are set.
  */
 using UnityEngine;
 using System.Collections;

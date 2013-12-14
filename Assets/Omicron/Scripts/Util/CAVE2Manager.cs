@@ -74,6 +74,10 @@ public class CAVE2Manager : OmicronEventClient {
 	
 	public float axisDeadzone = 0.2f;
 	
+	public bool keyboardEventEmulation = false;
+	Vector3 headEmulatedPosition = new Vector3(0, 1.5f, 0);
+	public float emulatedHeadSpeed = 0.05f;
+	
 	// Use this for initialization
 	new void Start () {
 		base.Start();
@@ -101,6 +105,35 @@ public class CAVE2Manager : OmicronEventClient {
 	void Update () {
 		wand1.UpdateState(Wand1, Wand1Mocap);
 		wand2.UpdateState(Wand2, Wand2Mocap);
+		
+		if( keyboardEventEmulation )
+		{
+			float vertical = Input.GetAxis("Vertical");
+			float horizontal = Input.GetAxis("Horizontal");
+			wand1.UpdateController( 0, new Vector2(horizontal,vertical) , Vector2.zero, Vector2.zero );
+			
+			float headForward = 0;
+			float headStrafe = 0;
+			float headVertical = 0;
+			
+			if( Input.GetKey(KeyCode.I) )
+				headForward += emulatedHeadSpeed;
+			else if( Input.GetKey(KeyCode.K) )
+				headForward -= emulatedHeadSpeed;
+			if( Input.GetKey(KeyCode.J) )
+				headStrafe -= emulatedHeadSpeed;
+			else if( Input.GetKey(KeyCode.L) )
+				headStrafe += emulatedHeadSpeed;
+			if( Input.GetKey(KeyCode.U) )
+				headVertical += emulatedHeadSpeed;
+			else if( Input.GetKey(KeyCode.O) )
+				headVertical -= emulatedHeadSpeed;
+			
+			headEmulatedPosition += new Vector3( headStrafe, headVertical, headForward );
+			
+			head1.Update( headEmulatedPosition , Quaternion.identity );
+			GameObject.FindGameObjectWithTag("MainCamera").transform.localPosition = headEmulatedPosition;
+		}
 	}
 	
 	void OnSerializeClusterView(getReal3D.ClusterStream stream)

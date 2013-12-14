@@ -48,7 +48,7 @@ namespace omicron
         * using the corresponding ascii code. The naming is oriented on the X11
         * keysym naming.
         */
-    enum KeyCode
+    enum OMGKeyCode
     {
         KC_ESCAPE = 256,
         KC_BACKSPACE,
