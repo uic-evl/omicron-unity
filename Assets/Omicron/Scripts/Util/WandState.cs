@@ -34,7 +34,8 @@ public class WandState : MonoBehaviour
 	public ButtonState buttonSP1 = ButtonState.Idle;
 	public ButtonState buttonSP2 = ButtonState.Idle;
 	public ButtonState buttonSP3 = ButtonState.Idle;
-	
+	ButtonState buttonNull = ButtonState.Idle;
+		
 	public bool RPCButtonEvents = false;
 	
 	getReal3D.ClusterView clusterView;
@@ -91,7 +92,17 @@ public class WandState : MonoBehaviour
 		stream.Serialize(ref rightAnalogStick);
 		stream.Serialize(ref analogTrigger);
 	}
-
+	
+	public Vector3 GetPosition()
+	{
+		return position;
+	}
+	
+	public Quaternion GetRotation()
+	{
+		return rotation;
+	}
+	
 	public float GetAxis( CAVE2Manager.Axis axis )
 	{
 		switch(axis)
@@ -194,22 +205,25 @@ public class WandState : MonoBehaviour
 		
 		// Set buttons held if down on the last frame
 		// Set buttons as idle if up on the last frame
-		foreach( CAVE2Manager.Button button in Enum.GetValues(typeof(CAVE2Manager.Button)))
+		
+		for(int i = 0; i < 16; i++ )
 		{
+			ButtonState buttonState = GetButtonState(i);
+			
 			if (getReal3D.Cluster.isMaster)
 			{
 				if (clusterView && RPCButtonEvents)
-					clusterView.RPC("UpdateButton", (int)button, (int)GetButton((int)button) );
+					clusterView.RPC("UpdateButton", i, (int)buttonState );
 			}
-			if( (int)button == (int)ButtonState.Down )
-				UpdateButton( (int)button, (int)ButtonState.Held );
-			else if( button1 == ButtonState.Up )
-				UpdateButton( (int)button, (int)ButtonState.Idle );
+			if( buttonState == ButtonState.Down )
+				UpdateButton( i, (int)ButtonState.Held );
+			else if( buttonState == ButtonState.Up )
+				UpdateButton( i, (int)ButtonState.Idle );
 		}
 		
 	}
 	
-	ButtonState GetButton( int buttonID )
+	ButtonState GetButtonState( int buttonID )
 	{
 		switch(buttonID)
 		{
@@ -229,7 +243,7 @@ public class WandState : MonoBehaviour
 			case((int)CAVE2Manager.Button.ButtonDown): return buttonDown;
 			case((int)CAVE2Manager.Button.ButtonLeft): return buttonLeft;
 			case((int)CAVE2Manager.Button.ButtonRight): return buttonRight;
-			default: return button1;
+			default: return buttonNull;
 		}
 	}
 	
