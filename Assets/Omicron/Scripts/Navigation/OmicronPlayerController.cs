@@ -63,13 +63,9 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	public enum ForwardRef { None, Head, Wand }
 	public ForwardRef forwardReference = ForwardRef.Wand;
 	public int headID = 1;
-	
-	public GameObject head;
+
 	Vector3 headPosition;
 	//Quaternion headRotation;
-	
-	public float headBodyDistance;
-	public Vector3 headWorldPos;
 	
 	public bool showCAVEFloorOnlyOnMaster = true;
 	public GameObject CAVEFloor;
@@ -77,7 +73,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	Vector3 wandPosition;
 	Quaternion wandRotation;
 
-	
+	public GameObject visualColliderObject;
 	
 	
 	bool freeflyButtonDown;
@@ -116,7 +112,19 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	new void Start () {
 		InitOmicron();
 	}
-
+	
+	// FixedUpdate is called every fixed framerate frame
+	// Should be used with dealing with RigidBodies
+	void FixedUpdate()
+	{
+		if( getReal3D.Cluster.isMaster )
+		{
+			controller.center = new Vector3( headPosition.x, controller.center.y, headPosition.z );
+			if( visualColliderObject )
+				visualColliderObject.transform.position = transform.position + controller.center;
+		}
+	}
+	
 	// Update is called once per frame
 	void Update () {
 		
@@ -126,17 +134,6 @@ public class OmicronPlayerController : OmicronWandUpdater {
 			wandRotation = cave2Manager.getWand(wandID).GetRotation();
 			
 			headPosition = cave2Manager.getHead(headID).GetPosition();
-			
-			//headWorldPos = transform.TransformPoint( headPosition );
-			//headWorldPos = head.transform.position;
-			//transform.position = new Vector3( headWorldPos.x, transform.position.y, headWorldPos.z );
-			//headRotation = cave2Manager.getHead(headID).GetRotation();
-			
-			//headBodyDistance = Mathf.Sqrt( Mathf.Pow(transform.position.x - headWorldPos.x,2) + Mathf.Pow(transform.position.z - headWorldPos.z,2) );
-			
-			//Vector3 headOffsetVector = Vector3.zero;
-			//if( headBodyDistance > 0.1f )
-			//	headOffsetVector = headWorldPos;
 			
 			forward = cave2Manager.getWand(wandID).GetAxis(forwardAxis);	
 			forward *= movementScale;
@@ -274,40 +271,42 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	{
 		navMode = (NavigationMode)val;
 	}
-
+	
+	Rect windowRect = new Rect(0, 0, 250 , 275);
     string[] navStrings = new string[] {"Walk", "Drive", "Freefly"};
 	string[] horzStrings = new string[] {"Strafe", "Turn"};
-	void OnGUI() {
+	void OnGUI()
+	{
 		if( showGUI && getReal3D.Cluster.isMaster )
 		{	
-			GUI.Box(new Rect(0, 0, 250 , 275 ), "Omicron Player Controller");
-			
-			GUI.Label(new Rect(25, 20 * 1, 200, 20), "Position: " + transform.position);
-			GUI.Label(new Rect(25, 20 * 2, 200, 20), "Head Position: " + headPosition);
-			GUI.Label(new Rect(25, 20 * 3, 200, 20), "Wand Position: " + wandPosition);
-			
-			GUI.Label(new Rect(25, 20 * 4, 200, 20), "Navigation Mode: ");
-			navMode = (NavigationMode)GUI.SelectionGrid(new Rect(25, 20 * 5, 200, 20), (int)navMode, navStrings, 3);
-			
-			GUI.Label(new Rect(25, 20 * 6, 200, 20), "Left Analog LR Mode: ");
-			horizontalMovementMode = (HorizonalMovementMode)GUI.SelectionGrid(new Rect(25, 20 * 7, 200, 20), (int)horizontalMovementMode, horzStrings, 3);
-			
-			GUI.Label(new Rect(25, 20 * 8 + 5, 120, 20), "Walk Nav Scale: ");
-	        movementScale = float.Parse(GUI.TextField(new Rect(150, 20 * 8 + 5, 75, 20), movementScale.ToString(), 25));
-			
-			GUI.Label(new Rect(25, 20 * 9 + 10, 120, 20), "Drive/Fly Nav Scale: ");
-	        flyMovementScale = float.Parse(GUI.TextField(new Rect(150, 20 * 9 + 10, 75, 20), flyMovementScale.ToString(), 25));
-			
-			GUI.Label(new Rect(25, 20 * 10 + 15, 120, 20), "Rotate Scale: ");
-	        turnSpeed = float.Parse(GUI.TextField(new Rect(150, 20 * 10 + 15, 75, 20), turnSpeed.ToString(), 25));
-
-			//GUI.Label(new Rect(25, 20 * 9 + 15, 120, 20), "Auto Level On Ground Collision: ");
-	        if( GUI.Toggle(new Rect(25, 20 * 11 + 15, 250, 200), (autoLevelMode == AutoLevelMode.OnGroundCollision), " Auto Level On Ground Collision") )
-				autoLevelMode = AutoLevelMode.OnGroundCollision;
-			else
-				autoLevelMode = AutoLevelMode.Disabled;
-			//trench = GUI.Toggle(new Rect(25, 200, 100, 30), trench, "Trench");
-			//surfaceHardReset = GUI.Toggle(new Rect(25, 220, 100, 30), surfaceHardReset, "Reset");
+			windowRect = GUI.Window(-1, windowRect, OnWindow, "Omicron Player Controller");			
 		}
     }
+
+	void OnWindow(int windowID)
+	{
+		GUI.Label(new Rect(25, 20 * 1, 200, 20), "Position: " + transform.position);
+		GUI.Label(new Rect(25, 20 * 2, 200, 20), "Head Position: " + headPosition);
+		GUI.Label(new Rect(25, 20 * 3, 200, 20), "Wand Position: " + wandPosition);
+		
+		GUI.Label(new Rect(25, 20 * 4, 200, 20), "Navigation Mode: ");
+		navMode = (NavigationMode)GUI.SelectionGrid(new Rect(25, 20 * 5, 200, 20), (int)navMode, navStrings, 3);
+		
+		GUI.Label(new Rect(25, 20 * 6, 200, 20), "Left Analog LR Mode: ");
+		horizontalMovementMode = (HorizonalMovementMode)GUI.SelectionGrid(new Rect(25, 20 * 7, 200, 20), (int)horizontalMovementMode, horzStrings, 3);
+		
+		GUI.Label(new Rect(25, 20 * 8 + 5, 120, 20), "Walk Nav Scale: ");
+	    movementScale = float.Parse(GUI.TextField(new Rect(150, 20 * 8 + 5, 75, 20), movementScale.ToString(), 25));
+		
+		GUI.Label(new Rect(25, 20 * 9 + 10, 120, 20), "Drive/Fly Nav Scale: ");
+	    flyMovementScale = float.Parse(GUI.TextField(new Rect(150, 20 * 9 + 10, 75, 20), flyMovementScale.ToString(), 25));
+			
+		GUI.Label(new Rect(25, 20 * 10 + 15, 120, 20), "Rotate Scale: ");
+	    turnSpeed = float.Parse(GUI.TextField(new Rect(150, 20 * 10 + 15, 75, 20), turnSpeed.ToString(), 25));
+
+	    if( GUI.Toggle(new Rect(25, 20 * 11 + 15, 250, 200), (autoLevelMode == AutoLevelMode.OnGroundCollision), " Auto Level On Ground Collision") )
+			autoLevelMode = AutoLevelMode.OnGroundCollision;
+		else
+			autoLevelMode = AutoLevelMode.Disabled;
+	}
 }
