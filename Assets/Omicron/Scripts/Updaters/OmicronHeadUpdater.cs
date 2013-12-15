@@ -47,4 +47,12 @@ public class OmicronHeadUpdater : MonoBehaviour {
 			transform.localRotation = cave2Manager.getHead(headID).rotation;
 		}
 	}
+	
+	void FixedUpdate()
+	{
+		//if( getReal3D.Cluster.isMaster )
+		//{
+		//	rigidbody.MovePosition(cave2Manager.getHead(headID).position);
+		//}
+	}
 }

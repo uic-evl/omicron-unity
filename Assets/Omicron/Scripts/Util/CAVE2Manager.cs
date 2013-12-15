@@ -48,6 +48,16 @@ public class HeadTrackerState
 		this.position = position;
 		this.rotation = orientation;
 	}
+	
+	public Vector3 GetPosition()
+	{
+		return position;
+	}
+	
+	public Quaternion GetRotation()
+	{
+		return rotation;
+	}
 }
 
 public class CAVE2Manager : OmicronEventClient {
