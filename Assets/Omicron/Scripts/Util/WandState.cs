@@ -77,7 +77,7 @@ public class WandState : MonoBehaviour
 		GUI.Label(new Rect(25, 20 * 13, 200, 20), "B2: " + button2);
 		GUI.Label(new Rect(25, 20 * 14, 200, 20), "B3: " + button3);
 		GUI.Label(new Rect(25, 20 * 15, 200, 20), "B4: " + button4);
-		GUI.Label(new Rect(25, 20 * 16, 200, 20), "B5: " + button5);
+		GUI.Label(new Rect(25, 20 * (int)EventBase.Flags.SpecialButton2, 200, 20), "B5: " + button5);
 		GUI.Label(new Rect(25, 20 * 17, 200, 20), "B6: " + button6);
 		GUI.Label(new Rect(25, 20 * 18, 200, 20), "B6: " + button7);
 		GUI.Label(new Rect(25, 20 * 19, 200, 20), "B7: " + button8);
@@ -206,7 +206,7 @@ public class WandState : MonoBehaviour
 		// Set buttons held if down on the last frame
 		// Set buttons as idle if up on the last frame
 		
-		for(int i = 0; i < 16; i++ )
+		for(int i = 0; i < (int)EventBase.Flags.SpecialButton2; i++ )
 		{
 			ButtonState buttonState = GetButtonState(i);
 			
@@ -284,74 +284,74 @@ public class WandState : MonoBehaviour
 		this.flags = (int)flags;
 
 		// Update any state changes
-		if( (flags & 1) == 1 && button1 != ButtonState.Held )
+		if( (flags & (int)CAVE2Manager.Button.Button1) == (int)CAVE2Manager.Button.Button1 && button1 != ButtonState.Held )
 			UpdateButton( (int)CAVE2Manager.Button.Button1, (int)ButtonState.Down );
-		else if( (flags & 1) == 0 && button1 != ButtonState.Idle)
+		else if( (flags & (int)CAVE2Manager.Button.Button1) == 0 && button1 != ButtonState.Idle)
 			UpdateButton( (int)CAVE2Manager.Button.Button1, (int)ButtonState.Up );
 		
-		if( (flags & 2) == 2 && button2 != ButtonState.Held )
+		if( (flags & (int)CAVE2Manager.Button.Button2) == (int)CAVE2Manager.Button.Button2 && button2 != ButtonState.Held )
 			UpdateButton( (int)CAVE2Manager.Button.Button2, (int)ButtonState.Down );
-		else if( (flags & 2) == 0 && button2 != ButtonState.Idle)
+		else if( (flags & (int)CAVE2Manager.Button.Button2) == 0 && button2 != ButtonState.Idle)
 			UpdateButton( (int)CAVE2Manager.Button.Button2, (int)ButtonState.Up );
 			
-		if( (flags & 4) == 4 && button3 != ButtonState.Held )
+		if( (flags & (int)CAVE2Manager.Button.Button3) == (int)CAVE2Manager.Button.Button3 && button3 != ButtonState.Held )
 			UpdateButton( (int)CAVE2Manager.Button.Button3, (int)ButtonState.Down );
-		else if( (flags & 4) == 0 && button3 != ButtonState.Idle)
+		else if( (flags & (int)CAVE2Manager.Button.Button3) == 0 && button3 != ButtonState.Idle)
 			UpdateButton( (int)CAVE2Manager.Button.Button3, (int)ButtonState.Up );
 			
-		if( (flags & 8) == 8 && buttonSP1 != ButtonState.Held )
+		if( (flags & (int)CAVE2Manager.Button.SpecialButton1) == (int)CAVE2Manager.Button.SpecialButton1 && buttonSP1 != ButtonState.Held )
 			UpdateButton( (int)CAVE2Manager.Button.SpecialButton1, (int)ButtonState.Down );
-		else if( (flags & 8) == 0 && buttonSP1 != ButtonState.Idle)
+		else if( (flags &  (int)CAVE2Manager.Button.SpecialButton1) == 0 && buttonSP1 != ButtonState.Idle)
 			UpdateButton( (int)CAVE2Manager.Button.SpecialButton1, (int)ButtonState.Up );
 		
-		if( (flags & 16) == 16 && buttonSP2 != ButtonState.Held )
+		if( (flags & (int)EventBase.Flags.SpecialButton2) == (int)EventBase.Flags.SpecialButton2 && buttonSP2 != ButtonState.Held )
 			UpdateButton( (int)CAVE2Manager.Button.SpecialButton2, (int)ButtonState.Down );
-		else if( (flags & 16) == 0 && buttonSP2 != ButtonState.Idle)
+		else if( (flags & (int)EventBase.Flags.SpecialButton2) == 0 && buttonSP2 != ButtonState.Idle)
 			UpdateButton( (int)CAVE2Manager.Button.SpecialButton2, (int)ButtonState.Up );
 		
-		if( (flags & 32) == 32 && buttonSP3 != ButtonState.Held )
+		if( (flags & (int)EventBase.Flags.SpecialButton3) == (int)EventBase.Flags.SpecialButton3 && buttonSP3 != ButtonState.Held )
 			UpdateButton( (int)CAVE2Manager.Button.SpecialButton3, (int)ButtonState.Down );
-		else if( (flags & 32) == 0 && buttonSP3 != ButtonState.Idle)
+		else if( (flags & (int)EventBase.Flags.SpecialButton3) == 0 && buttonSP3 != ButtonState.Idle)
 			UpdateButton( (int)CAVE2Manager.Button.SpecialButton3, (int)ButtonState.Up );
 		
-		if( (flags & 64) == 64 && button4 != ButtonState.Held )
+		if( (flags & (int)EventBase.Flags.Button4) == (int)EventBase.Flags.Button4 && button4 != ButtonState.Held )
 			UpdateButton( (int)CAVE2Manager.Button.Button4, (int)ButtonState.Down );
-		else if( (flags & 64) == 0 && button4 != ButtonState.Idle)
+		else if( (flags & (int)EventBase.Flags.Button4) == 0 && button4 != ButtonState.Idle)
 			UpdateButton( (int)CAVE2Manager.Button.Button4, (int)ButtonState.Up );
 		
-		if( (flags & 128) == 128 && button5 != ButtonState.Held )
+		if( (flags & (int)EventBase.Flags.Button5) == (int)EventBase.Flags.Button5 && button5 != ButtonState.Held )
 			UpdateButton( (int)CAVE2Manager.Button.Button5, (int)ButtonState.Down );
-		else if( (flags & 128) == 0 && button5 != ButtonState.Idle)
+		else if( (flags & (int)EventBase.Flags.Button5) == 0 && button5 != ButtonState.Idle)
 			UpdateButton( (int)CAVE2Manager.Button.Button5, (int)ButtonState.Up );
 		
-		if( (flags & 256) == 256 && button6 != ButtonState.Held )
+		if( (flags & (int)EventBase.Flags.Button6) == (int)EventBase.Flags.Button6 && button6 != ButtonState.Held )
 			UpdateButton( (int)CAVE2Manager.Button.Button6, (int)ButtonState.Down );
-		else if( (flags & 256) == 0 && button6 != ButtonState.Idle)
+		else if( (flags & (int)EventBase.Flags.Button6) == 0 && button6 != ButtonState.Idle)
 			UpdateButton( (int)CAVE2Manager.Button.Button6, (int)ButtonState.Up );
 		
-		if( (flags & 512) == 512 && button7 != ButtonState.Held )
+		if( (flags & (int)EventBase.Flags.Button7) == (int)EventBase.Flags.Button7 && button7 != ButtonState.Held )
 			UpdateButton( (int)CAVE2Manager.Button.Button7, (int)ButtonState.Down );
-		else if( (flags & 512) == 0 && button7 != ButtonState.Idle)
+		else if( (flags & (int)EventBase.Flags.Button7) == 0 && button7 != ButtonState.Idle)
 			UpdateButton( (int)CAVE2Manager.Button.Button7, (int)ButtonState.Up );
 		
-		if( (flags & 1024) == 1024 && buttonUp != ButtonState.Held )
+		if( (flags & (int)EventBase.Flags.ButtonUp) == (int)EventBase.Flags.ButtonUp && buttonUp != ButtonState.Held )
 			UpdateButton( (int)CAVE2Manager.Button.ButtonUp, (int)ButtonState.Down );
-		else if( (flags & 1024) == 0 && buttonUp != ButtonState.Idle)
+		else if( (flags & (int)EventBase.Flags.ButtonUp) == 0 && buttonUp != ButtonState.Idle)
 			UpdateButton( (int)CAVE2Manager.Button.ButtonUp, (int)ButtonState.Up );
 		
-		if( (flags & 2048) == 2048 && buttonDown != ButtonState.Held )
+		if( (flags & (int)EventBase.Flags.ButtonDown) == (int)EventBase.Flags.ButtonDown && buttonDown != ButtonState.Held )
 			UpdateButton( (int)CAVE2Manager.Button.ButtonDown, (int)ButtonState.Down );
-		else if( (flags & 2048) == 0 && buttonDown != ButtonState.Idle)
+		else if( (flags & (int)EventBase.Flags.ButtonDown) == 0 && buttonDown != ButtonState.Idle)
 			UpdateButton( (int)CAVE2Manager.Button.ButtonDown, (int)ButtonState.Up );
 		
-		if( (flags & 4096) == 4096 && buttonLeft != ButtonState.Held )
+		if( (flags & (int)EventBase.Flags.ButtonLeft) == (int)EventBase.Flags.ButtonLeft && buttonLeft != ButtonState.Held )
 			UpdateButton( (int)CAVE2Manager.Button.ButtonLeft, (int)ButtonState.Down );
-		else if( (flags & 4096) == 0 && buttonLeft != ButtonState.Idle)
+		else if( (flags & (int)EventBase.Flags.ButtonLeft) == 0 && buttonLeft != ButtonState.Idle)
 			UpdateButton( (int)CAVE2Manager.Button.ButtonLeft, (int)ButtonState.Up );
 		
-		if( (flags & 8192) == 8192 && buttonRight != ButtonState.Held )
+		if( (flags & (int)EventBase.Flags.ButtonRight) == (int)EventBase.Flags.ButtonRight && buttonRight != ButtonState.Held )
 			UpdateButton( (int)CAVE2Manager.Button.ButtonRight, (int)ButtonState.Down );
-		else if( (flags & 8192) == 0 && buttonRight != ButtonState.Idle)
+		else if( (flags & (int)EventBase.Flags.ButtonRight) == 0 && buttonRight != ButtonState.Idle)
 			UpdateButton( (int)CAVE2Manager.Button.ButtonRight, (int)ButtonState.Up );
 		
 		if( (flags & (int)EventBase.Flags.Button8) == (int)EventBase.Flags.Button8 && button8 != ButtonState.Held )
