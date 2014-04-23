@@ -259,9 +259,8 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		}
 		else if( horizontalMovementMode == HorizonalMovementMode.Turn )
 		{
-			transform.RotateAround( headObject.transform.position, Vector3.up, strafe * getReal3D.Cluster.deltaTime * turnSpeed);
 			transform.localPosition = nextPos;
-
+			transform.RotateAround( headObject.transform.position, Vector3.up, strafe * getReal3D.Cluster.deltaTime * turnSpeed);
 
 			//transform.Translate( new Vector3(0, 0, forward) * getReal3D.Cluster.deltaTime );
 			//transform.Rotate( new Vector3( 0, strafe, 0) * getReal3D.Cluster.deltaTime * turnSpeed );
@@ -282,8 +281,6 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		else if( forwardReference == ForwardRef.Wand )
 			forwardAngle += wandRotation.eulerAngles.y;
 
-
-
 		if( horizontalMovementMode == HorizonalMovementMode.Strafe )
 		{
 			nextPos.z += forward * getReal3D.Cluster.deltaTime * Mathf.Cos(Mathf.Deg2Rad*forwardAngle);
@@ -292,20 +289,20 @@ public class OmicronPlayerController : OmicronWandUpdater {
 			nextPos.z -= strafe * getReal3D.Cluster.deltaTime * Mathf.Sin(Mathf.Deg2Rad*forwardAngle);
 			nextPos.x -= strafe * getReal3D.Cluster.deltaTime * Mathf.Cos(Mathf.Deg2Rad*forwardAngle);
 
+			transform.localPosition = nextPos;
 			//transform.Translate( new Vector3(strafe, 0, forward) * getReal3D.Cluster.deltaTime );
 		}
 		else if( horizontalMovementMode == HorizonalMovementMode.Turn )
 		{
-			transform.RotateAround( headObject.transform.position, Vector3.up, strafe * getReal3D.Cluster.deltaTime * turnSpeed);
-
 			nextPos.z += forward * getReal3D.Cluster.deltaTime * Mathf.Cos(Mathf.Deg2Rad*forwardAngle);
 			nextPos.x += forward * getReal3D.Cluster.deltaTime * Mathf.Sin(Mathf.Deg2Rad*forwardAngle);
+			transform.localPosition = nextPos;
+
+			transform.RotateAround( headObject.transform.position, Vector3.up, strafe * getReal3D.Cluster.deltaTime * turnSpeed);
 
 			//transform.Translate( new Vector3(0, 0, forward) * getReal3D.Cluster.deltaTime );
 			//transform.Rotate( new Vector3( 0, strafe, 0) * getReal3D.Cluster.deltaTime * turnSpeed );
 		}
-
-		transform.localPosition = nextPos;
 
 		if( autoLevelMode == AutoLevelMode.OnGroundCollision )
 		{
