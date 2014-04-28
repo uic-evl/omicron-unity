@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
 *-------------------------------------------------------------------------------------------------
-* Copyright 2010-2013             Electronic Visualization Laboratory, University of Illinois at Chicago
+* Copyright 2010-2014             Electronic Visualization Laboratory, University of Illinois at Chicago
 * Authors:                                                                                
 * Arthur Nishimoto                anishimoto42@gmail.com
 *-------------------------------------------------------------------------------------------------
-* Copyright (c) 2010-2013, Electronic Visualization Laboratory, University of Illinois at Chicago
+* Copyright (c) 2010-2014, Electronic Visualization Laboratory, University of Illinois at Chicago
 * All rights reserved.
 * Redistribution and use in source and binary forms, with or without modification, are permitted
 * provided that the following conditions are met:
@@ -30,6 +30,8 @@ using System.Collections;
 
 public class OmicronPlayerController : OmicronWandUpdater {
 
+	string version = "v1.0-alpha5";
+
 	public CAVE2Manager.Axis forwardAxis = CAVE2Manager.Axis.LeftAnalogStickUD;
 	public CAVE2Manager.Axis strafeAxis = CAVE2Manager.Axis.LeftAnalogStickLR;
 
@@ -40,9 +42,6 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	public float turnSpeed = 50;
 	
 	public Vector3 moveDirection;
-	
-	public CharacterController controller;
-	public CharacterMotor motor;
 	
 	// Walk - Analog stick movement with physics
 	// Fly - 6DoF movement with no physics
@@ -60,12 +59,16 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	public AutoLevelMode autoLevelMode = AutoLevelMode.OnGroundCollision;
 	public CAVE2Manager.Button autoLevelButton = CAVE2Manager.Button.Button6;
 	
-	public enum ForwardRef { None, Head, Wand }
+	public enum ForwardRef { CAVEFront, Head, Wand }
 	public ForwardRef forwardReference = ForwardRef.Wand;
 	public int headID = 1;
+	public GameObject headObject;
+
+	public enum ColliderMode { None, CAVECenter, Head }
+	public ColliderMode colliderMode = ColliderMode.Head;
 
 	Vector3 headPosition;
-	//Quaternion headRotation;
+	Vector3 headRotation;
 	
 	public bool showCAVEFloorOnlyOnMaster = true;
 	public GameObject CAVEFloor;
@@ -74,7 +77,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	Quaternion wandRotation;
 
 	public GameObject visualColliderObject;
-	
+	CapsuleCollider collider;
 	
 	bool freeflyButtonDown;
 	bool freeflyInitVectorSet;
@@ -95,10 +98,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 			clusterView = gameObject.GetComponent<getReal3D.ClusterView>();
 			clusterView.observed = this;
 		}
-		controller = GetComponent<CharacterController>();
-		motor = GetComponent<CharacterMotor>();
-		
-		
+		collider = GetComponent<CapsuleCollider>();
 	}
 	
 	public void OnSerializeClusterView(getReal3D.ClusterStream stream)
@@ -117,12 +117,17 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	// Should be used with dealing with RigidBodies
 	void FixedUpdate()
 	{
-		if( getReal3D.Cluster.isMaster )
+		if( colliderMode == ColliderMode.Head )
 		{
-			controller.center = new Vector3( headPosition.x, controller.center.y, headPosition.z );
-			if( visualColliderObject )
-				visualColliderObject.transform.position = transform.position + controller.center;
+			collider.center = new Vector3( headPosition.x, collider.center.y, headPosition.z );
 		}
+		else if( colliderMode == ColliderMode.CAVECenter )
+		{
+			collider.center = new Vector3( 0, collider.center.y, 0 );
+		}
+
+		if( visualColliderObject )
+			visualColliderObject.transform.localPosition = collider.center;
 	}
 	
 	// Update is called once per frame
@@ -134,7 +139,8 @@ public class OmicronPlayerController : OmicronWandUpdater {
 			wandRotation = cave2Manager.getWand(wandID).GetRotation();
 			
 			headPosition = cave2Manager.getHead(headID).GetPosition();
-			
+			headRotation = cave2Manager.getHead(headID).GetRotation().eulerAngles;
+
 			forward = cave2Manager.getWand(wandID).GetAxis(forwardAxis);	
 			forward *= movementScale;
 			
@@ -157,17 +163,19 @@ public class OmicronPlayerController : OmicronWandUpdater {
 				transform.localEulerAngles = new Vector3( 0, transform.localEulerAngles.y, 0 );
 			}
 			
-			if( !CAVEFloor.activeSelf )
+			if( CAVEFloor && !CAVEFloor.activeSelf )
 				CAVEFloor.SetActive(true);
 		}
 		else
 		{
-			if( showCAVEFloorOnlyOnMaster && CAVEFloor.activeSelf )
+			if( CAVEFloor && showCAVEFloorOnlyOnMaster && CAVEFloor.activeSelf )
 				CAVEFloor.SetActive(false);
-			else if( !showCAVEFloorOnlyOnMaster && !CAVEFloor.activeSelf )
+			else if( CAVEFloor && !showCAVEFloorOnlyOnMaster && !CAVEFloor.activeSelf )
 				CAVEFloor.SetActive(true);
 		}
-		CAVEFloor.transform.rotation = Quaternion.identity;
+		
+		if( CAVEFloor )
+			CAVEFloor.transform.rotation = Quaternion.identity;
 		
 		if( navMode == NavigationMode.Drive || navMode == NavigationMode.Freefly )
 		{
@@ -181,8 +189,9 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	
 	void UpdateFreeflyMovement()
 	{
-		motor.enabled = false;
-		controller.enabled = false;
+		rigidbody.useGravity = false;
+		rigidbody.constraints = RigidbodyConstraints.FreezeAll;
+		collider.enabled = false;
 		
 		if( freeflyButtonDown && !freeflyInitVectorSet )
 		{
@@ -230,18 +239,77 @@ public class OmicronPlayerController : OmicronWandUpdater {
 			if( navMode == NavigationMode.Freefly )
 				transform.Rotate( new Vector3( rX, rY + wandRotation.y, rZ) );
 		}
+
+		Vector3 nextPos = transform.localPosition;
+		float forwardAngle = transform.localEulerAngles.y;
 		
+		if( forwardReference == ForwardRef.Head )
+			forwardAngle += headRotation.y;
+
+		nextPos.z += forward * getReal3D.Cluster.deltaTime * Mathf.Cos(Mathf.Deg2Rad*forwardAngle);
+		nextPos.x += forward * getReal3D.Cluster.deltaTime * Mathf.Sin(Mathf.Deg2Rad*forwardAngle);
+
 		if( horizontalMovementMode == HorizonalMovementMode.Strafe )
-			transform.Translate( new Vector3(strafe, 0, forward) * getReal3D.Cluster.deltaTime );
+		{
+			nextPos.z -= strafe * getReal3D.Cluster.deltaTime * Mathf.Sin(Mathf.Deg2Rad*forwardAngle);
+			nextPos.x -= strafe * getReal3D.Cluster.deltaTime * Mathf.Cos(Mathf.Deg2Rad*forwardAngle);
+
+			transform.localPosition = nextPos;
+			//transform.Translate( new Vector3(strafe, 0, forward) * getReal3D.Cluster.deltaTime );
+		}
 		else if( horizontalMovementMode == HorizonalMovementMode.Turn )
 		{
-			transform.Translate( new Vector3(0, 0, forward) * getReal3D.Cluster.deltaTime );
-			transform.Rotate( new Vector3( 0, strafe, 0) * getReal3D.Cluster.deltaTime * turnSpeed );
+			transform.localPosition = nextPos;
+			transform.RotateAround( headObject.transform.position, Vector3.up, strafe * getReal3D.Cluster.deltaTime * turnSpeed);
+
+			//transform.Translate( new Vector3(0, 0, forward) * getReal3D.Cluster.deltaTime );
+			//transform.Rotate( new Vector3( 0, strafe, 0) * getReal3D.Cluster.deltaTime * turnSpeed );
 		}
 	}
 	
 	void UpdateWalkMovement()
 	{
+		rigidbody.useGravity = true;
+		rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
+		collider.enabled = true;
+
+		Vector3 nextPos = transform.localPosition;
+		float forwardAngle = transform.localEulerAngles.y;
+
+		if( forwardReference == ForwardRef.Head )
+			forwardAngle += headRotation.y;
+		else if( forwardReference == ForwardRef.Wand )
+			forwardAngle += wandRotation.eulerAngles.y;
+
+		if( horizontalMovementMode == HorizonalMovementMode.Strafe )
+		{
+			nextPos.z += forward * getReal3D.Cluster.deltaTime * Mathf.Cos(Mathf.Deg2Rad*forwardAngle);
+			nextPos.x += forward * getReal3D.Cluster.deltaTime * Mathf.Sin(Mathf.Deg2Rad*forwardAngle);
+
+			nextPos.z -= strafe * getReal3D.Cluster.deltaTime * Mathf.Sin(Mathf.Deg2Rad*forwardAngle);
+			nextPos.x -= strafe * getReal3D.Cluster.deltaTime * Mathf.Cos(Mathf.Deg2Rad*forwardAngle);
+
+			transform.localPosition = nextPos;
+			//transform.Translate( new Vector3(strafe, 0, forward) * getReal3D.Cluster.deltaTime );
+		}
+		else if( horizontalMovementMode == HorizonalMovementMode.Turn )
+		{
+			nextPos.z += forward * getReal3D.Cluster.deltaTime * Mathf.Cos(Mathf.Deg2Rad*forwardAngle);
+			nextPos.x += forward * getReal3D.Cluster.deltaTime * Mathf.Sin(Mathf.Deg2Rad*forwardAngle);
+			transform.localPosition = nextPos;
+
+			transform.RotateAround( headObject.transform.position, Vector3.up, strafe * getReal3D.Cluster.deltaTime * turnSpeed);
+
+			//transform.Translate( new Vector3(0, 0, forward) * getReal3D.Cluster.deltaTime );
+			//transform.Rotate( new Vector3( 0, strafe, 0) * getReal3D.Cluster.deltaTime * turnSpeed );
+		}
+
+		if( autoLevelMode == AutoLevelMode.OnGroundCollision )
+		{
+			transform.localEulerAngles = new Vector3( 0, transform.localEulerAngles.y, 0 );
+		}
+		
+		/*
 		motor.enabled = true;
 		controller.enabled = true;
 			
@@ -264,6 +332,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		{
 			transform.Rotate( new Vector3( 0, strafe, 0) * getReal3D.Cluster.deltaTime * turnSpeed );
 		}
+		*/
 	}
 	
 	[getReal3D.RPC]
@@ -272,14 +341,16 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		navMode = (NavigationMode)val;
 	}
 	
-	Rect windowRect = new Rect(0, 0, 250 , 275);
+	Rect windowRect = new Rect(0, 0, 250 , 300);
     string[] navStrings = new string[] {"Walk", "Drive", "Freefly"};
 	string[] horzStrings = new string[] {"Strafe", "Turn"};
+	string[] forwardRefStrings = new string[] {"CAVE", "Head", "Wand"};
+
 	void OnGUI()
 	{
 		if( showGUI && getReal3D.Cluster.isMaster )
 		{	
-			windowRect = GUI.Window(-1, windowRect, OnWindow, "Omicron Player Controller");			
+			windowRect = GUI.Window(-1, windowRect, OnWindow, "Omicron Player Controller "+version);			
 		}
     }
 
@@ -291,20 +362,24 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		
 		GUI.Label(new Rect(25, 20 * 4, 200, 20), "Navigation Mode: ");
 		navMode = (NavigationMode)GUI.SelectionGrid(new Rect(25, 20 * 5, 200, 20), (int)navMode, navStrings, 3);
-		
-		GUI.Label(new Rect(25, 20 * 6, 200, 20), "Left Analog LR Mode: ");
-		horizontalMovementMode = (HorizonalMovementMode)GUI.SelectionGrid(new Rect(25, 20 * 7, 200, 20), (int)horizontalMovementMode, horzStrings, 3);
-		
-		GUI.Label(new Rect(25, 20 * 8 + 5, 120, 20), "Walk Nav Scale: ");
-	    movementScale = float.Parse(GUI.TextField(new Rect(150, 20 * 8 + 5, 75, 20), movementScale.ToString(), 25));
-		
-		GUI.Label(new Rect(25, 20 * 9 + 10, 120, 20), "Drive/Fly Nav Scale: ");
-	    flyMovementScale = float.Parse(GUI.TextField(new Rect(150, 20 * 9 + 10, 75, 20), flyMovementScale.ToString(), 25));
-			
-		GUI.Label(new Rect(25, 20 * 10 + 15, 120, 20), "Rotate Scale: ");
-	    turnSpeed = float.Parse(GUI.TextField(new Rect(150, 20 * 10 + 15, 75, 20), turnSpeed.ToString(), 25));
 
-	    if( GUI.Toggle(new Rect(25, 20 * 11 + 15, 250, 200), (autoLevelMode == AutoLevelMode.OnGroundCollision), " Auto Level On Ground Collision") )
+		GUI.Label(new Rect(25, 20 * 6, 200, 20), "Forward Reference: ");
+		forwardReference = (ForwardRef)GUI.SelectionGrid(new Rect(25, 20 * 7, 200, 20), (int)forwardReference, forwardRefStrings, 3);
+
+
+		GUI.Label(new Rect(25, 20 * 8, 200, 20), "Left Analog LR Mode: ");
+		horizontalMovementMode = (HorizonalMovementMode)GUI.SelectionGrid(new Rect(25, 20 * 9, 200, 20), (int)horizontalMovementMode, horzStrings, 3);
+		
+		GUI.Label(new Rect(25, 20 * 10 + 5, 120, 20), "Walk Nav Scale: ");
+	    movementScale = float.Parse(GUI.TextField(new Rect(150, 20 * 10 + 5, 75, 20), movementScale.ToString(), 25));
+		
+		GUI.Label(new Rect(25, 20 * 11 + 10, 120, 20), "Drive/Fly Nav Scale: ");
+	    flyMovementScale = float.Parse(GUI.TextField(new Rect(150, 20 * 11 + 10, 75, 20), flyMovementScale.ToString(), 25));
+			
+		GUI.Label(new Rect(25, 20 * 12 + 15, 120, 20), "Rotate Scale: ");
+	    turnSpeed = float.Parse(GUI.TextField(new Rect(150, 20 * 12 + 15, 75, 20), turnSpeed.ToString(), 25));
+
+	    if( GUI.Toggle(new Rect(25, 20 * 13 + 15, 250, 200), (autoLevelMode == AutoLevelMode.OnGroundCollision), " Auto Level On Ground Collision") )
 			autoLevelMode = AutoLevelMode.OnGroundCollision;
 		else
 			autoLevelMode = AutoLevelMode.Disabled;

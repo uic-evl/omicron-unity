@@ -120,7 +120,27 @@ public class CAVE2Manager : OmicronEventClient {
 		{
 			float vertical = Input.GetAxis("Vertical");
 			float horizontal = Input.GetAxis("Horizontal");
-			wand1.UpdateController( 0, new Vector2(horizontal,vertical) , Vector2.zero, Vector2.zero );
+			
+			uint flags = 0;
+			
+			// Arrow keys -> DPad
+			if( Input.GetKey( KeyCode.UpArrow ) )
+				flags += (int)EventBase.Flags.ButtonUp;
+			if( Input.GetKey( KeyCode.DownArrow ) )
+				flags += (int)EventBase.Flags.ButtonDown;
+			if( Input.GetKey( KeyCode.LeftArrow ) )
+				flags += (int)EventBase.Flags.ButtonLeft;
+			if( Input.GetKey( KeyCode.RightArrow ) )
+				flags += (int)EventBase.Flags.ButtonRight;
+			
+			// F -> Wand Button 2 (Circle)
+			if( Input.GetKey( KeyCode.F ) )
+				flags += (int)EventBase.Flags.Button2;
+			// R -> Wand Button 3 (Cross)
+			if( Input.GetKey( KeyCode.R ) )
+				flags += (int)EventBase.Flags.Button3;
+			
+			wand1.UpdateController( flags, new Vector2(horizontal,vertical) , Vector2.zero, Vector2.zero );
 			
 			float headForward = 0;
 			float headStrafe = 0;

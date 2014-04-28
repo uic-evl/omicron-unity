@@ -13,6 +13,8 @@ public class OmicronWandVisualTester : OmicronWandUpdater {
 	public GameObject buttonLeft;
 	public GameObject buttonRight;
 	
+	public bool sphereColliderEnabled = false;
+	
 	getReal3D.ClusterView clusterView;
 	
 	public bool useRPC = false;
@@ -47,6 +49,7 @@ public class OmicronWandVisualTester : OmicronWandUpdater {
 				stream.Serialize(ref downPressed);
 				stream.Serialize(ref leftPressed);
 				stream.Serialize(ref rightPressed);
+				stream.Serialize(ref sphereColliderEnabled );
 			}
 			
 			SetButtonState( (int)CAVE2Manager.Button.Button3, crossPressed );
@@ -69,6 +72,8 @@ public class OmicronWandVisualTester : OmicronWandUpdater {
 		
 		if( getReal3D.Cluster.isMaster )
 		{
+			GetComponent<SphereCollider>().enabled = sphereColliderEnabled;
+			
 			if( cave2Manager.getWand(wandID).GetButtonDown(CAVE2Manager.Button.Button3) )
 			{
 				crossPressed = true;
