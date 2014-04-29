@@ -77,7 +77,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	Quaternion wandRotation;
 
 	public GameObject visualColliderObject;
-	CapsuleCollider collider;
+	CapsuleCollider playerCollider;
 	
 	bool freeflyButtonDown;
 	bool freeflyInitVectorSet;
@@ -98,7 +98,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 			clusterView = gameObject.GetComponent<getReal3D.ClusterView>();
 			clusterView.observed = this;
 		}
-		collider = GetComponent<CapsuleCollider>();
+		playerCollider = GetComponent<CapsuleCollider>();
 	}
 	
 	public void OnSerializeClusterView(getReal3D.ClusterStream stream)
@@ -119,15 +119,15 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	{
 		if( colliderMode == ColliderMode.Head )
 		{
-			collider.center = new Vector3( headPosition.x, collider.center.y, headPosition.z );
+			playerCollider.center = new Vector3( headPosition.x, playerCollider.center.y, headPosition.z );
 		}
 		else if( colliderMode == ColliderMode.CAVECenter )
 		{
-			collider.center = new Vector3( 0, collider.center.y, 0 );
+			playerCollider.center = new Vector3( 0, playerCollider.center.y, 0 );
 		}
 
 		if( visualColliderObject )
-			visualColliderObject.transform.localPosition = collider.center;
+			visualColliderObject.transform.localPosition = playerCollider.center;
 	}
 	
 	// Update is called once per frame
@@ -191,7 +191,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	{
 		rigidbody.useGravity = false;
 		rigidbody.constraints = RigidbodyConstraints.FreezeAll;
-		collider.enabled = false;
+		playerCollider.enabled = false;
 		
 		if( freeflyButtonDown && !freeflyInitVectorSet )
 		{
@@ -271,7 +271,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	{
 		rigidbody.useGravity = true;
 		rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
-		collider.enabled = true;
+		playerCollider.enabled = true;
 
 		Vector3 nextPos = transform.localPosition;
 		float forwardAngle = transform.localEulerAngles.y;

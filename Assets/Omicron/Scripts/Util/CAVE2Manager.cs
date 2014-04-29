@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
 *-------------------------------------------------------------------------------------------------
-* Copyright 2010-2013             Electronic Visualization Laboratory, University of Illinois at Chicago
+* Copyright 2010-2014             Electronic Visualization Laboratory, University of Illinois at Chicago
 * Authors:                                                                                
 * Arthur Nishimoto                anishimoto42@gmail.com
 *-------------------------------------------------------------------------------------------------
-* Copyright (c) 2010-2013, Electronic Visualization Laboratory, University of Illinois at Chicago
+* Copyright (c) 2010-2014, Electronic Visualization Laboratory, University of Illinois at Chicago
 * All rights reserved.
 * Redistribution and use in source and binary forms, with or without modification, are permitted
 * provided that the following conditions are met:
@@ -85,9 +85,24 @@ public class CAVE2Manager : OmicronEventClient {
 	public float axisDeadzone = 0.2f;
 	
 	public bool keyboardEventEmulation = false;
+	public bool wandMousePointerEmulation = false;
+
 	Vector3 headEmulatedPosition = new Vector3(0, 1.5f, 0);
-	public float emulatedHeadSpeed = 0.05f;
-	
+	Vector3 headEmulatedRotation = new Vector3(0, 0, 0);
+
+	Vector3 wandEmulatedPosition = new Vector3(0.175f, 1.2f, 0.6f);
+	public Vector3 wandEmulatedRotation = new Vector3(0, 0, 0);
+
+	public enum TrackerEmulated { CAVE, Head, Wand };
+	public enum TrackerEmulationMode { Translate, Rotate };
+
+	public TrackerEmulated WASDkeys = TrackerEmulated.CAVE;
+	public TrackerEmulated IJKLkeys = TrackerEmulated.Head;
+	public TrackerEmulationMode IJKLkeyMode = TrackerEmulationMode.Translate;
+
+	public float emulatedTranslateSpeed = 0.05f;
+	public float emulatedRotationSpeed = 0.05f;
+
 	// Use this for initialization
 	new void Start () {
 		base.Start();
@@ -110,7 +125,7 @@ public class CAVE2Manager : OmicronEventClient {
 			wand2.mocapID = Wand2Mocap;
 		}
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
 		wand1.UpdateState(Wand1, Wand1Mocap);
@@ -134,35 +149,59 @@ public class CAVE2Manager : OmicronEventClient {
 				flags += (int)EventBase.Flags.ButtonRight;
 			
 			// F -> Wand Button 2 (Circle)
-			if( Input.GetKey( KeyCode.F ) )
+			if( Input.GetKey( KeyCode.F ) || Input.GetMouseButton(1) )
 				flags += (int)EventBase.Flags.Button2;
 			// R -> Wand Button 3 (Cross)
-			if( Input.GetKey( KeyCode.R ) )
+			if( Input.GetKey( KeyCode.R ) || Input.GetMouseButton(0) )
 				flags += (int)EventBase.Flags.Button3;
 			
 			wand1.UpdateController( flags, new Vector2(horizontal,vertical) , Vector2.zero, Vector2.zero );
 			
+
 			float headForward = 0;
 			float headStrafe = 0;
 			float headVertical = 0;
 			
+			float speed = emulatedTranslateSpeed;
+			if( IJKLkeyMode == TrackerEmulationMode.Translate )
+				speed = emulatedTranslateSpeed;
+			else if( IJKLkeyMode == TrackerEmulationMode.Rotate )
+				speed = emulatedRotationSpeed;
+			
 			if( Input.GetKey(KeyCode.I) )
-				headForward += emulatedHeadSpeed;
+				headForward += speed;
 			else if( Input.GetKey(KeyCode.K) )
-				headForward -= emulatedHeadSpeed;
+				headForward -= speed;
 			if( Input.GetKey(KeyCode.J) )
-				headStrafe -= emulatedHeadSpeed;
+				headStrafe -= speed;
 			else if( Input.GetKey(KeyCode.L) )
-				headStrafe += emulatedHeadSpeed;
+				headStrafe += speed;
 			if( Input.GetKey(KeyCode.U) )
-				headVertical += emulatedHeadSpeed;
+				headVertical += speed;
 			else if( Input.GetKey(KeyCode.O) )
-				headVertical -= emulatedHeadSpeed;
-			
-			headEmulatedPosition += new Vector3( headStrafe, headVertical, headForward );
-			
-			head1.Update( headEmulatedPosition , Quaternion.identity );
+				headVertical -= speed;
+
+			if( IJKLkeys == TrackerEmulated.Head )
+			{
+				if( IJKLkeyMode == TrackerEmulationMode.Translate )
+					headEmulatedPosition += new Vector3( headStrafe, headVertical, headForward );
+				else if( IJKLkeyMode == TrackerEmulationMode.Rotate )
+					headEmulatedRotation += new Vector3( headForward, headStrafe, headVertical );
+			}
+			else if( IJKLkeys == TrackerEmulated.Wand )
+			{
+				if( IJKLkeyMode == TrackerEmulationMode.Translate )
+					wandEmulatedPosition += new Vector3( headStrafe, headVertical, headForward );
+				else if( IJKLkeyMode == TrackerEmulationMode.Rotate )
+					wandEmulatedRotation += new Vector3( headForward, headStrafe, headVertical );
+			}
+
+			// Update emulated positions/rotations
+			head1.Update( headEmulatedPosition , Quaternion.Euler(headEmulatedRotation) );
+			wand1.UpdateMocap( wandEmulatedPosition , Quaternion.Euler(wandEmulatedRotation) );
+
 			GameObject.FindGameObjectWithTag("MainCamera").transform.localPosition = headEmulatedPosition;
+			GameObject.FindGameObjectWithTag("MainCamera").transform.localEulerAngles = headEmulatedRotation;
 		}
 	}
 	

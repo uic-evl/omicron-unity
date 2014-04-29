@@ -44,8 +44,6 @@ public class WandLaser : OmicronWandUpdater {
 	void Update () {
 		if( getReal3D.Cluster.isMaster )
 		{
-			
-			
 			laserActivated = cave2Manager.getWand(wandID).GetButton(CAVE2Manager.Button.Button3);
 			laser.enabled = laserActivated;
 			

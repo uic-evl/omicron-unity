@@ -50,15 +50,46 @@ public class OmicronWandUpdater : MonoBehaviour {
 	void Update() {
 		if( getReal3D.Cluster.isMaster )
 		{
-			if( rigidbody )
+			if( !cave2Manager.wandMousePointerEmulation )
 			{
-				rigidbody.MovePosition( wand.position );
-				rigidbody.MoveRotation( wand.rotation );
+				if( rigidbody )
+				{
+					rigidbody.MovePosition( wand.position );
+					rigidbody.MoveRotation( wand.rotation );
+				}
+				else
+				{
+					transform.localPosition = wand.position;
+					transform.localRotation = wand.rotation;
+				}
 			}
-			else
+			else // Mouse pointer mode
 			{
-				transform.localPosition = wand.position;
-				transform.localRotation = wand.rotation;
+				if( rigidbody )
+				{
+					rigidbody.MovePosition( wand.position );
+				}
+				else
+				{
+					transform.localPosition = wand.position;
+				}
+
+				// Mouse pointer ray controls rotation
+				Vector2 position = new Vector3( Input.mousePosition.x, Input.mousePosition.y );
+				
+				// Ray extending from main camera into screen from touch point
+				Ray ray = Camera.main.ScreenPointToRay(position);
+				RaycastHit hit;
+				if (Physics.Raycast(ray, out hit, 100))
+				{
+					transform.LookAt( hit.point );
+				}
+				else
+				{
+					transform.LookAt( ray.GetPoint(1000) );
+				}
+				// Update the wandSate rotation (opposite of normal since this object is determining the rotation)
+				cave2Manager.wandEmulatedRotation = transform.eulerAngles;
 			}
 		}
 	}
