@@ -5,12 +5,18 @@ public class WandLaser : OmicronWandUpdater {
 	
 	public bool laserActivated;
 	float laserDistance;
-	
+	bool laserHit;
+	Vector3 laserPosition;
+
 	LineRenderer laser;
 	public Material laserMaterial;
 	public Color laserColor = Color.red;
 	
 	getReal3D.ClusterView clusterView;
+
+	public ParticleSystem particleSystem;
+
+
 
 	public void Awake()
 	{
@@ -26,7 +32,9 @@ public class WandLaser : OmicronWandUpdater {
 	public void OnSerializeClusterView(getReal3D.ClusterStream stream)
 	{
 		stream.Serialize( ref laserActivated );
-		stream.Serialize( ref laserActivated );
+		stream.Serialize( ref laserHit );
+		stream.Serialize( ref laserPosition );
+		stream.Serialize( ref laserDistance );
 	}
 	
 	// Use this for initialization
@@ -38,6 +46,8 @@ public class WandLaser : OmicronWandUpdater {
 		laser.useWorldSpace = false;
 		laser.material = laserMaterial;
 		laser.SetColors( laserColor, laserColor );
+
+		particleSystem = Instantiate(particleSystem) as ParticleSystem;
 	}
 	
 	// Update is called once per frame
@@ -51,15 +61,32 @@ public class WandLaser : OmicronWandUpdater {
 			{
 				Ray ray = new Ray( transform.position, transform.TransformDirection(Vector3.forward) );
 				RaycastHit hit;
-				laserDistance = 1000;
-		        if (Physics.Raycast(ray, out hit, 100))
+
+				laserHit = Physics.Raycast(ray, out hit, 100);
+				if (laserHit)
 				{
 		            Debug.DrawLine(ray.origin, hit.point);
 					laserDistance = hit.distance;
-					
+					laserPosition = hit.point;
 				}
-				laser.SetPosition( 1, new Vector3( 0, 0, laserDistance ) );
+				else
+				{
+					laserDistance = 1000;
+				}
+
 			}
+		}
+
+		laser.enabled = laserActivated;
+		if( laserActivated )
+		{
+			if (laserHit)
+			{
+				particleSystem.transform.position = laserPosition;
+				particleSystem.Emit(1);
+				particleSystem.renderer.material.SetColor("TintColor", laser.material.color );
+			}
+			laser.SetPosition( 1, new Vector3( 0, 0, laserDistance ) );
 		}
 	}
 }

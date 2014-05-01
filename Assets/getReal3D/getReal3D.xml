@@ -93,13 +93,25 @@
         </member>
         <member name="M:getReal3D.Plugin.getAppWindowHeight">
             <summary>
-            Get the height of the Unity instance window.
+            Get the height of this Unity instance window.
             </summary>
             <returns>The height in pixels</returns>
         </member>
         <member name="M:getReal3D.Plugin.getAppWindowWidth">
             <summary>
-            Get the width of the Unity instance window.
+            Get the width of this Unity instance window.
+            </summary>
+            <returns>The width in pixels</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getMasterWindowHeight">
+            <summary>
+            Get the height of the master Unity instance window.
+            </summary>
+            <returns>The height in pixels</returns>
+        </member>
+        <member name="M:getReal3D.Plugin.getMasterWindowWidth">
+            <summary>
+            Get the width of the master Unity instance window.
             </summary>
             <returns>The width in pixels</returns>
         </member>
@@ -717,12 +729,12 @@
         </member>
         <member name="P:getReal3D.GUI.width">
             <summary>
-            Use to override the default GUI width (800 pixels)
+            Use to override the default GUI width (800 pixels or the specified width of the master instance)
             </summary>
         </member>
         <member name="P:getReal3D.GUI.height">
             <summary>
-            Use to override the default GUI height (600 pixels)
+            Use to override the default GUI height (600 pixels or the specified height of the master instance)
             </summary>
         </member>
         <member name="P:getReal3D.GUI.enabled">

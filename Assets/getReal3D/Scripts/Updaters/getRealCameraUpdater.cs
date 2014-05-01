@@ -16,7 +16,9 @@ public class getRealCameraUpdater
 	private Camera m_camera;
 
 	public int cameraIndex = 0;
-	public bool applyHeadTracking = true;
+	public bool applyHeadPosition = true;
+	public bool applyHeadRotation = true;
+	public bool applyCameraProjection = true;
 
     private float m_mainNearClip;
     private float m_mainFarClip;
@@ -24,6 +26,12 @@ public class getRealCameraUpdater
     private bool m_pluginInitialized = false;
 	
 	public GameObject CameraPrefab = null;
+
+	public enum ViewportType { Automatic, UserModulated, UserOverride };
+	public ViewportType viewportType;
+	public Rect userViewport = new Rect(0f, 0f, 1f, 1f);
+
+	public bool updateOnPreCull = true;
 
 	void Awake()
 	{
@@ -51,7 +59,21 @@ public class getRealCameraUpdater
 		}
 		
 		Rect viewport = new Rect(0f, 0f, 1f, 1f);
-		getReal3D.Plugin.getCameraViewport((uint)cameraIndex, ref viewport);
+
+		switch(viewportType) {
+		case ViewportType.Automatic:
+			getReal3D.Plugin.getCameraViewport((uint)cameraIndex, ref viewport);
+			break;
+		case ViewportType.UserModulated:
+			getReal3D.Plugin.getCameraViewport((uint)cameraIndex, ref viewport);
+			viewport.Set (userViewport.x * viewport.width + viewport.x, userViewport.y * viewport.height + viewport.y,
+			              userViewport.width * viewport.width, userViewport.height * viewport.height);
+			break;
+		case ViewportType.UserOverride:
+			viewport = userViewport;
+			break;
+		}
+
 		camera.rect = viewport;
 		
 		camera.renderingPath = getReal3D.Config.renderingPath;
@@ -65,7 +87,7 @@ public class getRealCameraUpdater
 		// find cameras, see which we can remove from needCameras
 		foreach(Camera cam in Camera.allCameras)
 		{
-			if (cam.GetComponent<getRealCameraUpdater>() != null)
+			if (cam.GetComponent<getRealCameraUpdater>() != null && (cam.name == name || cam.name == name+"(Clone)"))
 			{
 				int idx = cam.GetComponent<getRealCameraUpdater>().cameraIndex;
 				if (idx > 0) needCameras.Remove(idx);
@@ -101,17 +123,30 @@ public class getRealCameraUpdater
 			newCamObject.camera.CopyFrom(camera);
 		}
 	}
-	
-	void Update()
+
+	void Update() {
+		if (!updateOnPreCull)
+			UpdateCamera();
+	}
+
+	void OnPreCull() {
+		if (updateOnPreCull)
+			UpdateCamera();
+	}
+
+	void UpdateCamera()
 	{
 		if (m_pluginInitialized)
 		{
-			if (applyHeadTracking)
-			{
+			if (applyHeadPosition) {
 	        	m_transform.localPosition = getReal3D.Input.GetCameraSensor((uint)cameraIndex).position;
+			}
+			if (applyHeadRotation) {
 	        	m_transform.localRotation = getReal3D.Input.GetCameraSensor((uint)cameraIndex).rotation;
 			}
-	        m_camera.projectionMatrix = getReal3D.Input.GetCameraProjection((uint)cameraIndex, m_mainFarClip, m_mainNearClip);
+			if (applyCameraProjection) {
+	        	m_camera.projectionMatrix = getReal3D.Input.GetCameraProjection((uint)cameraIndex, m_mainFarClip, m_mainNearClip);
+			}
 		}
 	}
 }

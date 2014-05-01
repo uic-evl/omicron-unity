@@ -272,14 +272,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   axes: 2
-  XAxisSpace: 1
-  YAxisSpace: 0
-  ZAxisSpace: 1
-  firstAxis: Yaw
-  secondAxis: Pitch
+  yawAxis: Yaw
+  pitchAxis: Pitch
   resetButton: Reset
-  RotationSpeed: 20
-  rotationCenter: {fileID: 0}
+  RotationSpeed: 30
+  rotationAround: 1
+  rotationAroundReference: {fileID: 0}
+  rotationFollows: 0
+  rotationFollowsReference: {fileID: 0}
 --- !u!114 &11400010
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -294,6 +294,13 @@ MonoBehaviour:
   cameraIndex: 0
   applyHeadTracking: 1
   CameraPrefab: {fileID: 0}
+  viewportType: 0
+  userViewport:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
 --- !u!114 &11400012
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -308,7 +315,8 @@ MonoBehaviour:
   axes: 2
   activationButton: WandLook
   resetButton: Reset
-  rotationCenter: {fileID: 0}
+  rotationAround: 1
+  rotationReference: {fileID: 0}
 --- !u!114 &11400014
 MonoBehaviour:
   m_ObjectHideFlags: 1

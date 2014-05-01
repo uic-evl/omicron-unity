@@ -14,18 +14,25 @@ public class getReal3D_Menu {
 		PlayerSettings.defaultIsNativeResolution = false;
 		PlayerSettings.displayResolutionDialog = ResolutionDialogSetting.HiddenByDefault;
 		PlayerSettings.forceSingleInstance = false;
-		PlayerSettings.resizableWindow = true;
+		PlayerSettings.resizableWindow = false;
 		PlayerSettings.runInBackground = true;
 		PlayerSettings.usePlayerLog = true;
 	}
-	
+
+	[UnityEditor.Callbacks.PostProcessScene(101)]
+	[MenuItem("getReal3D/Advanced/getReal3D Script Execution Order", false, 105)]
+	static public void FixExecutionOrder() {
+		Debug.Log ("Fixing script execution order ...");
+		getReal3D.Editor.Utils.FixScriptExecutionOrder();
+	}
+
     [MenuItem("getReal3D/Select ClusterViews", false, 12)]
     static public void SelectClusterView()
 	{
+		getReal3D.Editor.ValidateClusterViewProperties.Validate();
 		getReal3D.ClusterView[] cvArray = Resources.FindObjectsOfTypeAll(typeof(getReal3D.ClusterView)) as getReal3D.ClusterView[];
 		List<GameObject> gos = new List<GameObject>();
-        foreach (getReal3D.ClusterView cv in cvArray)
-        {
+        foreach (getReal3D.ClusterView cv in cvArray) {
             gos.Add(cv.gameObject);
         }
 		Selection.objects = gos.ToArray();
@@ -34,11 +41,11 @@ public class getReal3D_Menu {
 	[MenuItem("getReal3D/Remove All ClusterViews", false, 17)]
     static public void RemoveAllClusterView()
     {
-        if (EditorUtility.DisplayDialog("Delete ALL ClusterView Components?", "Are you sure you want to delete all ClusterView Components in the scene, including manually added ClusterViews?", "Delete ALL ClusterViews", "Cancel"))
+		getReal3D.Editor.ValidateClusterViewProperties.Validate();
+		if (EditorUtility.DisplayDialog("Delete ALL ClusterView Components?", "Are you sure you want to delete all ClusterView Components in the scene, including manually added ClusterViews?", "Delete ALL ClusterViews", "Cancel"))
         {
             GameObject[] objects = getReal3D.Editor.Utils.GetAllObjectsInScene(false).ToArray();
-            foreach (GameObject obj in objects)
-            {
+            foreach (GameObject obj in objects) {
                 getReal3D.ClusterView.RemoveClusterViewFromObject(obj, false);
             }
         }
@@ -47,7 +54,8 @@ public class getReal3D_Menu {
     [MenuItem("getReal3D/Remove Auto ClusterViews", false, 15)]
     static public void RemoveClusterView()
     {
-        GameObject[] objects = getReal3D.Editor.Utils.GetAllObjectsInScene(false).ToArray();
+		getReal3D.Editor.ValidateClusterViewProperties.Validate();
+		GameObject[] objects = getReal3D.Editor.Utils.GetAllObjectsInScene(false).ToArray();
         foreach (GameObject obj in objects)
         {
             getReal3D.ClusterView.RemoveClusterViewFromObject(obj, true);
@@ -57,7 +65,8 @@ public class getReal3D_Menu {
 	[MenuItem("getReal3D/Remove ClusterViews from Selection", false, 16)]
 	static public void RemoveClusterViewSelected()
 	{
-        GameObject[] objects = getReal3D.Editor.Utils.GetAllObjectsInSelection(true).ToArray();
+		getReal3D.Editor.ValidateClusterViewProperties.Validate();
+		GameObject[] objects = getReal3D.Editor.Utils.GetAllObjectsInSelection(true).ToArray();
         foreach (GameObject obj in objects)
         {
 			Debug.Log (obj);
@@ -65,8 +74,8 @@ public class getReal3D_Menu {
         }
 	}
 
-	//[MenuItem("getReal3D/Find \"Missing\" scripts", false, 2)]
-	static public void RemoveMissingScripts()
+	//[MenuItem("getReal3D/Advanced/Find \"Missing\" scripts", false, 2)]
+	static public void FindMissingScripts()
 	{
         GameObject[] objects = getReal3D.Editor.Utils.GetAllObjectsInScene(false).ToArray();
 		foreach(GameObject obj in objects)
@@ -94,6 +103,7 @@ public class getReal3D_Menu {
     [MenuItem("getReal3D/Add ClusterViews", false, 10)]
     static public void AddClusterView()
     {
+		getReal3D.Editor.ValidateClusterViewProperties.Validate();
 		RemoveClusterView();
         getReal3D.ClusterView.ReloadProperties();
         GameObject[] objects = getReal3D.Editor.Utils.GetAllObjectsInScene(false).ToArray();
@@ -110,7 +120,8 @@ public class getReal3D_Menu {
 	[MenuItem("getReal3D/Add ClusterViews to Selection", false, 11)]
 	static public void AddClusterViewSelected()
 	{
-        RemoveClusterViewSelected();
+		getReal3D.Editor.ValidateClusterViewProperties.Validate();
+		RemoveClusterViewSelected();
         getReal3D.ClusterView.ReloadProperties();
         GameObject[] objects = getReal3D.Editor.Utils.GetAllObjectsInSelection(true).ToArray();
 		getReal3D.ClusterView.AddClusterViewToObjects(objects, false);

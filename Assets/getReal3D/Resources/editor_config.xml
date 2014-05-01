@@ -1,31 +1,7 @@
 <?xml version='1.0'?>
-<!-- Configuration file for getReal3D for Unity VR Plugin. -->
-<!-- Mechdyne (c) 2011 -->
-<!-- VR_CLUSTER settings:
-  name: name of the configuration, used in the launcher (optional, string, "Unknown")
-  connection_timeout: connection timeout in seconds (optional, unsigned integer, 10 seconds)
-  remote_call_timeout: timeout when doing a remote call in seconds (optional, unsigned integer, 60*5 = 5 minutes)
-  log_level: force the log level to use (optional, one of (Debug, Info, Warning, Error, None)). If not set, the
-      log level specified in the launcher is used.
--->
+<!-- Configuration file for getReal3D for Unity3D -->
+<!-- Mechdyne (c) 2011, 2012, 2013 -->
 <vr_cluster version="4" name="Unity sample configuration">
-  <!-- STARTUP settings for cluster
-        working_dir: working directory when launching the application
-        bin: full qualified path to the application
-        do_fork (optional, boolean): If daemon launches the application, if false, it will print commands to launch.
-        console (optional, boolean): If daemon spawn a console for the process (default false)
-        ENV_VAR node: add an environment variable to the application
-            name: name of the environment variable
-            value: value of the environment variable
-		ARG node: add an argument to the command
-			value: value of the argument to add
-        All of these can use the following variable which will be replaced:
-            %TEMP% get replaced by windows temporary directory
-            %PROGRAM_FILES_32% get replaced by 'c:\Program Files(x86)' or 'c:\Program Files' depending on the OS architecture
-            %PROGRAM_FILES% get replaced by 'c:\Program Files'
-            %INSTANCE_ID% get replaced by the instance ID of the application
-            %INSTANCE_TEMP_PATH% temporary path specific to the isntance          
-	-->
   <startup bin="%UNITY_BIN_SET_BY_LAUNCHER%" working_dir="%UNITY_DIR_SET_BY_LAUNCHER%">
     <env_var value="SGXLOG_INFO" name="SGXLOG_LEVEL"/>
   </startup>
@@ -44,35 +20,31 @@
       <map_valuator dead_zone=".1" index="4" name="Pitch" />
       <map_tracker index="1" name="Head" />
       <map_tracker index="2" name="Wand" />
--->
+      -->
     </unity>
   </app_config>
   <devices>
     <tracker key="4126">
-      <head index="0"/>
-      <left_eye x="-1.375" y="0.0" z="0.0"/>
-      <right_eye x=" 1.375" y="0.0" z="0.0"/>
-      <wand index="1"/>
+      <head index="0" y="0"/>
+      <left_eye  x="-1.375"/>
+      <right_eye x=" 1.375"/>
+      <wand index="1" y="3.5" z="1"/>
     </tracker>
     <controller key="4127"/>
   </devices>
   <display world_to_vr_scale="1.0">
     <screen space="HEAD" name="screen">
-      <ul x="-24" y=" 18" z="-36"/>
-      <ll x="-24" y="-18" z="-36"/>
-      <lr x=" 24" y="-18" z="-36"/>
+      <ul x="-10.45" y=" 5.88" z="-18"/>
+      <ll x="-10.45" y="-5.88" z="-18"/>
+      <lr x=" 10.45" y="-5.88" z="-18"/>
     </screen>
   </display>
   <sync_config port="6001" host="127.0.0.1"/>
   <vr_node port="8676" host="127.0.0.1">
-    <!--
-          x,y: position of the window. Optional, default is (0,0)
-          w,h: size the window.
-          gpu_affinity: if the window should be bound to a specific GPU. Optional boolean value, default is true.
-          border: if the window should be created with a border. Optional boolean value, default is false.
-          topmost: if the window should be created topmost. Optional boolean value, default is false.
-        -->
-    <vr_config w="800" x="250" h="600" y="250" shows_ui="1" border="false" topmost="false" gpu_affinity="1">
+    <vr_config w="800" x="0" h="450" y="  0" shows_ui="1" border="false" topmost="false" gpu_affinity="1">
+      <screen_ref eye="mono" name="screen"/>
+    </vr_config>
+    <vr_config w="800" x="0" h="450" y="450" shows_ui="1" border="false" topmost="false" gpu_affinity="1">
       <screen_ref eye="mono" name="screen"/>
     </vr_config>
   </vr_node>

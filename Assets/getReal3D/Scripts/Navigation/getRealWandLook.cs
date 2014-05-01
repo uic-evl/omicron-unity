@@ -18,7 +18,7 @@ public class getRealWandLook
 
 	private Transform m_transform;
 	public enum RotationAround { Wand, Head, Reference };
-    public RotationAround rotationAround = RotationAround.Reference;
+    public RotationAround rotationAround = RotationAround.Head;
     public Transform rotationReference = null;
 	private CharacterController controller = null;
 

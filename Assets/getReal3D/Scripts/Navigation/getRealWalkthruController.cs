@@ -29,6 +29,11 @@ public class getRealWalkthruController
 	    m_transform = transform;
 		m_motor = GetComponent<CharacterMotor>();
 		m_controller = GetComponent<CharacterController>();
+	}
+
+	void Start()
+	{
+		if (rigidbody) rigidbody.freezeRotation = true;
 		m_lastGroundedPosition = m_transform.position;
         if (!getReal3D.Input.NavOptions.HasValue("TranslationSpeed"))
 		{
