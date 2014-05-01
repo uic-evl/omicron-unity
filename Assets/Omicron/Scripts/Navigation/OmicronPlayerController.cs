@@ -213,7 +213,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		}
 		else
 		{
-			Vector3 movementVector = (wandPosition - freeflyInitVector) + new Vector3(strafe, 0, forward);
+			Vector3 movementVector = (wandPosition - freeflyInitVector);
 
 			// Ported from Electro's Vortex application by Robert Kooima
 			//Vector3 xVec = new Vector3(1.0f,0.0f,0.0f);
@@ -237,7 +237,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 
 			transform.Translate( movementVector * getReal3D.Cluster.deltaTime * flyMovementScale);
 			if( navMode == NavigationMode.Freefly )
-				transform.Rotate( new Vector3( rX, rY + wandRotation.y, rZ) );
+				transform.Rotate( new Vector3( rX, rY, rZ) );
 		}
 
 		Vector3 nextPos = transform.localPosition;
