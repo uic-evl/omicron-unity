@@ -16,17 +16,10 @@ public class WandLaser : OmicronWandUpdater {
 
 	public ParticleSystem particleSystem;
 
-
-
 	public void Awake()
 	{
-		clusterView = gameObject.GetComponent<getReal3D.ClusterView>();
-		if( clusterView == null )
-		{
-			gameObject.AddComponent<getReal3D.ClusterView>();
-			clusterView = gameObject.GetComponent<getReal3D.ClusterView>();
-			clusterView.observed = this;
-		}
+		clusterView = gameObject.AddComponent<getReal3D.ClusterView>();
+		clusterView.observed = this;
 	}
 	
 	public void OnSerializeClusterView(getReal3D.ClusterStream stream)
@@ -46,6 +39,8 @@ public class WandLaser : OmicronWandUpdater {
 		laser.useWorldSpace = false;
 		laser.material = laserMaterial;
 		laser.SetColors( laserColor, laserColor );
+		laser.castShadows = false;
+		laser.receiveShadows = false;
 
 		particleSystem = Instantiate(particleSystem) as ParticleSystem;
 	}
@@ -84,7 +79,6 @@ public class WandLaser : OmicronWandUpdater {
 			{
 				particleSystem.transform.position = laserPosition;
 				particleSystem.Emit(1);
-				particleSystem.renderer.material.SetColor("TintColor", laser.material.color );
 			}
 			laser.SetPosition( 1, new Vector3( 0, 0, laserDistance ) );
 		}
