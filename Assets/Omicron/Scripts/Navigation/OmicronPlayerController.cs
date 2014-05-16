@@ -173,10 +173,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 			else if( CAVEFloor && !showCAVEFloorOnlyOnMaster && !CAVEFloor.activeSelf )
 				CAVEFloor.SetActive(true);
 		}
-		
-		if( CAVEFloor )
-			CAVEFloor.transform.rotation = Quaternion.identity;
-		
+
 		if( navMode == NavigationMode.Drive || navMode == NavigationMode.Freefly )
 		{
 			UpdateFreeflyMovement();
@@ -245,6 +242,8 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		
 		if( forwardReference == ForwardRef.Head )
 			forwardAngle += headRotation.y;
+		else if( forwardReference == ForwardRef.Wand )
+			forwardAngle += wandRotation.eulerAngles.y;
 
 		nextPos.z += forward * getReal3D.Cluster.deltaTime * Mathf.Cos(Mathf.Deg2Rad*forwardAngle);
 		nextPos.x += forward * getReal3D.Cluster.deltaTime * Mathf.Sin(Mathf.Deg2Rad*forwardAngle);

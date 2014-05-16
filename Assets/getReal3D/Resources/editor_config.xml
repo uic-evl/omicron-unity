@@ -25,7 +25,7 @@
   </app_config>
   <devices>
     <tracker key="4126">
-      <head index="0" y="0"/>
+      <head index="0" y="5.5"/>
       <left_eye  x="-1.375"/>
       <right_eye x=" 1.375"/>
       <wand index="1" y="3.5" z="1"/>

@@ -149,6 +149,16 @@ class OmicronManager : MonoBehaviour
 		{
 			omicronManager.Connect( serverIP, serverMsgPort, dataPort );
 		}
+		else if( !connectToServer )
+		{
+			getRealCameraUpdater getRealCam = Camera.main.GetComponent<getRealCameraUpdater>();
+			if( getRealCam )
+			{
+				getRealCam.applyHeadPosition = false;
+				getRealCam.applyHeadRotation = false;
+				getRealCam.applyCameraProjection = false;
+			}
+		}
 	}// start
 	
 	public void AddClient( OmicronEventClient c )
