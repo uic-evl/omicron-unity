@@ -14,7 +14,8 @@ public class WandLaser : OmicronWandUpdater {
 	
 	getReal3D.ClusterView clusterView;
 
-	public ParticleSystem particleSystem;
+	public ParticleSystem laserParticlePrefab;
+	ParticleSystem laserParticle;
 
 	public void Awake()
 	{
@@ -42,7 +43,7 @@ public class WandLaser : OmicronWandUpdater {
 		laser.castShadows = false;
 		laser.receiveShadows = false;
 
-		particleSystem = Instantiate(particleSystem) as ParticleSystem;
+		laserParticle = Instantiate(laserParticlePrefab) as ParticleSystem;
 	}
 	
 	// Update is called once per frame
@@ -60,6 +61,7 @@ public class WandLaser : OmicronWandUpdater {
 				laserHit = Physics.Raycast(ray, out hit, 100);
 				if (laserHit)
 				{
+					hit.collider.gameObject.BroadcastMessage("LaserHit", SendMessageOptions.DontRequireReceiver );
 		            Debug.DrawLine(ray.origin, hit.point);
 					laserDistance = hit.distance;
 					laserPosition = hit.point;
@@ -77,8 +79,8 @@ public class WandLaser : OmicronWandUpdater {
 		{
 			if (laserHit)
 			{
-				particleSystem.transform.position = laserPosition;
-				particleSystem.Emit(1);
+				laserParticle.transform.position = laserPosition;
+				laserParticle.Emit(1);
 			}
 			laser.SetPosition( 1, new Vector3( 0, 0, laserDistance ) );
 		}
