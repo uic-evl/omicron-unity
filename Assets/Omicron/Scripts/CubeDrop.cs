@@ -28,10 +28,7 @@ public class CubeDrop : MonoBehaviour {
 
 	void LaserHit()
 	{
-		if( clusterView )
-			clusterView.RPC ("Drop");
-		else
-			Drop ();
+		clusterView.RPC ("Drop");
 	}
 	
 	[getReal3D.RPC]
