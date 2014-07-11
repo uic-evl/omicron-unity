@@ -148,6 +148,10 @@ class OmicronManager : MonoBehaviour
 		if( connectToServer && getReal3D.Cluster.isMaster )
 		{
 			omicronManager.Connect( serverIP, serverMsgPort, dataPort );
+
+			CAVE2Manager cave2Manager = GameObject.FindGameObjectWithTag("OmicronManager").GetComponent<CAVE2Manager>();
+			cave2Manager.keyboardEventEmulation = false;
+			cave2Manager.wandMousePointerEmulation = false;
 		}
 		else if( !connectToServer )
 		{

@@ -124,6 +124,7 @@ public class CAVE2Manager : OmicronEventClient {
 			wand2.sourceID = Wand2;
 			wand2.mocapID = Wand2Mocap;
 		}
+
 	}
 
 	// Update is called once per frame

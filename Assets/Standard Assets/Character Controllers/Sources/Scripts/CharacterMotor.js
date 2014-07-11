@@ -336,6 +336,11 @@ function Update () {
 		UpdateFunction();
 }
 
+function SetMaxSpeed( value : float )
+{
+	movement.maxForwardSpeed = value;
+}
+
 private function ApplyInputVelocityChange (velocity : Vector3) {	
 	if (!canControl)
 		inputMoveDirection = Vector3.zero;

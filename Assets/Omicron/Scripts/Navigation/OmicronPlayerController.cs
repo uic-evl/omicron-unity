@@ -30,7 +30,7 @@ using System.Collections;
 
 public class OmicronPlayerController : OmicronWandUpdater {
 
-	string version = "v1.0-alpha5";
+	string version = "v1.0-alpha6";
 
 	public CAVE2Manager.Axis forwardAxis = CAVE2Manager.Axis.LeftAnalogStickUD;
 	public CAVE2Manager.Axis strafeAxis = CAVE2Manager.Axis.LeftAnalogStickLR;
@@ -86,9 +86,9 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	Vector3 fly_x, fly_y, fly_z;
 	
 	public bool showGUI = true;
-		
+
+	// Standard getReal3D Code Block ----------------------------------------------
 	getReal3D.ClusterView clusterView;
-	
 	public void Awake()
 	{
 		clusterView = gameObject.GetComponent<getReal3D.ClusterView>();
@@ -107,7 +107,8 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		stream.Serialize( ref wandPosition );
 		stream.Serialize( ref wandRotation );
 	}
-	
+	// ----------------------------------------------------------------------------
+
 	// Use this for initialization
 	new void Start () {
 		InitOmicron();
