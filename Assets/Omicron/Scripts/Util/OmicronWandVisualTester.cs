@@ -72,8 +72,6 @@ public class OmicronWandVisualTester : OmicronWandUpdater {
 		
 		if( getReal3D.Cluster.isMaster )
 		{
-			GetComponent<SphereCollider>().enabled = sphereColliderEnabled;
-			
 			if( cave2Manager.getWand(wandID).GetButtonDown(CAVE2Manager.Button.Button3) )
 			{
 				crossPressed = true;

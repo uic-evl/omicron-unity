@@ -154,9 +154,17 @@ public class CAVE2Manager : OmicronEventClient {
 			// R -> Wand Button 3 (Cross)
 			if( Input.GetKey( KeyCode.R ) || Input.GetMouseButton(0) )
 				flags += (int)EventBase.Flags.Button3;
-			
-			wand1.UpdateController( flags, new Vector2(horizontal,vertical) , Vector2.zero, Vector2.zero );
-			
+
+			Vector2 wandAnalog = new Vector2();
+
+			if( WASDkeys == TrackerEmulated.CAVE )
+				wandAnalog = new Vector2(horizontal,vertical);
+			else if( WASDkeys == TrackerEmulated.Head )
+			{
+				headEmulatedPosition += new Vector3( horizontal, 0, vertical ) * Time.deltaTime;
+			}
+
+			wand1.UpdateController( flags, wandAnalog , Vector2.zero, Vector2.zero );
 
 			float headForward = 0;
 			float headStrafe = 0;

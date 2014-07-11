@@ -26,7 +26,7 @@ public class CubeDrop : MonoBehaviour {
 	
 	}
 
-	void LaserHit()
+	void WandClick()
 	{
 		clusterView.RPC ("Drop");
 	}
