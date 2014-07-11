@@ -345,3 +345,11 @@ Omicron-Unity.userprefs
 Library
 
 Temp
+getReal3D
+/Assets/Plugins/x86_64
+/Assets/Plugins/gr_plugin.dll
+/Assets/Plugins/gr_plugin.dll.meta
+/Assets/Plugins/gr_plugin64.dll
+/Assets/Plugins/gr_plugin64.dll.meta
+/Assets/Plugins/x86_64.meta
+getReal3D.meta
