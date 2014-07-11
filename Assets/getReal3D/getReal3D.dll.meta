@@ -1,9 +1,0 @@
-fileFormatVersion: 2
-guid: 71ece38510d9fd644bddda6f10a65717
-MonoAssemblyImporter:
-  serializedVersion: 1
-  iconMap: {}
-  executionOrder:
-    getReal3D.ClusterManager: -32000
-    getReal3D.ClusterManagerCaller: 32000
-  userData: 

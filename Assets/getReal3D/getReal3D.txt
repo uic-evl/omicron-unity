@@ -1,1 +1,0 @@
-getReal3D plugin version 2.2.1.493.
