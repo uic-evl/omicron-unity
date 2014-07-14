@@ -238,8 +238,8 @@ public class OmicronPlayerController : OmicronWandUpdater {
 				transform.Rotate( new Vector3( rX, rY, rZ) );
 		}
 
-		Vector3 nextPos = transform.localPosition;
-		float forwardAngle = transform.localEulerAngles.y;
+		Vector3 nextPos = transform.position;
+		float forwardAngle = transform.eulerAngles.y;
 		
 		if( forwardReference == ForwardRef.Head )
 			forwardAngle += headRotation.y;
@@ -254,12 +254,12 @@ public class OmicronPlayerController : OmicronWandUpdater {
 			nextPos.z -= strafe * getReal3D.Cluster.deltaTime * Mathf.Sin(Mathf.Deg2Rad*forwardAngle);
 			nextPos.x -= strafe * getReal3D.Cluster.deltaTime * Mathf.Cos(Mathf.Deg2Rad*forwardAngle);
 
-			transform.localPosition = nextPos;
+			transform.position = nextPos;
 			//transform.Translate( new Vector3(strafe, 0, forward) * getReal3D.Cluster.deltaTime );
 		}
 		else if( horizontalMovementMode == HorizonalMovementMode.Turn )
 		{
-			transform.localPosition = nextPos;
+			transform.position = nextPos;
 			transform.RotateAround( headObject.transform.position, Vector3.up, strafe * getReal3D.Cluster.deltaTime * turnSpeed);
 
 			//transform.Translate( new Vector3(0, 0, forward) * getReal3D.Cluster.deltaTime );
@@ -273,8 +273,8 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
 		playerCollider.enabled = true;
 
-		Vector3 nextPos = transform.localPosition;
-		float forwardAngle = transform.localEulerAngles.y;
+		Vector3 nextPos = transform.position;
+		float forwardAngle = transform.eulerAngles.y;
 
 		if( forwardReference == ForwardRef.Head )
 			forwardAngle += headRotation.y;
@@ -289,14 +289,14 @@ public class OmicronPlayerController : OmicronWandUpdater {
 			nextPos.z -= strafe * getReal3D.Cluster.deltaTime * Mathf.Sin(Mathf.Deg2Rad*forwardAngle);
 			nextPos.x -= strafe * getReal3D.Cluster.deltaTime * Mathf.Cos(Mathf.Deg2Rad*forwardAngle);
 
-			transform.localPosition = nextPos;
+			transform.position = nextPos;
 			//transform.Translate( new Vector3(strafe, 0, forward) * getReal3D.Cluster.deltaTime );
 		}
 		else if( horizontalMovementMode == HorizonalMovementMode.Turn )
 		{
 			nextPos.z += forward * getReal3D.Cluster.deltaTime * Mathf.Cos(Mathf.Deg2Rad*forwardAngle);
 			nextPos.x += forward * getReal3D.Cluster.deltaTime * Mathf.Sin(Mathf.Deg2Rad*forwardAngle);
-			transform.localPosition = nextPos;
+			transform.position = nextPos;
 
 			transform.RotateAround( headObject.transform.position, Vector3.up, strafe * getReal3D.Cluster.deltaTime * turnSpeed);
 
@@ -306,7 +306,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 
 		if( autoLevelMode == AutoLevelMode.OnGroundCollision )
 		{
-			transform.localEulerAngles = new Vector3( 0, transform.localEulerAngles.y, 0 );
+			transform.eulerAngles = new Vector3( 0, transform.eulerAngles.y, 0 );
 		}
 		
 		/*
