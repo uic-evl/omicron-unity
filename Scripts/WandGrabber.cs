@@ -76,7 +76,7 @@ public class WandGrabber : OmicronWandUpdater {
 
 	void OnTriggerEnter(Collider other)
 	{
-		if( other.gameObject.rigidbody && !hasGrabableObject )
+		if( other.gameObject.rigidbody && other.GetComponent<getReal3D.ClusterView>() && !hasGrabableObject )
 		{
 			clusterView.RPC ("GrabObject", other.GetComponent<getReal3D.ClusterView>() );
 			
