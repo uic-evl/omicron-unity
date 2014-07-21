@@ -74,19 +74,19 @@ public class WandLaser : OmicronWandUpdater {
 			if( wandHit ) // The wand is pointed at a collider
 			{
 				// Send a message to the hit object telling it that the wand is hovering over it
-				hit.collider.gameObject.BroadcastMessage("OnWandOver", SendMessageOptions.DontRequireReceiver );
+				hit.collider.gameObject.SendMessage("OnWandOver", SendMessageOptions.DontRequireReceiver );
 
 				// If the laser button has just been pressed, tell the hit object
 				if( cave2Manager.getWand(wandID).GetButtonDown(CAVE2Manager.Button.Button3) )
 				{
-					hit.collider.gameObject.BroadcastMessage("OnWandButtonClick", SendMessageOptions.DontRequireReceiver );
+					hit.collider.gameObject.SendMessage("OnWandButtonClick", SendMessageOptions.DontRequireReceiver );
 				}
 
 				// Laser button is held down
 				if( laserActivated )
 				{
 					// Tell hit object laser button is held down
-					hit.collider.gameObject.BroadcastMessage("OnWandButtonHold", SendMessageOptions.DontRequireReceiver );
+					hit.collider.gameObject.SendMessage("OnWandButtonHold", SendMessageOptions.DontRequireReceiver );
 
 					Debug.DrawLine(ray.origin, hit.point);
 					// Set the laser distance at the collision point
