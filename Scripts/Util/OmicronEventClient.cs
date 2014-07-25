@@ -32,7 +32,9 @@ using omicronConnector;
 
 public class OmicronEventClient : MonoBehaviour {
 	OmicronManager omicronManager;
-	
+
+	bool flagForRemoval = false;
+
 	// Use this for initialization
 	public void Start () {
 		InitOmicron ();
@@ -52,4 +54,15 @@ public class OmicronEventClient : MonoBehaviour {
 	{
 		//Debug.Log("OmicronEventClient: '"+name+"' received " + e.serviceType);
 	}
+
+	public void SetFlaggedForRemoval()
+	{
+		flagForRemoval = true;
+	}
+
+	public bool IsFlaggedForRemoval()
+	{
+		return flagForRemoval;
+	}
+
 }

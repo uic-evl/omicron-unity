@@ -32,6 +32,8 @@ using omicronConnector;
 
 public class OmicronKinectEventClient : OmicronEventClient {
 
+	public int bodyID = -1;
+
 	public GameObject jointPrefab;
 
 	public GameObject handStatePrefab;
@@ -47,12 +49,17 @@ public class OmicronKinectEventClient : OmicronEventClient {
 
 	public Material[] materials;
 
+	public float timeout = 5;
+	float lastUpdateTime;
+
 	// Use this for initialization
 	new void Start () {
 		InitOmicron ();
 
 		leftHandStateMarker = Instantiate (handStatePrefab) as GameObject;
 		rightHandStateMarker = Instantiate (handStatePrefab) as GameObject;
+
+		lastUpdateTime = Time.time;
 	}
 
 	void InitializeJoints( int jointCount )
@@ -93,12 +100,26 @@ public class OmicronKinectEventClient : OmicronEventClient {
 		case(3): rightHandStateMarker.renderer.material = materials [3]; break;
 		case(4): rightHandStateMarker.renderer.material = materials [4]; break;
 		}
+
+
+		if ( Time.time > lastUpdateTime + timeout )
+		{
+			SetFlaggedForRemoval();
+			Destroy( gameObject );
+		}
 	}
 	
 	void OnEvent( EventData e )
 	{
-		if (e.serviceType == EventBase.ServiceType.ServiceTypeMocap)
+		if (e.serviceType == EventBase.ServiceType.ServiceTypeMocap )
 		{
+			int sourceID = (int)e.sourceId;
+
+			if( sourceID != bodyID )
+				return;
+
+			lastUpdateTime = Time.time;
+
 			// 27 = OpenNI or Kinect v1.x skeleton; 29 = Kinect v2.0
 			// See https://github.com/uic-evl/omicron/wiki/MSKinectService
 			// for joint ID names
@@ -113,12 +134,12 @@ public class OmicronKinectEventClient : OmicronEventClient {
 				e.getExtraDataVector3(i, posArray );
 				joints[i].transform.localPosition = new Vector3( posArray[0], posArray[1], posArray[2] );
 
-				if( i == 9 ) // Left hand
+				if( leftHandStateMarker != null && i == 9 ) // Left hand
 				{
 					leftHandStateMarker.transform.parent = joints[i].transform;
 					leftHandStateMarker.transform.localPosition = Vector3.zero;
 				}
-				else if( i == 19 ) // Right hand
+				else if( rightHandStateMarker != null && i == 19 ) // Right hand
 				{
 					rightHandStateMarker.transform.parent = joints[i].transform;
 					rightHandStateMarker.transform.localPosition = Vector3.zero;

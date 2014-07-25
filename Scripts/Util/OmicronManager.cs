@@ -222,10 +222,16 @@ class OmicronManager : MonoBehaviour
 			{
 				foreach( EventData e in eventList )
 				{
+					ArrayList activeClients = new ArrayList();
 					foreach( OmicronEventClient c in omicronClients )
 					{
-						c.BroadcastMessage("OnEvent",e,SendMessageOptions.DontRequireReceiver);
+						if( !c.IsFlaggedForRemoval() )
+						{
+							c.BroadcastMessage("OnEvent",e,SendMessageOptions.DontRequireReceiver);
+							activeClients.Add(c);
+						}
 					}
+					omicronClients = activeClients;
 					/*
 					if( (EventBase.ServiceType)e.serviceType == EventBase.ServiceType.ServiceTypePointer )
 					{
