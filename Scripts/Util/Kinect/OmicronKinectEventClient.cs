@@ -34,12 +34,25 @@ public class OmicronKinectEventClient : OmicronEventClient {
 
 	public GameObject jointPrefab;
 
+	public GameObject handStatePrefab;
+
 	bool jointsInitialized = false;
 	GameObject[] joints;
+
+	GameObject leftHandStateMarker;
+	GameObject rightHandStateMarker;
+
+	int leftHandState;
+	int rightHandState;
+
+	public Material[] materials;
 
 	// Use this for initialization
 	new void Start () {
 		InitOmicron ();
+
+		leftHandStateMarker = Instantiate (handStatePrefab) as GameObject;
+		rightHandStateMarker = Instantiate (handStatePrefab) as GameObject;
 	}
 
 	void InitializeJoints( int jointCount )
@@ -56,6 +69,30 @@ public class OmicronKinectEventClient : OmicronEventClient {
 
 	// Update is called once per frame
 	void Update () {
+		/*
+		HandState_Unknown	= 0,
+        HandState_NotTracked	= 1,
+        HandState_Open	= 2,
+        HandState_Closed	= 3,
+        HandState_Lasso	= 4
+        */
+		switch(leftHandState)
+		{
+		//case(0): leftHandStateMarker.renderer.material = materials [0]; break;
+		case(1): leftHandStateMarker.renderer.material = materials [1]; break;
+		case(2): leftHandStateMarker.renderer.material = materials [2]; break;
+		case(3): leftHandStateMarker.renderer.material = materials [3]; break;
+		case(4): leftHandStateMarker.renderer.material = materials [4]; break;
+		}
+
+		switch(rightHandState)
+		{
+		//case(0): rightHandStateMarker.renderer.material = materials [0]; break;
+		case(1): rightHandStateMarker.renderer.material = materials [1]; break;
+		case(2): rightHandStateMarker.renderer.material = materials [2]; break;
+		case(3): rightHandStateMarker.renderer.material = materials [3]; break;
+		case(4): rightHandStateMarker.renderer.material = materials [4]; break;
+		}
 	}
 	
 	void OnEvent( EventData e )
@@ -75,8 +112,22 @@ public class OmicronKinectEventClient : OmicronEventClient {
 				float[] posArray = new float[] { 0, 0, 0 };
 				e.getExtraDataVector3(i, posArray );
 				joints[i].transform.localPosition = new Vector3( posArray[0], posArray[1], posArray[2] );
+
+				if( i == 9 ) // Left hand
+				{
+					leftHandStateMarker.transform.parent = joints[i].transform;
+					leftHandStateMarker.transform.localPosition = Vector3.zero;
+				}
+				else if( i == 19 ) // Right hand
+				{
+					rightHandStateMarker.transform.parent = joints[i].transform;
+					rightHandStateMarker.transform.localPosition = Vector3.zero;
+				}
 			}
 
+			// Hand state is encoded using the event's orientation field
+			leftHandState = (int)e.orw;
+			rightHandState = (int)e.orx;
 		}
 	}
 }
