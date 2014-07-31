@@ -370,8 +370,7 @@ namespace omicronConnector
         {
             if (extraDataType != omicron.EventBase.ExtraDataType.ExtraDataString) return "";
 			extraData = Encoding.Convert(Encoding.GetEncoding("iso-8859-1"), Encoding.UTF8, extraData);
-            string dataString = Encoding.UTF8.GetString(extraData, 0, (int)extraDataItems);
-			dataString = dataString.Substring(0, ((int)extraDataItems / sizeof(char)) - 1 );
+			string dataString = Encoding.UTF8.GetString(extraData, 0, (int)extraDataItems);
 			return dataString;
         }
     };
