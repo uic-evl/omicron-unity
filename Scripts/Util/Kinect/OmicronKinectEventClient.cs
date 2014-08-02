@@ -45,6 +45,7 @@ public class OmicronKinectEventClient : OmicronEventClient {
 	GameObject leftHandStateMarker;
 	GameObject rightHandStateMarker;
 
+	public enum KinectHandState { Unknown, NotTracked, Open, Closed, Lasso };
 	int leftHandState;
 	int rightHandState;
 
@@ -145,6 +146,14 @@ public class OmicronKinectEventClient : OmicronEventClient {
 		case(4): rightHandStateMarker.renderer.material = materials [4]; break;
 		}
 
+		if( leftHandStateMarker.GetComponent<KinectHandGrabber>() )
+		{
+			leftHandStateMarker.GetComponent<KinectHandGrabber>().handState = leftHandState;
+		}
+		if( rightHandStateMarker.GetComponent<KinectHandGrabber>() )
+		{
+			rightHandStateMarker.GetComponent<KinectHandGrabber>().handState = rightHandState;
+		}
 
 		if ( getReal3D.Cluster.isMaster && Time.time > lastUpdateTime + timeout )
 		{
