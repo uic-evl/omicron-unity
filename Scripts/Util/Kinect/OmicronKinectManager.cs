@@ -88,8 +88,12 @@ public class OmicronKinectManager : OmicronEventClient {
 	[getReal3D.RPC]
 	void CreateBody( int sourceID )
 	{
-		GameObject body = getReal3D.ClusterView.Instantiate(kinect2bodyPrefab) as GameObject;
+		GameObject body;
+
+		body = Instantiate(kinect2bodyPrefab) as GameObject;
+
 		body.transform.parent = transform;
+		body.transform.localPosition = Vector3.zero;
 		body.GetComponent<OmicronKinectEventClient>().bodyID = sourceID;
 		
 		trackedBodies.Add( sourceID, body );

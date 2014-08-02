@@ -56,8 +56,8 @@ public class OmicronKinectEventClient : OmicronEventClient {
 	getReal3D.ClusterView clusterView;
 	public void Awake()
 	{
-		clusterView = gameObject.AddComponent<getReal3D.ClusterView>();
-		clusterView.observed = this;
+		getReal3D.ClusterView.AddClusterViewToObject(gameObject, true);
+		clusterView = gameObject.GetComponent<getReal3D.ClusterView>();
 	}
 	
 	public void OnSerializeClusterView(getReal3D.ClusterStream stream)
@@ -71,22 +71,33 @@ public class OmicronKinectEventClient : OmicronEventClient {
 	// Use this for initialization
 	new void Start () {
 		InitOmicron ();
-
-		leftHandStateMarker = getReal3D.ClusterView.Instantiate (handStatePrefab) as GameObject;
-		rightHandStateMarker = getReal3D.ClusterView.Instantiate (handStatePrefab) as GameObject;
-
 		lastUpdateTime = Time.time;
 	}
 
 	[getReal3D.RPC]
 	void InitializeJoints( int jointCount )
 	{
+		leftHandStateMarker = getReal3D.ClusterView.Instantiate (handStatePrefab) as GameObject;
+		rightHandStateMarker = getReal3D.ClusterView.Instantiate (handStatePrefab) as GameObject;
+
 		joints = new GameObject[jointCount];
 		for (int i = 0; i < jointCount; i++)
 		{
 			joints[i] = getReal3D.ClusterView.Instantiate(jointPrefab) as GameObject;
+
 			joints[i].transform.parent = transform;
 			joints[i].name = "Joint "+i;
+
+			if( leftHandStateMarker != null && i == 9 ) // Left hand
+			{
+				leftHandStateMarker.transform.parent = joints[i].transform;
+				leftHandStateMarker.transform.localPosition = Vector3.zero;
+			}
+			else if( rightHandStateMarker != null && i == 19 ) // Right hand
+			{
+				rightHandStateMarker.transform.parent = joints[i].transform;
+				rightHandStateMarker.transform.localPosition = Vector3.zero;
+			}
 		}
 		jointsInitialized = true;
 	}
@@ -99,7 +110,8 @@ public class OmicronKinectEventClient : OmicronEventClient {
         HandState_Open	= 2,
         HandState_Closed	= 3,
         HandState_Lasso	= 4
-        */
+		*/
+
 		switch(leftHandState)
 		{
 		//case(0): leftHandStateMarker.renderer.material = materials [0]; break;
@@ -121,60 +133,47 @@ public class OmicronKinectEventClient : OmicronEventClient {
 
 		if ( Time.time > lastUpdateTime + timeout )
 		{
-			SetFlaggedForRemoval();
-			Destroy( gameObject );
+			if( getReal3D.Cluster.isMaster )
+			{
+				SetFlaggedForRemoval();
+				getReal3D.ClusterView.Destroy( gameObject );
+			}
 		}
 	}
 	
 	void OnEvent( EventData e )
 	{
-		if( getReal3D.Cluster.isMaster )
+		if (e.serviceType == EventBase.ServiceType.ServiceTypeMocap )
 		{
-			if (e.serviceType == EventBase.ServiceType.ServiceTypeMocap )
+			int sourceID = (int)e.sourceId;
+
+			if( sourceID != bodyID )
+				return;
+
+			lastUpdateTime = Time.time;
+
+			// 27 = OpenNI or Kinect v1.x skeleton; 29 = Kinect v2.0
+			// See https://github.com/uic-evl/omicron/wiki/MSKinectService
+			// for joint ID names
+			int jointCount = (int)e.extraDataItems;
+
+			if( !jointsInitialized )
 			{
-				int sourceID = (int)e.sourceId;
-
-				if( sourceID != bodyID )
-					return;
-
-				lastUpdateTime = Time.time;
-
-				// 27 = OpenNI or Kinect v1.x skeleton; 29 = Kinect v2.0
-				// See https://github.com/uic-evl/omicron/wiki/MSKinectService
-				// for joint ID names
-				int jointCount = (int)e.extraDataItems;
-
-				if( !jointsInitialized )
-				{
-					if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
-					{
-						clusterView.RPC ("InitializeJoints", jointCount);
-					}
-					else
-						InitializeJoints(jointCount);
-				}
-				for( int i = 0; i < jointCount; i++ )
-				{
-					float[] posArray = new float[] { 0, 0, 0 };
-					e.getExtraDataVector3(i, posArray );
-					joints[i].transform.localPosition = new Vector3( posArray[0], posArray[1], posArray[2] );
-
-					if( leftHandStateMarker != null && i == 9 ) // Left hand
-					{
-						leftHandStateMarker.transform.parent = joints[i].transform;
-						leftHandStateMarker.transform.localPosition = Vector3.zero;
-					}
-					else if( rightHandStateMarker != null && i == 19 ) // Right hand
-					{
-						rightHandStateMarker.transform.parent = joints[i].transform;
-						rightHandStateMarker.transform.localPosition = Vector3.zero;
-					}
-				}
-
-				// Hand state is encoded using the event's orientation field
-				leftHandState = (int)e.orw;
-				rightHandState = (int)e.orx;
+				if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
+					clusterView.RPC("InitializeJoints", jointCount);
+				else
+					InitializeJoints(jointCount);
 			}
+			for( int i = 0; i < jointCount; i++ )
+			{
+				float[] posArray = new float[] { 0, 0, 0 };
+				e.getExtraDataVector3(i, posArray );
+				joints[i].transform.localPosition = new Vector3( posArray[0], posArray[1], posArray[2] );
+			}
+
+			// Hand state is encoded using the event's orientation field
+			leftHandState = (int)e.orw;
+			rightHandState = (int)e.orx;
 		}
 	}
 }
