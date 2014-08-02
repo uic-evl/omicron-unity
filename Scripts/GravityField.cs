@@ -29,7 +29,12 @@ public class GravityField : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if( force > 250 )
-			clusterView.RPC ("Explode"); // Send message to cluster clients
+		{
+			if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
+				clusterView.RPC("Explode");
+			else
+				Explode();
+		}
 		else if( force > 20 )
 			force -= getReal3D.Cluster.deltaTime * 10;
 	}

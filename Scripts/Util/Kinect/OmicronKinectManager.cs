@@ -34,6 +34,9 @@ public class OmicronKinectManager : OmicronEventClient {
 
 	public GameObject kinect2bodyPrefab;
 
+	public Vector3 kinectSensorPosition;
+	public Vector3 kinectSensorTilt;
+
 	Hashtable trackedBodies;
 
 	// Standard getReal3D Code Block ----------------------------------------------
@@ -94,6 +97,7 @@ public class OmicronKinectManager : OmicronEventClient {
 
 		body.transform.parent = transform;
 		body.transform.localPosition = Vector3.zero;
+		body.transform.localRotation = Quaternion.identity;
 		body.GetComponent<OmicronKinectEventClient>().bodyID = sourceID;
 		body.GetComponent<OmicronKinectEventClient>().kinectManager = this;
 		trackedBodies.Add( sourceID, body );

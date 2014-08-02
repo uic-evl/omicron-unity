@@ -32,7 +32,10 @@ public class CubeDrop : MonoBehaviour {
 	void OnWandButtonClick()
 	{
 		// Send message to cluster clients
-		clusterView.RPC ("Drop");
+		if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
+			clusterView.RPC("Drop");
+		else
+			Drop();
 	}
 	
 	[getReal3D.RPC]

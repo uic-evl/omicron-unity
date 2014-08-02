@@ -79,9 +79,6 @@ public class OmicronKinectEventClient : OmicronEventClient {
 	[getReal3D.RPC]
 	void InitializeJoints( int jointCount )
 	{
-		leftHandStateMarker = Instantiate (handStatePrefab) as GameObject;
-		rightHandStateMarker = Instantiate (handStatePrefab) as GameObject;
-
 		joints = new GameObject[jointCount];
 		for (int i = 0; i < jointCount; i++)
 		{
@@ -90,13 +87,15 @@ public class OmicronKinectEventClient : OmicronEventClient {
 			joints[i].transform.parent = transform;
 			joints[i].name = "Joint "+i;
 
-			if( leftHandStateMarker != null && i == 9 ) // Left hand
+			if( i == 9 ) // Left hand
 			{
+				leftHandStateMarker = Instantiate (handStatePrefab) as GameObject;
 				leftHandStateMarker.transform.parent = joints[i].transform;
 				leftHandStateMarker.transform.localPosition = Vector3.zero;
 			}
-			else if( rightHandStateMarker != null && i == 19 ) // Right hand
+			else if( i == 19 ) // Right hand
 			{
+				rightHandStateMarker = Instantiate (handStatePrefab) as GameObject;
 				rightHandStateMarker.transform.parent = joints[i].transform;
 				rightHandStateMarker.transform.localPosition = Vector3.zero;
 			}
@@ -183,7 +182,10 @@ public class OmicronKinectEventClient : OmicronEventClient {
 			{
 				float[] posArray = new float[] { 0, 0, 0 };
 				e.getExtraDataVector3(i, posArray );
-				joints[i].transform.localPosition = new Vector3( posArray[0], posArray[1], posArray[2] );
+
+				// 
+
+				joints[i].transform.localPosition = new Vector3( posArray[0], posArray[1], -posArray[2] );
 
 				// Hide unused/inactive joints
 				if( posArray[0] == 0 && posArray[1] == 0 && posArray[2] == 0 )
