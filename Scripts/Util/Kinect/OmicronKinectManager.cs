@@ -35,6 +35,20 @@ public class OmicronKinectManager : OmicronEventClient {
 	public GameObject kinect2bodyPrefab;
 
 	Hashtable trackedBodies;
+
+	// Standard getReal3D Code Block ----------------------------------------------
+	getReal3D.ClusterView clusterView;
+	public void Awake()
+	{
+		clusterView = gameObject.AddComponent<getReal3D.ClusterView>();
+		clusterView.observed = this;
+	}
+	
+	public void OnSerializeClusterView(getReal3D.ClusterStream stream)
+	{
+	}
+	// ----------------------------------------------------------------------------
+
 	// Use this for initialization
 	new void Start () {
 		trackedBodies = new Hashtable ();
@@ -48,24 +62,37 @@ public class OmicronKinectManager : OmicronEventClient {
 
 	void OnEvent( EventData e )
 	{
-		if (e.serviceType == EventBase.ServiceType.ServiceTypeMocap)
+		if( getReal3D.Cluster.isMaster )
 		{
-			int sourceID = (int)e.sourceId;
-			if( !trackedBodies.ContainsKey( sourceID ) )
+			if (e.serviceType == EventBase.ServiceType.ServiceTypeMocap)
 			{
-				GameObject body = Instantiate(kinect2bodyPrefab) as GameObject;
-				body.transform.parent = transform;
-				body.GetComponent<OmicronKinectEventClient>().bodyID = sourceID;
+				int sourceID = (int)e.sourceId;
+				if( !trackedBodies.ContainsKey( sourceID ) )
+				{
+					if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
+						clusterView.RPC("CreateBody", sourceID);
+					else
+						CreateBody(sourceID);
+				}
+			}
+			else if (e.serviceType == EventBase.ServiceType.ServiceTypeSpeech)
+			{
+				string speechString = e.getExtraDataString();
+				float speechConfidence = e.posx;
 
-				trackedBodies.Add( sourceID, body );
+				Debug.Log("Received Speech: '" + speechString + "' at " +speechConfidence+ " confidence" );
 			}
 		}
-		else if (e.serviceType == EventBase.ServiceType.ServiceTypeSpeech)
-		{
-			string speechString = e.getExtraDataString();
-			float speechConfidence = e.posx;
-
-			Debug.Log("Received Speech: '" + speechString + "' at " +speechConfidence+ " confidence" );
-		}
 	}
+
+	[getReal3D.RPC]
+	void CreateBody( int sourceID )
+	{
+		GameObject body = getReal3D.ClusterView.Instantiate(kinect2bodyPrefab) as GameObject;
+		body.transform.parent = transform;
+		body.GetComponent<OmicronKinectEventClient>().bodyID = sourceID;
+		
+		trackedBodies.Add( sourceID, body );
+	}
+
 }

@@ -52,22 +52,39 @@ public class OmicronKinectEventClient : OmicronEventClient {
 	public float timeout = 5;
 	float lastUpdateTime;
 
+	// Standard getReal3D Code Block ----------------------------------------------
+	getReal3D.ClusterView clusterView;
+	public void Awake()
+	{
+		clusterView = gameObject.AddComponent<getReal3D.ClusterView>();
+		clusterView.observed = this;
+	}
+	
+	public void OnSerializeClusterView(getReal3D.ClusterStream stream)
+	{
+		stream.Serialize( ref lastUpdateTime );
+		stream.Serialize( ref leftHandState );
+		stream.Serialize( ref rightHandState );
+	}
+	// ----------------------------------------------------------------------------
+
 	// Use this for initialization
 	new void Start () {
 		InitOmicron ();
 
-		leftHandStateMarker = Instantiate (handStatePrefab) as GameObject;
-		rightHandStateMarker = Instantiate (handStatePrefab) as GameObject;
+		leftHandStateMarker = getReal3D.ClusterView.Instantiate (handStatePrefab) as GameObject;
+		rightHandStateMarker = getReal3D.ClusterView.Instantiate (handStatePrefab) as GameObject;
 
 		lastUpdateTime = Time.time;
 	}
 
+	[getReal3D.RPC]
 	void InitializeJoints( int jointCount )
 	{
 		joints = new GameObject[jointCount];
 		for (int i = 0; i < jointCount; i++)
 		{
-			joints[i] = Instantiate(jointPrefab) as GameObject;
+			joints[i] = getReal3D.ClusterView.Instantiate(jointPrefab) as GameObject;
 			joints[i].transform.parent = transform;
 			joints[i].name = "Joint "+i;
 		}
@@ -111,44 +128,53 @@ public class OmicronKinectEventClient : OmicronEventClient {
 	
 	void OnEvent( EventData e )
 	{
-		if (e.serviceType == EventBase.ServiceType.ServiceTypeMocap )
+		if( getReal3D.Cluster.isMaster )
 		{
-			int sourceID = (int)e.sourceId;
-
-			if( sourceID != bodyID )
-				return;
-
-			lastUpdateTime = Time.time;
-
-			// 27 = OpenNI or Kinect v1.x skeleton; 29 = Kinect v2.0
-			// See https://github.com/uic-evl/omicron/wiki/MSKinectService
-			// for joint ID names
-			int jointCount = (int)e.extraDataItems;
-
-			if( !jointsInitialized )
-				InitializeJoints(jointCount);
-
-			for( int i = 0; i < jointCount; i++ )
+			if (e.serviceType == EventBase.ServiceType.ServiceTypeMocap )
 			{
-				float[] posArray = new float[] { 0, 0, 0 };
-				e.getExtraDataVector3(i, posArray );
-				joints[i].transform.localPosition = new Vector3( posArray[0], posArray[1], posArray[2] );
+				int sourceID = (int)e.sourceId;
 
-				if( leftHandStateMarker != null && i == 9 ) // Left hand
+				if( sourceID != bodyID )
+					return;
+
+				lastUpdateTime = Time.time;
+
+				// 27 = OpenNI or Kinect v1.x skeleton; 29 = Kinect v2.0
+				// See https://github.com/uic-evl/omicron/wiki/MSKinectService
+				// for joint ID names
+				int jointCount = (int)e.extraDataItems;
+
+				if( !jointsInitialized )
 				{
-					leftHandStateMarker.transform.parent = joints[i].transform;
-					leftHandStateMarker.transform.localPosition = Vector3.zero;
+					if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
+					{
+						clusterView.RPC ("InitializeJoints", jointCount);
+					}
+					else
+						InitializeJoints(jointCount);
 				}
-				else if( rightHandStateMarker != null && i == 19 ) // Right hand
+				for( int i = 0; i < jointCount; i++ )
 				{
-					rightHandStateMarker.transform.parent = joints[i].transform;
-					rightHandStateMarker.transform.localPosition = Vector3.zero;
+					float[] posArray = new float[] { 0, 0, 0 };
+					e.getExtraDataVector3(i, posArray );
+					joints[i].transform.localPosition = new Vector3( posArray[0], posArray[1], posArray[2] );
+
+					if( leftHandStateMarker != null && i == 9 ) // Left hand
+					{
+						leftHandStateMarker.transform.parent = joints[i].transform;
+						leftHandStateMarker.transform.localPosition = Vector3.zero;
+					}
+					else if( rightHandStateMarker != null && i == 19 ) // Right hand
+					{
+						rightHandStateMarker.transform.parent = joints[i].transform;
+						rightHandStateMarker.transform.localPosition = Vector3.zero;
+					}
 				}
+
+				// Hand state is encoded using the event's orientation field
+				leftHandState = (int)e.orw;
+				rightHandState = (int)e.orx;
 			}
-
-			// Hand state is encoded using the event's orientation field
-			leftHandState = (int)e.orw;
-			rightHandState = (int)e.orx;
 		}
 	}
 }
