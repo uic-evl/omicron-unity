@@ -114,6 +114,6 @@ public class WandLaser : OmicronWandUpdater {
 			laser.SetPosition( 1, new Vector3( 0, 0, laserDistance ) );
 		}
 
-		GetComponent<SphereCollider>().enabled = true; // Enable sphere collider after raycast
+		//GetComponent<SphereCollider>().enabled = true; // Enable sphere collider after raycast
 	}
 }

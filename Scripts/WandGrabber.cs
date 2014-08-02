@@ -5,6 +5,8 @@ public class WandGrabber : OmicronWandUpdater {
 
 	public CAVE2Manager.Button grabButton;
 
+	public float grabDistance = 0.1f;
+
 	public Collider grabCollider;
 
 	public bool grabbing;
@@ -15,6 +17,7 @@ public class WandGrabber : OmicronWandUpdater {
 	public Transform originalParent;
 
 	public GameObject visualCollider;
+
 
 	// Standard getReal3D Code Block ----------------------------------------------
 	getReal3D.ClusterView clusterView;
@@ -39,31 +42,51 @@ public class WandGrabber : OmicronWandUpdater {
 	
 	// Update is called once per frame
 	void Update () {
+		grabCollider.isTrigger = true;
+
 		if( getReal3D.Cluster.isMaster )
 		{
 			grabbing = cave2Manager.getWand(wandID).GetButton(grabButton);
+		}
 
-			grabCollider.isTrigger = (grabbing || holdingObject);
 
-			if( !grabbing && hasGrabableObject && !holdingObject )
+		// Shoot a ray from the wand
+		Ray ray = new Ray( transform.position, transform.TransformDirection(Vector3.forward) );
+		RaycastHit hit;
+		
+		// Get the first collider that was hit by the ray
+		bool wandHit = Physics.Raycast(ray, out hit, 100);
+		Debug.DrawLine(ray.origin, hit.point); // Draws a line in the editor
+		
+		if( wandHit && hit.collider.gameObject.GetComponent<GrabableObject>() )
+		{
+			if( hit.distance <= grabDistance && !holdingObject )
 			{
-				originalParent = grabableObject.transform.parent;
-				grabableObject.rigidbody.isKinematic = true;
-				grabableObject.transform.parent = transform;
-				holdingObject = true;
+				hasGrabableObject = true;
+				if( getReal3D.Cluster.isMaster && grabbing )
+				{
+					clusterView.RPC ("SelectGrabbableObject", hit.collider.gameObject.GetComponent<getReal3D.ClusterView>() );
+					clusterView.RPC ("GrabObject");
+				}
 			}
-			else if( grabbing && hasGrabableObject && holdingObject )
+			else if( hit.distance > 0.1f )
 			{
-				grabableObject.rigidbody.isKinematic = false;
-				grabableObject.transform.parent = originalParent;
-				holdingObject = false;
 				hasGrabableObject = false;
+				if( grabableObject == hit.collider.gameObject )
+				{
+					clusterView.RPC ("DeselectGrabbableObject");
+				}
 			}
+		}
+
+		if( getReal3D.Cluster.isMaster && !grabbing && hasGrabableObject && holdingObject )
+		{
+			clusterView.RPC ("ReleaseObject");
 		}
 
 		if( visualCollider )
 		{
-			if( grabbing && !holdingObject && hasGrabableObject )
+			if( hasGrabableObject )
 				visualCollider.renderer.material.color = new Color(10/255.0f, 250/255.0f, 250/255.0f, 128/255.0f);
 			else if( holdingObject )
 				visualCollider.renderer.material.color = new Color(10/255.0f, 250/255.0f, 10/255.0f, 0/255.0f);
@@ -76,31 +99,64 @@ public class WandGrabber : OmicronWandUpdater {
 
 	void OnTriggerEnter(Collider other)
 	{
-		if( other.gameObject.rigidbody && other.GetComponent<getReal3D.ClusterView>() && !hasGrabableObject )
+		if( other.GetComponent<GrabableObject>() && !hasGrabableObject )
 		{
-			clusterView.RPC ("GrabObject", other.GetComponent<getReal3D.ClusterView>() );
-			
+			//hasGrabableObject = true;
+			//grabableObject = other.gameObject;
+			//clusterView.RPC ("SelectGrabbableObject", other.GetComponent<getReal3D.ClusterView>() );
 		}
 	}
 
 	void OnTriggerExit(Collider other)
 	{
-		if( other.gameObject.rigidbody && other.gameObject == grabableObject )
+		if( other.gameObject == grabableObject )
 		{
-			clusterView.RPC ("ReleaseObject");
+			//hasGrabableObject = false;
+			//grabableObject = null;
+			//clusterView.RPC ("ReleaseObject");
 		}
 	}
 
 	[getReal3D.RPC]
-	void GrabObject( getReal3D.ClusterView otherCV )
+	void SelectGrabbableObject( getReal3D.ClusterView otherCV )
 	{
-		hasGrabableObject = true;
 		grabableObject = otherCV.gameObject;
+	}
+
+	[getReal3D.RPC]
+	void DeselectGrabbableObject()
+	{
+		grabableObject = null;
+	}
+
+	[getReal3D.RPC]
+	void GrabObject()
+	{
+		originalParent = grabableObject.transform.parent;
+		grabableObject.rigidbody.isKinematic = true;
+		
+		grabableObject.transform.parent = transform;
+		
+		//grabJoint = grabableObject.AddComponent<FixedJoint>();
+		//grabJoint.connectedBody = rigidbody;
+		//grabJoint.breakForce = Mathf.Infinity;
+		//grabJoint.breakTorque = Mathf.Infinity;
+		
+		holdingObject = true;
 	}
 
 	[getReal3D.RPC]
 	void ReleaseObject()
 	{
+		grabableObject.rigidbody.isKinematic = false;
+		if( originalParent != transform )
+			grabableObject.transform.parent = originalParent;
+		else
+			grabableObject.transform.parent = null;
+		//grabJoint = null;
+		
+		holdingObject = false;
 		hasGrabableObject = false;
+		grabableObject = null;
 	}
 }

@@ -15,11 +15,29 @@ public class GrabableObject : MonoBehaviour {
 		clusterView = gameObject.AddComponent<getReal3D.ClusterView>();
 		clusterView.observed = this;
 
-		getReal3D.ClusterView clusterView2 = gameObject.AddComponent<getReal3D.ClusterView>();
-		clusterView2.observed = rigidbody;
+		// Check existing ClusterViews to prevent duplicates
+		getReal3D.ClusterView[] existingClusterViews = gameObject.GetComponents<getReal3D.ClusterView>();
+		bool observingRigidbody = false;
+		bool observingTransform = false;
 
-		getReal3D.ClusterView clusterView3 = gameObject.AddComponent<getReal3D.ClusterView>();
-		clusterView3.observed = transform;
+		foreach( getReal3D.ClusterView cv in existingClusterViews )
+		{
+			if( cv.observed == rigidbody )
+				observingRigidbody = true;
+			if( cv.observed == transform )
+				observingTransform = true;
+		}
+
+		if( !observingRigidbody )
+		{
+			getReal3D.ClusterView clusterView2 = gameObject.AddComponent<getReal3D.ClusterView>();
+			clusterView2.observed = rigidbody;
+		}
+		if( !observingTransform )
+		{
+			getReal3D.ClusterView clusterView3 = gameObject.AddComponent<getReal3D.ClusterView>();
+			clusterView3.observed = transform;
+		}
 	}
 	
 	public void OnSerializeClusterView(getReal3D.ClusterStream stream)
