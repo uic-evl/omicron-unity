@@ -95,8 +95,13 @@ public class OmicronKinectManager : OmicronEventClient {
 		body.transform.parent = transform;
 		body.transform.localPosition = Vector3.zero;
 		body.GetComponent<OmicronKinectEventClient>().bodyID = sourceID;
-		
+		body.GetComponent<OmicronKinectEventClient>().kinectManager = this;
 		trackedBodies.Add( sourceID, body );
+	}
+
+	public void RemoveBody(int bodyID )
+	{
+		trackedBodies.Remove( bodyID );
 	}
 
 }

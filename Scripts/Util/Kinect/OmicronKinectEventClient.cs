@@ -31,6 +31,7 @@ using omicron;
 using omicronConnector;
 
 public class OmicronKinectEventClient : OmicronEventClient {
+	public OmicronKinectManager kinectManager;
 
 	public int bodyID = -1;
 
@@ -65,6 +66,7 @@ public class OmicronKinectEventClient : OmicronEventClient {
 		stream.Serialize( ref lastUpdateTime );
 		stream.Serialize( ref leftHandState );
 		stream.Serialize( ref rightHandState );
+		stream.Serialize( ref lastUpdateTime );
 	}
 	// ----------------------------------------------------------------------------
 
@@ -77,13 +79,13 @@ public class OmicronKinectEventClient : OmicronEventClient {
 	[getReal3D.RPC]
 	void InitializeJoints( int jointCount )
 	{
-		leftHandStateMarker = getReal3D.ClusterView.Instantiate (handStatePrefab) as GameObject;
-		rightHandStateMarker = getReal3D.ClusterView.Instantiate (handStatePrefab) as GameObject;
+		leftHandStateMarker = Instantiate (handStatePrefab) as GameObject;
+		rightHandStateMarker = Instantiate (handStatePrefab) as GameObject;
 
 		joints = new GameObject[jointCount];
 		for (int i = 0; i < jointCount; i++)
 		{
-			joints[i] = getReal3D.ClusterView.Instantiate(jointPrefab) as GameObject;
+			joints[i] = Instantiate(jointPrefab) as GameObject;
 
 			joints[i].transform.parent = transform;
 			joints[i].name = "Joint "+i;
@@ -100,6 +102,20 @@ public class OmicronKinectEventClient : OmicronEventClient {
 			}
 		}
 		jointsInitialized = true;
+	}
+
+	[getReal3D.RPC]
+	void RemoveBody()
+	{
+		kinectManager.RemoveBody(bodyID);
+		SetFlaggedForRemoval();
+		Destroy( gameObject );
+	}
+
+	[getReal3D.RPC]
+	void SetJointVisible(int jointID, bool value)
+	{
+		joints[jointID].renderer.enabled = value;
 	}
 
 	// Update is called once per frame
@@ -131,13 +147,12 @@ public class OmicronKinectEventClient : OmicronEventClient {
 		}
 
 
-		if ( Time.time > lastUpdateTime + timeout )
+		if ( getReal3D.Cluster.isMaster && Time.time > lastUpdateTime + timeout )
 		{
-			if( getReal3D.Cluster.isMaster )
-			{
-				SetFlaggedForRemoval();
-				getReal3D.ClusterView.Destroy( gameObject );
-			}
+			if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
+				clusterView.RPC("RemoveBody");
+			else
+				RemoveBody();
 		}
 	}
 	
@@ -169,6 +184,22 @@ public class OmicronKinectEventClient : OmicronEventClient {
 				float[] posArray = new float[] { 0, 0, 0 };
 				e.getExtraDataVector3(i, posArray );
 				joints[i].transform.localPosition = new Vector3( posArray[0], posArray[1], posArray[2] );
+
+				// Hide unused/inactive joints
+				if( posArray[0] == 0 && posArray[1] == 0 && posArray[2] == 0 )
+				{
+					if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
+						clusterView.RPC("SetJointVisible", i, false);
+					else
+						SetJointVisible(i, false);
+				}
+				else if( !joints[i].renderer.enabled )
+				{
+					if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
+						clusterView.RPC("SetJointVisible", i, true);
+					else
+						SetJointVisible(i, true);
+				}
 			}
 
 			// Hand state is encoded using the event's orientation field

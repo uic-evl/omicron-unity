@@ -97,26 +97,6 @@ public class WandGrabber : OmicronWandUpdater {
 		}
 	}
 
-	void OnTriggerEnter(Collider other)
-	{
-		if( other.GetComponent<GrabableObject>() && !hasGrabableObject )
-		{
-			//hasGrabableObject = true;
-			//grabableObject = other.gameObject;
-			//clusterView.RPC ("SelectGrabbableObject", other.GetComponent<getReal3D.ClusterView>() );
-		}
-	}
-
-	void OnTriggerExit(Collider other)
-	{
-		if( other.gameObject == grabableObject )
-		{
-			//hasGrabableObject = false;
-			//grabableObject = null;
-			//clusterView.RPC ("ReleaseObject");
-		}
-	}
-
 	[getReal3D.RPC]
 	void SelectGrabbableObject( getReal3D.ClusterView otherCV )
 	{
