@@ -37,7 +37,13 @@ public class OmicronKinectManager : OmicronEventClient {
 	public Vector3 kinectSensorPosition;
 	public Vector3 kinectSensorTilt;
 
+	public bool enableBodyTracking = true;
+	public bool enableSpeechRecognition = true;
+	public float minimumSpeechConfidence = 0.3f;
+
 	Hashtable trackedBodies;
+
+	public GameObject[] voiceCommandListeners;
 
 	// Standard getReal3D Code Block ----------------------------------------------
 	getReal3D.ClusterView clusterView;
@@ -67,7 +73,7 @@ public class OmicronKinectManager : OmicronEventClient {
 	{
 		if( getReal3D.Cluster.isMaster )
 		{
-			if (e.serviceType == EventBase.ServiceType.ServiceTypeMocap)
+			if (enableBodyTracking && e.serviceType == EventBase.ServiceType.ServiceTypeMocap )
 			{
 				int sourceID = (int)e.sourceId;
 				if( !trackedBodies.ContainsKey( sourceID ) )
@@ -78,12 +84,20 @@ public class OmicronKinectManager : OmicronEventClient {
 						CreateBody(sourceID);
 				}
 			}
-			else if (e.serviceType == EventBase.ServiceType.ServiceTypeSpeech)
+			else if (enableSpeechRecognition && e.serviceType == EventBase.ServiceType.ServiceTypeSpeech)
 			{
 				string speechString = e.getExtraDataString();
 				float speechConfidence = e.posx;
 
 				Debug.Log("Received Speech: '" + speechString + "' at " +speechConfidence+ " confidence" );
+
+				if( speechConfidence >= minimumSpeechConfidence )
+				{
+					foreach( GameObject voiceListeners in voiceCommandListeners )
+					{
+						voiceListeners.SendMessage("OnVoiceCommand", speechString);
+					}
+				}
 			}
 		}
 	}
