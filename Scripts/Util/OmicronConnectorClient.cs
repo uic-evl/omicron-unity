@@ -446,6 +446,12 @@ namespace omicronConnector
                 catch (SocketException e)
                 {
                     Debug.LogError("SocketException: " + e);
+					udpClient.Close();
+					listenerThread.Abort();
+					
+					// Close TCP connection.
+					streamToServer.Close();
+					client.Close();
                 }
             }
         }// CTOR
