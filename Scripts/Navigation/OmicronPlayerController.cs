@@ -86,6 +86,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	Vector3 fly_x, fly_y, fly_z;
 	
 	public bool showGUI = true;
+	public bool freezeMovement = false;
 
 	// Standard getReal3D Code Block ----------------------------------------------
 	getReal3D.ClusterView clusterView;
@@ -142,12 +143,14 @@ public class OmicronPlayerController : OmicronWandUpdater {
 			headPosition = cave2Manager.getHead(headID).GetPosition();
 			headRotation = cave2Manager.getHead(headID).GetRotation().eulerAngles;
 
-			forward = cave2Manager.getWand(wandID).GetAxis(forwardAxis);	
-			forward *= movementScale;
-			
-			strafe = cave2Manager.getWand(wandID).GetAxis(strafeAxis);	
-			strafe *= movementScale;
-			
+			if( !freezeMovement )
+			{
+				forward = cave2Manager.getWand(wandID).GetAxis(forwardAxis);	
+				forward *= movementScale;
+				
+				strafe = cave2Manager.getWand(wandID).GetAxis(strafeAxis);	
+				strafe *= movementScale;
+			}
 			
 			freeflyButtonDown = cave2Manager.getWand(wandID).GetButton(freeFlyButton);
 			
