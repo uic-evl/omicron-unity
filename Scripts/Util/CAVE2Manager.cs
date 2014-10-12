@@ -87,8 +87,8 @@ public class CAVE2Manager : OmicronEventClient {
 	public bool keyboardEventEmulation = false;
 	public bool wandMousePointerEmulation = false;
 
-	Vector3 headEmulatedPosition = new Vector3(0, 1.5f, 0);
-	Vector3 headEmulatedRotation = new Vector3(0, 0, 0);
+	public Vector3 headEmulatedPosition = new Vector3(0, 1.5f, 0);
+	public Vector3 headEmulatedRotation = new Vector3(0, 0, 0);
 
 	Vector3 wandEmulatedPosition = new Vector3(0.175f, 1.2f, 0.6f);
 	public Vector3 wandEmulatedRotation = new Vector3(0, 0, 0);
@@ -227,7 +227,7 @@ public class CAVE2Manager : OmicronEventClient {
 			// -zPos -xRot -yRot for Omicron->Unity coordinate conversion)
 			Vector3 unityPos = new Vector3(e.posx, e.posy, -e.posz);
 			Quaternion unityRot = new Quaternion(-e.orx, -e.ory, e.orz, e.orw);
-			
+
 			if( e.sourceId == head1.sourceID )
 			{
 				head1.Update( unityPos, unityRot );
