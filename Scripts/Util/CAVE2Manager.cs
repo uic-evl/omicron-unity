@@ -81,9 +81,10 @@ public class CAVE2Manager : OmicronEventClient {
 	public int Head2 = 4; // 4 = Head_Tracker2
 	public int Wand2 = 2;
 	public int Wand2Mocap = 5;
-	
+
+	public float axisSensitivity = 1f;
 	public float axisDeadzone = 0.2f;
-	
+
 	public bool keyboardEventEmulation = false;
 	public bool wandMousePointerEmulation = false;
 
@@ -134,8 +135,8 @@ public class CAVE2Manager : OmicronEventClient {
 		
 		if( keyboardEventEmulation )
 		{
-			float vertical = Input.GetAxis("Vertical");
-			float horizontal = Input.GetAxis("Horizontal");
+			float vertical = Input.GetAxis("Vertical") * axisSensitivity;
+			float horizontal = Input.GetAxis("Horizontal") * axisSensitivity;
 			
 			uint flags = 0;
 			
@@ -252,8 +253,8 @@ public class CAVE2Manager : OmicronEventClient {
 			//Quaternion unityRot = new Quaternion(-e.orx, -e.ory, e.orz, e.orw);
 			
 			// Flip Up/Down analog stick values
-			Vector2 leftAnalogStick = new Vector2( e.getExtraDataFloat(0), -e.getExtraDataFloat(1) );
-			Vector2 rightAnalogStick = new Vector2( e.getExtraDataFloat(2), -e.getExtraDataFloat(3) );
+			Vector2 leftAnalogStick = new Vector2( e.getExtraDataFloat(0), -e.getExtraDataFloat(1) ) * axisSensitivity;
+			Vector2 rightAnalogStick = new Vector2( e.getExtraDataFloat(2), -e.getExtraDataFloat(3) ) * axisSensitivity;
 			Vector2 analogTrigger = new Vector2( e.getExtraDataFloat(4), e.getExtraDataFloat(5) );
 			
 			if( Mathf.Abs(leftAnalogStick.x) < axisDeadzone )
