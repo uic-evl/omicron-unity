@@ -87,6 +87,7 @@ public class CAVE2Manager : OmicronEventClient {
 
 	public bool keyboardEventEmulation = false;
 	public bool wandMousePointerEmulation = false;
+	public bool mocapEmulation = false;
 
 	public Vector3 headEmulatedPosition = new Vector3(0, 1.5f, 0);
 	public Vector3 headEmulatedRotation = new Vector3(0, 0, 0);
@@ -126,6 +127,7 @@ public class CAVE2Manager : OmicronEventClient {
 			wand2.mocapID = Wand2Mocap;
 		}
 
+		Application.targetFrameRate = 60;
 	}
 
 	// Update is called once per frame
@@ -206,10 +208,15 @@ public class CAVE2Manager : OmicronEventClient {
 					wandEmulatedRotation += new Vector3( headForward, headStrafe, headVertical );
 			}
 
+
+		}
+
+		if( mocapEmulation )
+		{
 			// Update emulated positions/rotations
 			head1.Update( headEmulatedPosition , Quaternion.Euler(headEmulatedRotation) );
 			wand1.UpdateMocap( wandEmulatedPosition , Quaternion.Euler(wandEmulatedRotation) );
-
+			
 			GameObject.FindGameObjectWithTag("MainCamera").transform.localPosition = headEmulatedPosition;
 			GameObject.FindGameObjectWithTag("MainCamera").transform.localEulerAngles = headEmulatedRotation;
 		}
