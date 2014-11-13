@@ -186,6 +186,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		{
 			UpdateWalkMovement();
 		}
+
 	}
 	
 	void UpdateFreeflyMovement()
