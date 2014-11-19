@@ -146,11 +146,11 @@ public class OmicronKinectEventClient : OmicronEventClient {
 		case(4): rightHandStateMarker.renderer.material = materials [4]; break;
 		}
 
-		if( leftHandStateMarker.GetComponent<KinectHandGrabber>() )
+		if( leftHandStateMarker && leftHandStateMarker.GetComponent<KinectHandGrabber>() )
 		{
 			leftHandStateMarker.GetComponent<KinectHandGrabber>().handState = leftHandState;
 		}
-		if( rightHandStateMarker.GetComponent<KinectHandGrabber>() )
+		if( rightHandStateMarker && rightHandStateMarker.GetComponent<KinectHandGrabber>() )
 		{
 			rightHandStateMarker.GetComponent<KinectHandGrabber>().handState = rightHandState;
 		}

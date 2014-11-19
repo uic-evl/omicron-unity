@@ -89,7 +89,7 @@ public class OmicronKinectManager : OmicronEventClient {
 				string speechString = e.getExtraDataString();
 				float speechConfidence = e.posx;
 
-				Debug.Log("Received Speech: '" + speechString + "' at " +speechConfidence+ " confidence" );
+				//Debug.Log("Received Speech: '" + speechString + "' at " +speechConfidence+ " confidence" );
 
 				if( speechConfidence >= minimumSpeechConfidence )
 				{

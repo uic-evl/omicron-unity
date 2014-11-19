@@ -442,16 +442,22 @@ namespace omicronConnector
                 catch (ArgumentNullException e)
                 {
                     Debug.LogError("ArgumentNullException: " + e);
+					Dispose();
                 }
                 catch (SocketException e)
                 {
                     Debug.LogError("SocketException: " + e);
+					Dispose();
                 }
             }
         }// CTOR
 
         public void Dispose() 
 	    {
+			String message = "data_off";
+			Byte[] data = System.Text.Encoding.ASCII.GetBytes(message);
+			streamToServer.Write(data, 0, data.Length);
+
 		    // Close the socket when finished receiving datagrams
             Debug.Log("OmicronConnectorClient: Finished receiving. Closing socket.\n");
             udpClient.Close();
