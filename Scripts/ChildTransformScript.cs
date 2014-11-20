@@ -12,6 +12,7 @@ public class ChildTransformScript : MonoBehaviour {
 	Vector3 rotationOffset;
 	Vector3 scaleOffset;
 
+	public bool useLateUpdate = false;
 	// Use this for initialization
 	void Start () {
 		positionOffset = transform.position;
@@ -21,11 +22,26 @@ public class ChildTransformScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if( parent && matchPosition )
-			transform.position = parent.position + positionOffset;
-		if( parent && matchRotation )
-			transform.eulerAngles = parent.eulerAngles + rotationOffset;
-		if( parent && matchScale )
-			transform.localScale = parent.localScale + scaleOffset;
+		if( !useLateUpdate )
+		{
+			if( parent && matchPosition )
+				transform.position = parent.position + positionOffset;
+			if( parent && matchRotation )
+				transform.eulerAngles = parent.eulerAngles + rotationOffset;
+			if( parent && matchScale )
+				transform.localScale = parent.localScale + scaleOffset;
+		}
+	}
+
+	void LateUpdate () {
+		if( useLateUpdate )
+		{
+			if( parent && matchPosition )
+				transform.position = parent.position + positionOffset;
+			if( parent && matchRotation )
+				transform.eulerAngles = parent.eulerAngles + rotationOffset;
+			if( parent && matchScale )
+				transform.localScale = parent.localScale + scaleOffset;
+		}
 	}
 }
