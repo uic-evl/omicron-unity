@@ -50,8 +50,9 @@ public class HUDFPS : MonoBehaviour
 	{
 		if (getReal3D.Cluster.isMaster)
 		{
+			bool lastState = showOnlyOnMaster;
 			showOnlyOnMaster = GUI.Toggle (new Rect (Screen.width - 250 - 25, Screen.height - 20 - (20 * 0 + 15), 250, 20), showOnlyOnMaster, "FPS Only On Master");
-			if( clusterView )
+			if( clusterView && lastState != showOnlyOnMaster )
 				clusterView.RPC ("ToggleShowOnMaster", showOnlyOnMaster );
 		}
 	}
