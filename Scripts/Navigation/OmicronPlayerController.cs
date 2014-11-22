@@ -159,7 +159,10 @@ public class OmicronPlayerController : OmicronWandUpdater {
 				navMode++;
 				if( (int)navMode > 2 )
 					navMode = 0;
-				clusterView.RPC("SetNavigationMode", (int)navMode);
+				if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
+					clusterView.RPC("SetNavigationMode", (int)navMode);
+				else
+					SetNavigationMode((int)navMode);
 			}
 			
 			if( cave2Manager.getWand(wandID).GetButtonDown(autoLevelButton) )
