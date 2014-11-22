@@ -105,6 +105,8 @@ public class CAVE2Manager : OmicronEventClient {
 	public float emulatedTranslateSpeed = 0.05f;
 	public float emulatedRotationSpeed = 0.05f;
 
+	public int framerateCap = 60;
+
 	// Use this for initialization
 	new void Start () {
 		base.Start();
@@ -127,7 +129,7 @@ public class CAVE2Manager : OmicronEventClient {
 			wand2.mocapID = Wand2Mocap;
 		}
 
-		Application.targetFrameRate = 60;
+		Application.targetFrameRate = framerateCap;
 	}
 
 	// Update is called once per frame
