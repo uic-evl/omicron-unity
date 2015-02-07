@@ -14,21 +14,6 @@ public class KinectHandGrabber : MonoBehaviour {
 	public GameObject grabableObject;
 	public Transform originalParent;
 
-	// Standard getReal3D Code Block ----------------------------------------------
-	getReal3D.ClusterView clusterView;
-	public void Awake()
-	{
-		clusterView = gameObject.AddComponent<getReal3D.ClusterView>();
-		clusterView.observed = this;
-	}
-	
-	public void OnSerializeClusterView(getReal3D.ClusterStream stream)
-	{
-		stream.Serialize( ref grabbing );
-		stream.Serialize( ref holdingObject );
-	}
-	// ----------------------------------------------------------------------------
-
 	// Use this for initialization
 	void Start () {
 	
@@ -42,16 +27,9 @@ public class KinectHandGrabber : MonoBehaviour {
 			lastKnownHandState = (int)OmicronKinectEventClient.KinectHandState.Open;
 			grabbing = false;
 
-			if( getReal3D.Cluster.isMaster && holdingObject )
+			if( holdingObject )
 			{
-				if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
-				{
-					clusterView.RPC ("ReleaseObject");
-				}
-				else
-				{
-					ReleaseObject();
-				}
+				ReleaseObject();
 			}
 		}
 		else if( handState == (int)OmicronKinectEventClient.KinectHandState.Closed )
@@ -64,37 +42,14 @@ public class KinectHandGrabber : MonoBehaviour {
 
 	void OnTriggerStay( Collider other )
 	{
-		if( other.GetComponent<GrabableObject>() )
-		{
-			if( getReal3D.Cluster.isMaster && grabbing && !holdingObject )
-			{
-				if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
-				{
-					clusterView.RPC ("SelectGrabbableObjectRPC", other.GetComponent<getReal3D.ClusterView>() );
-					clusterView.RPC ("GrabObject");
-				}
-				else
-				{
-					SelectGrabbableObject( other.gameObject );
-					GrabObject();
-				}
-			}
-		}
+
 	}
 
-	[getReal3D.RPC]
-	void SelectGrabbableObjectRPC( getReal3D.ClusterView otherCV )
-	{
-		grabableObject = otherCV.gameObject;
-	}
-	
 	void SelectGrabbableObject( GameObject otherGameObject )
 	{
 		grabableObject = otherGameObject;
 	}
 
-
-	[getReal3D.RPC]
 	void GrabObject()
 	{
 		originalParent = grabableObject.transform.parent;
@@ -110,7 +65,6 @@ public class KinectHandGrabber : MonoBehaviour {
 		holdingObject = true;
 	}
 
-	[getReal3D.RPC]
 	void ReleaseObject()
 	{
 		grabableObject.rigidbody.isKinematic = false;

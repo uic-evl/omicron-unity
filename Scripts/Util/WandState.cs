@@ -37,20 +37,7 @@ public class WandState : MonoBehaviour
 	ButtonState buttonNull = ButtonState.Idle;
 		
 	public bool RPCButtonEvents = false;
-	
-	getReal3D.ClusterView clusterView;
-	
-	public void Awake()
-	{
-		clusterView = gameObject.GetComponent<getReal3D.ClusterView>();
-		if( clusterView == null )
-		{
-			gameObject.AddComponent<getReal3D.ClusterView>();
-			clusterView = gameObject.GetComponent<getReal3D.ClusterView>();
-			clusterView.observed = this;
-		}
-	}
-	
+
 	public void Start()
 	{
 	}
@@ -84,15 +71,6 @@ public class WandState : MonoBehaviour
     }
     */
 
-	public void OnSerializeClusterView(getReal3D.ClusterStream stream)
-	{
-		stream.Serialize(ref position);
-		stream.Serialize(ref rotation);
-		stream.Serialize(ref leftAnalogStick);
-		stream.Serialize(ref rightAnalogStick);
-		stream.Serialize(ref analogTrigger);
-	}
-	
 	public Vector3 GetPosition()
 	{
 		return position;
@@ -209,12 +187,7 @@ public class WandState : MonoBehaviour
 		for(int i = 0; i < 16; i++ )
 		{
 			ButtonState buttonState = GetButtonState(i);
-			
-			if (getReal3D.Cluster.isMaster)
-			{
-				if (clusterView && RPCButtonEvents)
-					clusterView.RPC("UpdateButton", i, (int)buttonState );
-			}
+
 			if( buttonState == ButtonState.Down )
 				UpdateButton( i, (int)ButtonState.Held );
 			else if( buttonState == ButtonState.Up )

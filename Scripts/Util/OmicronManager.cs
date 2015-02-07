@@ -145,7 +145,7 @@ class OmicronManager : MonoBehaviour
 		
 		gameObject.tag = "OmicronManager";
 		
-		if( connectToServer && getReal3D.Cluster.isMaster )
+		if( connectToServer )
 		{
 			omicronManager.Connect( serverIP, serverMsgPort, dataPort );
 
@@ -155,6 +155,7 @@ class OmicronManager : MonoBehaviour
 		}
 		else if( !connectToServer )
 		{
+			/*
 			getRealCameraUpdater getRealCam = Camera.main.GetComponent<getRealCameraUpdater>();
 			if( getRealCam )
 			{
@@ -162,6 +163,7 @@ class OmicronManager : MonoBehaviour
 				getRealCam.applyHeadRotation = false;
 				getRealCam.applyCameraProjection = false;
 			}
+			*/
 		}
 	}// start
 	
@@ -193,9 +195,7 @@ class OmicronManager : MonoBehaviour
 	
 	public void Update()
 	{
-		if( getReal3D.Cluster.isMaster )
-		{
-			if( mouseTouchEmulation )
+		if( mouseTouchEmulation )
 			{
 				Vector2 position = new Vector3( Input.mousePosition.x, Input.mousePosition.y );
 						
@@ -264,12 +264,11 @@ class OmicronManager : MonoBehaviour
 				// Clear the list (TODO: probably should set the Processed flag instead and cleanup elsewhere)
 				eventList.Clear();
 			}
-		}
 	}
 	
 	void OnApplicationQuit()
     {
-		if( connectToServer && getReal3D.Cluster.isMaster ){
+		if( connectToServer ){
 			omicronManager.Dispose();
 			
 			Debug.Log("InputService: Disconnected");

@@ -14,9 +14,7 @@ public class OmicronWandVisualTester : OmicronWandUpdater {
 	public GameObject buttonRight;
 	
 	public bool sphereColliderEnabled = false;
-	
-	getReal3D.ClusterView clusterView;
-	
+
 	public bool useRPC = false;
 	
 	public bool crossPressed;
@@ -25,43 +23,7 @@ public class OmicronWandVisualTester : OmicronWandUpdater {
 	public bool downPressed;
 	public bool leftPressed;
 	public bool rightPressed;
-	
-	public void Awake()
-	{
-		clusterView = gameObject.GetComponent<getReal3D.ClusterView>();
-		if( clusterView == null )
-		{
-			gameObject.AddComponent<getReal3D.ClusterView>();
-			clusterView = gameObject.GetComponent<getReal3D.ClusterView>();
-			clusterView.observed = this;
-		}
-	}
-	
-	public void OnSerializeClusterView(getReal3D.ClusterStream stream)
-	{
-		if( !useRPC )
-		{
-			if( getReal3D.Cluster.isMaster )
-			{
-				stream.Serialize(ref crossPressed);
-				stream.Serialize(ref circlePressed);
-				stream.Serialize(ref upPressed);
-				stream.Serialize(ref downPressed);
-				stream.Serialize(ref leftPressed);
-				stream.Serialize(ref rightPressed);
-				stream.Serialize(ref sphereColliderEnabled );
-			}
-			
-			SetButtonState( (int)CAVE2Manager.Button.Button3, crossPressed );
-			SetButtonState( (int)CAVE2Manager.Button.Button2, circlePressed );
-			
-			SetButtonState( (int)CAVE2Manager.Button.ButtonUp, upPressed );
-			SetButtonState( (int)CAVE2Manager.Button.ButtonDown, downPressed );
-			SetButtonState( (int)CAVE2Manager.Button.ButtonLeft, leftPressed );
-			SetButtonState( (int)CAVE2Manager.Button.ButtonRight, rightPressed );
-		}
-	}
-	
+
 	// Use this for initialization
 	new void Start () {
 		InitOmicron();
@@ -70,112 +32,70 @@ public class OmicronWandVisualTester : OmicronWandUpdater {
 	// Update is called once per frame
 	void Update () {
 		
-		if( getReal3D.Cluster.isMaster )
-		{
-			if( cave2Manager.getWand(wandID).GetButtonDown(CAVE2Manager.Button.Button3) )
+		if( cave2Manager.getWand(wandID).GetButtonDown(CAVE2Manager.Button.Button3) )
 			{
 				crossPressed = true;
-				if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
-					clusterView.RPC("SetButtonState", (int)CAVE2Manager.Button.Button3, true );
-				else
-					SetButtonState((int)CAVE2Manager.Button.Button3, true);
+				SetButtonState((int)CAVE2Manager.Button.Button3, true);
 			}
 			else if( cave2Manager.getWand(wandID).GetButtonUp(CAVE2Manager.Button.Button3) )
 			{
 				crossPressed = false;
-				if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
-					clusterView.RPC("SetButtonState", (int)CAVE2Manager.Button.Button3, false );
-				else
-					SetButtonState((int)CAVE2Manager.Button.Button3, false);
+				SetButtonState((int)CAVE2Manager.Button.Button3, false);
 			}
 			
 			if( cave2Manager.getWand(wandID).GetButtonDown(CAVE2Manager.Button.Button2) )
 			{
 				circlePressed = true;
-				if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
-					clusterView.RPC("SetButtonState", (int)CAVE2Manager.Button.Button2, true );
-				else
-					SetButtonState((int)CAVE2Manager.Button.Button2, true);
+				SetButtonState((int)CAVE2Manager.Button.Button2, true);
 			}
 			else if( cave2Manager.getWand(wandID).GetButtonUp(CAVE2Manager.Button.Button2) )
 			{
 				circlePressed = false;
-				if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
-					clusterView.RPC("SetButtonState", (int)CAVE2Manager.Button.Button2, false );
-				else
-					SetButtonState((int)CAVE2Manager.Button.Button2, false);
+				SetButtonState((int)CAVE2Manager.Button.Button2, false);
 			}
 			
 			if( cave2Manager.getWand(wandID).GetButtonDown(CAVE2Manager.Button.ButtonUp) )
 			{
 				upPressed = true;
-				if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
-					clusterView.RPC("SetButtonState", (int)CAVE2Manager.Button.ButtonUp, true );
-				else
-					SetButtonState((int)CAVE2Manager.Button.ButtonUp, true);
+				SetButtonState((int)CAVE2Manager.Button.ButtonUp, true);
 			}
 			else if( cave2Manager.getWand(wandID).GetButtonUp(CAVE2Manager.Button.ButtonUp) )
 			{
 				upPressed = false;
-				if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
-					clusterView.RPC("SetButtonState", (int)CAVE2Manager.Button.ButtonUp, false );
-				else
-					SetButtonState((int)CAVE2Manager.Button.ButtonUp, false);
+				SetButtonState((int)CAVE2Manager.Button.ButtonUp, false);
 			}
 			if( cave2Manager.getWand(wandID).GetButtonDown(CAVE2Manager.Button.ButtonDown) )
 			{
 				downPressed = true;
-				if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
-					clusterView.RPC("SetButtonState", (int)CAVE2Manager.Button.ButtonDown, true );
-				else
-					SetButtonState((int)CAVE2Manager.Button.ButtonDown, true);
+				SetButtonState((int)CAVE2Manager.Button.ButtonDown, true);
 			}
 			else if( cave2Manager.getWand(wandID).GetButtonUp(CAVE2Manager.Button.ButtonDown) )
 			{
 				downPressed = false;
-				if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
-					clusterView.RPC("SetButtonState", (int)CAVE2Manager.Button.ButtonDown, false );
-				else
-					SetButtonState((int)CAVE2Manager.Button.ButtonDown, false);
+				SetButtonState((int)CAVE2Manager.Button.ButtonDown, false);
 			}
 			if( cave2Manager.getWand(wandID).GetButtonDown(CAVE2Manager.Button.ButtonLeft) )
 			{
 				leftPressed = true;
-				if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
-					clusterView.RPC("SetButtonState", (int)CAVE2Manager.Button.ButtonLeft, true );
-				else
-					SetButtonState((int)CAVE2Manager.Button.ButtonLeft, true);
+				SetButtonState((int)CAVE2Manager.Button.ButtonLeft, true);
 			}
 			else if( cave2Manager.getWand(wandID).GetButtonUp(CAVE2Manager.Button.ButtonLeft) )
 			{
 				leftPressed = false;
-				if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
-					clusterView.RPC("SetButtonState", (int)CAVE2Manager.Button.ButtonLeft, false );
-				else
-					SetButtonState((int)CAVE2Manager.Button.ButtonLeft, false);
+				SetButtonState((int)CAVE2Manager.Button.ButtonLeft, false);
 			}
 			if( cave2Manager.getWand(wandID).GetButtonDown(CAVE2Manager.Button.ButtonRight) )
 			{
 				rightPressed = true;
-				if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
-					clusterView.RPC("SetButtonState", (int)CAVE2Manager.Button.ButtonRight, true );
-				else
-					SetButtonState((int)CAVE2Manager.Button.ButtonRight, true);
+				SetButtonState((int)CAVE2Manager.Button.ButtonRight, true);
 			}
 			else if( cave2Manager.getWand(wandID).GetButtonUp(CAVE2Manager.Button.ButtonRight) )
 			{
 				rightPressed = false;
-				if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
-					clusterView.RPC("SetButtonState", (int)CAVE2Manager.Button.ButtonRight, false );
-				else
-					SetButtonState((int)CAVE2Manager.Button.ButtonRight, false);
+				SetButtonState((int)CAVE2Manager.Button.ButtonRight, false);
 			}
-			
-		}
-
 	}
-	
-	[getReal3D.RPC]
+
 	void SetButtonState( int buttonID, bool lit )
 	{
 		switch(buttonID)

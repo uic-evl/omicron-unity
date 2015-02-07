@@ -34,9 +34,12 @@ public class OmicronPlayerController : OmicronWandUpdater {
 
 	public CAVE2Manager.Axis forwardAxis = CAVE2Manager.Axis.LeftAnalogStickUD;
 	public CAVE2Manager.Axis strafeAxis = CAVE2Manager.Axis.LeftAnalogStickLR;
+	public CAVE2Manager.Axis lookUDAxis = CAVE2Manager.Axis.RightAnalogStickUD;
+	public CAVE2Manager.Axis lookLRAxis = CAVE2Manager.Axis.RightAnalogStickLR;
 
 	public float forward;
 	public float strafe;
+	public Vector2 lookAround = new Vector2();
 	public float movementScale = 2;
 	public float flyMovementScale = 100;
 	public float turnSpeed = 50;
@@ -88,40 +91,23 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	public bool showGUI = true;
 	public bool freezeMovement = false;
 
-	// Standard getReal3D Code Block ----------------------------------------------
-	getReal3D.ClusterView clusterView;
-	public void Awake()
-	{
-		clusterView = gameObject.GetComponent<getReal3D.ClusterView>();
-		if( clusterView == null )
-		{
-			gameObject.AddComponent<getReal3D.ClusterView>();
-			clusterView = gameObject.GetComponent<getReal3D.ClusterView>();
-			clusterView.observed = this;
-		}
-		playerCollider = GetComponent<CapsuleCollider>();
-	}
-	
-	public void OnSerializeClusterView(getReal3D.ClusterStream stream)
-	{
-		stream.Serialize( ref freeflyButtonDown );
-		stream.Serialize( ref wandPosition );
-		stream.Serialize( ref wandRotation );
-	}
-	// ----------------------------------------------------------------------------
-
 	// Use this for initialization
 	new void Start () {
 		InitOmicron();
+		gameObject.tag = "CAVE";
+
+		playerCollider = gameObject.GetComponent<CapsuleCollider> ();
 	}
 	
 	// FixedUpdate is called every fixed framerate frame
 	// Should be used with dealing with RigidBodies
 	void FixedUpdate()
 	{
+		playerCollider.height = headPosition.y - 0.25f; // Player height - head size
+
 		if( colliderMode == ColliderMode.Head )
 		{
-			playerCollider.center = new Vector3( headPosition.x, playerCollider.center.y, headPosition.z );
+			playerCollider.center = new Vector3( headPosition.x, playerCollider.height / 2, headPosition.z );
 		}
 		else if( colliderMode == ColliderMode.CAVECenter )
 		{
@@ -130,56 +116,6 @@ public class OmicronPlayerController : OmicronWandUpdater {
 
 		if( visualColliderObject )
 			visualColliderObject.transform.localPosition = playerCollider.center;
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-		if( getReal3D.Cluster.isMaster )
-		{
-			wandPosition = cave2Manager.getWand(wandID).GetPosition();
-			wandRotation = cave2Manager.getWand(wandID).GetRotation();
-			
-			headPosition = cave2Manager.getHead(headID).GetPosition();
-			headRotation = cave2Manager.getHead(headID).GetRotation().eulerAngles;
-
-			if( !freezeMovement )
-			{
-				forward = cave2Manager.getWand(wandID).GetAxis(forwardAxis);	
-				forward *= movementScale;
-				
-				strafe = cave2Manager.getWand(wandID).GetAxis(strafeAxis);	
-				strafe *= movementScale;
-			}
-			
-			freeflyButtonDown = cave2Manager.getWand(wandID).GetButton(freeFlyButton);
-			
-			if( cave2Manager.getWand(wandID).GetButtonDown(freeFlyToggleButton) )
-			{
-				navMode++;
-				if( (int)navMode > 2 )
-					navMode = 0;
-				if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
-					clusterView.RPC("SetNavigationMode", (int)navMode);
-				else
-					SetNavigationMode((int)navMode);
-			}
-			
-			if( cave2Manager.getWand(wandID).GetButtonDown(autoLevelButton) )
-			{
-				transform.localEulerAngles = new Vector3( 0, transform.localEulerAngles.y, 0 );
-			}
-			
-			if( CAVEFloor && !CAVEFloor.activeSelf )
-				CAVEFloor.SetActive(true);
-		}
-		else
-		{
-			if( CAVEFloor && showCAVEFloorOnlyOnMaster && CAVEFloor.activeSelf )
-				CAVEFloor.SetActive(false);
-			else if( CAVEFloor && !showCAVEFloorOnlyOnMaster && !CAVEFloor.activeSelf )
-				CAVEFloor.SetActive(true);
-		}
 
 		if( navMode == NavigationMode.Drive || navMode == NavigationMode.Freefly )
 		{
@@ -189,6 +125,56 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		{
 			UpdateWalkMovement();
 		}
+	}
+	
+	// Update is called once per frame
+	void Update () {
+		
+		wandPosition = cave2Manager.getWand(wandID).GetPosition();
+		wandRotation = cave2Manager.getWand(wandID).GetRotation();
+			
+		headPosition = cave2Manager.getHead(headID).GetPosition();
+		headRotation = cave2Manager.getHead(headID).GetRotation().eulerAngles;
+
+		if( !freezeMovement )
+		{
+			forward = cave2Manager.getWand(wandID).GetAxis(forwardAxis);	
+			forward *= movementScale;
+
+			strafe = cave2Manager.getWand(wandID).GetAxis(strafeAxis);	
+			strafe *= movementScale;
+
+			lookAround.x = cave2Manager.getWand(wandID).GetAxis(lookUDAxis);
+			lookAround.x *= movementScale;
+			lookAround.y = cave2Manager.getWand(wandID).GetAxis(lookLRAxis);
+			lookAround.y *= movementScale;
+		}
+			
+		freeflyButtonDown = cave2Manager.getWand(wandID).GetButton(freeFlyButton);
+			
+		if( cave2Manager.getWand(wandID).GetButtonDown(freeFlyToggleButton) )
+		{
+			navMode++;
+			if( (int)navMode > 2 )
+				navMode = 0;
+
+			SetNavigationMode((int)navMode);
+		}
+
+		if( cave2Manager.getWand(wandID).GetButtonDown(autoLevelButton) )
+		{
+			transform.localEulerAngles = new Vector3( 0, transform.localEulerAngles.y, 0 );
+		}
+			
+		if( CAVEFloor && !CAVEFloor.activeSelf )
+			CAVEFloor.SetActive(true);
+
+		if( CAVEFloor && showCAVEFloorOnlyOnMaster && CAVEFloor.activeSelf )
+			CAVEFloor.SetActive(false);
+		else if( CAVEFloor && !showCAVEFloorOnlyOnMaster && !CAVEFloor.activeSelf )
+			CAVEFloor.SetActive(true);
+
+
 
 	}
 	
@@ -236,11 +222,11 @@ public class OmicronPlayerController : OmicronWandUpdater {
 			float wy = fly_y.y - y.y;
 			float wz = fly_y.z - y.z;
 			
-			float rX =  (vx * fly_y.x + vy * fly_y.y + vz * fly_y.z) * getReal3D.Cluster.deltaTime * turnSpeed;
-			float rY = -(vx * fly_x.x + vy * fly_x.y + vz * fly_x.z) * getReal3D.Cluster.deltaTime * turnSpeed;
-			float rZ =  (wx * fly_x.x + wy * fly_x.y + wz * fly_x.z) * getReal3D.Cluster.deltaTime * turnSpeed;
+			float rX =  (vx * fly_y.x + vy * fly_y.y + vz * fly_y.z) * Time.deltaTime * turnSpeed;
+			float rY = -(vx * fly_x.x + vy * fly_x.y + vz * fly_x.z) * Time.deltaTime * turnSpeed;
+			float rZ =  (wx * fly_x.x + wy * fly_x.y + wz * fly_x.z) * Time.deltaTime * turnSpeed;
 
-			transform.Translate( movementVector * getReal3D.Cluster.deltaTime * flyMovementScale);
+			transform.Translate( movementVector * Time.deltaTime * flyMovementScale);
 			if( navMode == NavigationMode.Freefly )
 				transform.Rotate( new Vector3( rX, rY, rZ) );
 		}
@@ -253,24 +239,24 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		else if( forwardReference == ForwardRef.Wand )
 			forwardAngle += wandRotation.eulerAngles.y;
 
-		nextPos.z += forward * getReal3D.Cluster.deltaTime * Mathf.Cos(Mathf.Deg2Rad*forwardAngle);
-		nextPos.x += forward * getReal3D.Cluster.deltaTime * Mathf.Sin(Mathf.Deg2Rad*forwardAngle);
+		nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad*forwardAngle);
+		nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad*forwardAngle);
 
 		if( horizontalMovementMode == HorizonalMovementMode.Strafe )
 		{
-			nextPos.z -= strafe * getReal3D.Cluster.deltaTime * Mathf.Sin(Mathf.Deg2Rad*forwardAngle);
-			nextPos.x -= strafe * getReal3D.Cluster.deltaTime * Mathf.Cos(Mathf.Deg2Rad*forwardAngle);
+			nextPos.z += strafe * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad*(forwardAngle+90));
+			nextPos.x += strafe * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad*(forwardAngle+90));
 
 			transform.position = nextPos;
-			//transform.Translate( new Vector3(strafe, 0, forward) * getReal3D.Cluster.deltaTime );
+			//transform.Translate( new Vector3(strafe, 0, forward) * Time.deltaTime );
 		}
 		else if( horizontalMovementMode == HorizonalMovementMode.Turn )
 		{
 			transform.position = nextPos;
-			transform.RotateAround( headObject.transform.position, Vector3.up, strafe * getReal3D.Cluster.deltaTime * turnSpeed);
+			transform.RotateAround( headObject.transform.position, Vector3.up, strafe * Time.deltaTime * turnSpeed);
 
-			//transform.Translate( new Vector3(0, 0, forward) * getReal3D.Cluster.deltaTime );
-			//transform.Rotate( new Vector3( 0, strafe, 0) * getReal3D.Cluster.deltaTime * turnSpeed );
+			//transform.Translate( new Vector3(0, 0, forward) * Time.deltaTime );
+			//transform.Rotate( new Vector3( 0, strafe, 0) * Time.deltaTime * turnSpeed );
 		}
 	}
 	
@@ -290,26 +276,28 @@ public class OmicronPlayerController : OmicronWandUpdater {
 
 		if( horizontalMovementMode == HorizonalMovementMode.Strafe )
 		{
-			nextPos.z += forward * getReal3D.Cluster.deltaTime * Mathf.Cos(Mathf.Deg2Rad*forwardAngle);
-			nextPos.x += forward * getReal3D.Cluster.deltaTime * Mathf.Sin(Mathf.Deg2Rad*forwardAngle);
+			nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad*forwardAngle);
+			nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad*forwardAngle);
 
-			nextPos.z -= strafe * getReal3D.Cluster.deltaTime * Mathf.Sin(Mathf.Deg2Rad*forwardAngle);
-			nextPos.x -= strafe * getReal3D.Cluster.deltaTime * Mathf.Cos(Mathf.Deg2Rad*forwardAngle);
+			nextPos.z += strafe * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad*(forwardAngle+90));
+			nextPos.x += strafe * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad*(forwardAngle+90));
 
 			transform.position = nextPos;
-			//transform.Translate( new Vector3(strafe, 0, forward) * getReal3D.Cluster.deltaTime );
+			//transform.Translate( new Vector3(strafe, 0, forward) * Time.deltaTime );
 		}
 		else if( horizontalMovementMode == HorizonalMovementMode.Turn )
 		{
-			nextPos.z += forward * getReal3D.Cluster.deltaTime * Mathf.Cos(Mathf.Deg2Rad*forwardAngle);
-			nextPos.x += forward * getReal3D.Cluster.deltaTime * Mathf.Sin(Mathf.Deg2Rad*forwardAngle);
-			transform.position = nextPos;
+			nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad*forwardAngle);
+			nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad*forwardAngle);
+			//transform.position = nextPos;
 
-			transform.RotateAround( headObject.transform.position, Vector3.up, strafe * getReal3D.Cluster.deltaTime * turnSpeed);
+			transform.RotateAround( headObject.transform.position, Vector3.up, strafe * Time.deltaTime * turnSpeed);
 
-			//transform.Translate( new Vector3(0, 0, forward) * getReal3D.Cluster.deltaTime );
-			//transform.Rotate( new Vector3( 0, strafe, 0) * getReal3D.Cluster.deltaTime * turnSpeed );
+			//transform.Translate( new Vector3(0, 0, forward) * Time.deltaTime );
+			transform.Rotate( new Vector3( 0, strafe, 0) * Time.deltaTime * turnSpeed );
 		}
+
+		//transform.Rotate( new Vector3( 0, lookAround.y, 0) * Time.deltaTime * turnSpeed );
 
 		if( autoLevelMode == AutoLevelMode.OnGroundCollision )
 		{
@@ -333,16 +321,15 @@ public class OmicronPlayerController : OmicronWandUpdater {
 				transform.localEulerAngles = new Vector3( 0, transform.localEulerAngles.y, 0 );
 			}
 	    }
-	    controller.Move(moveDirection * getReal3D.Cluster.deltaTime);
+	    controller.Move(moveDirection * Time.deltaTime);
 		
 		if( horizontalMovementMode == HorizonalMovementMode.Turn )
 		{
-			transform.Rotate( new Vector3( 0, strafe, 0) * getReal3D.Cluster.deltaTime * turnSpeed );
+			transform.Rotate( new Vector3( 0, strafe, 0) * Time.deltaTime * turnSpeed );
 		}
 		*/
 	}
 	
-	[getReal3D.RPC]
 	void SetNavigationMode( int val )
 	{
 		navMode = (NavigationMode)val;
@@ -355,7 +342,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 
 	void OnGUI()
 	{
-		if( showGUI && getReal3D.Cluster.isMaster )
+		if( showGUI )
 		{	
 			windowRect = GUI.Window(-1, windowRect, OnWindow, "Omicron Player Controller "+version);			
 		}

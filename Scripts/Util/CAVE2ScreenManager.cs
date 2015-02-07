@@ -99,8 +99,8 @@ public class CAVE2ScreenManager : MonoBehaviour {
 	
 	void OnGUI()
 	{
-		if( getReal3D.Cluster.isMaster )
-		{
+		//if( getReal3D.Cluster.isMaster )
+		//{
 			lyra01 = UnityEngine.GUI.Toggle(new Rect(10, 15 * 1, 100, 15), lyra01, "Lyra-01");
 			lyra02 = UnityEngine.GUI.Toggle(new Rect(10, 15 * 2, 100, 15), lyra02, "Lyra-02");
 			lyra03 = UnityEngine.GUI.Toggle(new Rect(10, 15 * 3, 100, 15), lyra03, "Lyra-03");
@@ -110,8 +110,9 @@ public class CAVE2ScreenManager : MonoBehaviour {
 			lyra07 = UnityEngine.GUI.Toggle(new Rect(10, 15 * 7, 100, 15), lyra07, "Lyra-07");
 			lyra08 = UnityEngine.GUI.Toggle(new Rect(10, 15 * 8, 100, 15), lyra08, "Lyra-08");
 			lyra09 = UnityEngine.GUI.Toggle(new Rect(10, 15 * 9, 100, 15), lyra09, "Lyra-09");
-		}
+		//}
 	}
+	/*
 	void OnSerializeClusterView(getReal3D.ClusterStream stream)
 	{
 		if( getReal3D.Cluster.isMaster )
@@ -138,5 +139,5 @@ public class CAVE2ScreenManager : MonoBehaviour {
 			stream.Serialize(ref lyra08);
 			stream.Serialize(ref lyra09);
 		}
-	}
+	}*/
 }

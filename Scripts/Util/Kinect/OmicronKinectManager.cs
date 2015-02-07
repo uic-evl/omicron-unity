@@ -45,19 +45,6 @@ public class OmicronKinectManager : OmicronEventClient {
 
 	public GameObject[] voiceCommandListeners;
 
-	// Standard getReal3D Code Block ----------------------------------------------
-	getReal3D.ClusterView clusterView;
-	public void Awake()
-	{
-		clusterView = gameObject.AddComponent<getReal3D.ClusterView>();
-		clusterView.observed = this;
-	}
-	
-	public void OnSerializeClusterView(getReal3D.ClusterStream stream)
-	{
-	}
-	// ----------------------------------------------------------------------------
-
 	// Use this for initialization
 	new void Start () {
 		trackedBodies = new Hashtable ();
@@ -71,38 +58,31 @@ public class OmicronKinectManager : OmicronEventClient {
 
 	void OnEvent( EventData e )
 	{
-		if( getReal3D.Cluster.isMaster )
+		if (enableBodyTracking && e.serviceType == EventBase.ServiceType.ServiceTypeMocap )
 		{
-			if (enableBodyTracking && e.serviceType == EventBase.ServiceType.ServiceTypeMocap )
+			int sourceID = (int)e.sourceId;
+			if( !trackedBodies.ContainsKey( sourceID ) )
 			{
-				int sourceID = (int)e.sourceId;
-				if( !trackedBodies.ContainsKey( sourceID ) )
-				{
-					if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
-						clusterView.RPC("CreateBody", sourceID);
-					else
-						CreateBody(sourceID);
-				}
+				CreateBody(sourceID);
 			}
-			else if (enableSpeechRecognition && e.serviceType == EventBase.ServiceType.ServiceTypeSpeech)
+		}
+		else if (enableSpeechRecognition && e.serviceType == EventBase.ServiceType.ServiceTypeSpeech)
+		{
+			string speechString = e.getExtraDataString();
+			float speechConfidence = e.posx;
+
+			//Debug.Log("Received Speech: '" + speechString + "' at " +speechConfidence+ " confidence" );
+
+			if( speechConfidence >= minimumSpeechConfidence )
 			{
-				string speechString = e.getExtraDataString();
-				float speechConfidence = e.posx;
-
-				//Debug.Log("Received Speech: '" + speechString + "' at " +speechConfidence+ " confidence" );
-
-				if( speechConfidence >= minimumSpeechConfidence )
+				foreach( GameObject voiceListeners in voiceCommandListeners )
 				{
-					foreach( GameObject voiceListeners in voiceCommandListeners )
-					{
-						voiceListeners.SendMessage("OnVoiceCommand", speechString);
-					}
+					voiceListeners.SendMessage("OnVoiceCommand", speechString);
 				}
 			}
 		}
 	}
 
-	[getReal3D.RPC]
 	void CreateBody( int sourceID )
 	{
 		GameObject body;

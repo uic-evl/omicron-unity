@@ -15,26 +15,6 @@ public class WandLaser : OmicronWandUpdater {
 	public ParticleSystem laserParticlePrefab;
 	ParticleSystem laserParticle;
 
-	// Standard getReal3D Code Block ----------------------------------------------
-	getReal3D.ClusterView clusterView;
-	public void Awake()
-	{
-		// Adds a cluster view to this script
-		clusterView = gameObject.AddComponent<getReal3D.ClusterView>();
-		clusterView.observed = this;
-	}
-	
-	public void OnSerializeClusterView(getReal3D.ClusterStream stream)
-	{
-		// These variables are constantly synced across the cluster
-		// and are based on input events handled in Update()
-		stream.Serialize( ref laserActivated );
-		stream.Serialize( ref wandHit );
-		stream.Serialize( ref laserPosition );
-		stream.Serialize( ref laserDistance );
-	}
-	// ----------------------------------------------------------------------------
-
 	// Use this for initialization
 	new void Start () {
 		InitOmicron();
@@ -54,11 +34,8 @@ public class WandLaser : OmicronWandUpdater {
 	
 	// Update is called once per frame
 	void Update () {
-		GetComponent<SphereCollider>().enabled = false; // Disable sphere collider for raycast
+		//GetComponent<SphereCollider>().enabled = false; // Disable sphere collider for raycast
 
-		// Only occurs on the master node
-		if( getReal3D.Cluster.isMaster )
-		{
 			// Checking inputs should only be done on master node
 			laserActivated = cave2Manager.getWand(wandID).GetButton(CAVE2Manager.Button.Button3);
 			laser.enabled = laserActivated;
@@ -100,7 +77,6 @@ public class WandLaser : OmicronWandUpdater {
 				// Set laser distance far away
 				laserDistance = 1000;
 			}
-		}
 
 		// Do this on all nodes
 		laser.enabled = laserActivated;

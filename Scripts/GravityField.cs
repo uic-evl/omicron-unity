@@ -5,22 +5,6 @@ public class GravityField : MonoBehaviour {
 
 	public float force = 1;
 
-	// Standard getReal3D Code Block ----------------------------------------------
-	getReal3D.ClusterView clusterView;
-	public void Awake()
-	{
-		// Adds a cluster view to this script
-		clusterView = gameObject.AddComponent<getReal3D.ClusterView>();
-		clusterView.observed = this;
-	}
-	
-	public void OnSerializeClusterView(getReal3D.ClusterStream stream)
-	{
-		// These variables are constantly synced across the cluster
-		stream.Serialize( ref force );
-	}
-	// ----------------------------------------------------------------------------
-
 	// Use this for initialization
 	void Start () {
 	
@@ -30,13 +14,10 @@ public class GravityField : MonoBehaviour {
 	void Update () {
 		if( force > 250 )
 		{
-			if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
-				clusterView.RPC("Explode");
-			else
-				Explode();
+			Explode();
 		}
 		else if( force > 20 )
-			force -= getReal3D.Cluster.deltaTime * 10;
+			force -= Time.deltaTime * 10;
 	}
 
 	void OnTriggerStay( Collider other )
@@ -49,7 +30,6 @@ public class GravityField : MonoBehaviour {
 		force++;
 	}
 
-	[getReal3D.RPC]
 	void Explode()
 	{
 		Destroy( gameObject );

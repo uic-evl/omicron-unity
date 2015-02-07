@@ -88,11 +88,12 @@ public class CAVE2Manager : OmicronEventClient {
 	public bool keyboardEventEmulation = false;
 	public bool wandMousePointerEmulation = false;
 	public bool mocapEmulation = false;
+	public bool lockWandToHeadTransform = false;
 
 	public Vector3 headEmulatedPosition = new Vector3(0, 1.5f, 0);
 	public Vector3 headEmulatedRotation = new Vector3(0, 0, 0);
 
-	Vector3 wandEmulatedPosition = new Vector3(0.175f, 1.2f, 0.6f);
+	public Vector3 wandEmulatedPosition = new Vector3(0.175f, 1.2f, 0.6f);
 	public Vector3 wandEmulatedRotation = new Vector3(0, 0, 0);
 
 	public enum TrackerEmulated { CAVE, Head, Wand };
@@ -215,20 +216,25 @@ public class CAVE2Manager : OmicronEventClient {
 
 		if( mocapEmulation )
 		{
+			Vector3 lookAround = new Vector3( -wand1.GetAxis(Axis.RightAnalogStickUD), wand1.GetAxis(Axis.RightAnalogStickLR), 0 );
+			lookAround *= 2;
+			headEmulatedRotation += lookAround;
+
+			if( lockWandToHeadTransform )
+			{
+				wandEmulatedPosition = headEmulatedPosition;
+				wandEmulatedRotation = headEmulatedRotation;
+			}
+
 			// Update emulated positions/rotations
 			head1.Update( headEmulatedPosition , Quaternion.Euler(headEmulatedRotation) );
 			wand1.UpdateMocap( wandEmulatedPosition , Quaternion.Euler(wandEmulatedRotation) );
 			
-			GameObject.FindGameObjectWithTag("MainCamera").transform.localPosition = headEmulatedPosition;
-			GameObject.FindGameObjectWithTag("MainCamera").transform.localEulerAngles = headEmulatedRotation;
+			GameObject.FindGameObjectWithTag("CameraController").transform.localPosition = headEmulatedPosition;
+			GameObject.FindGameObjectWithTag("CameraController").transform.localEulerAngles = headEmulatedRotation;
 		}
 	}
-	
-	void OnSerializeClusterView(getReal3D.ClusterStream stream)
-	{
 
-	}
-	
 	void OnEvent( EventData e )
 	{
 		//Debug.Log("CAVE2Manager: '"+name+"' received " + e.serviceType);

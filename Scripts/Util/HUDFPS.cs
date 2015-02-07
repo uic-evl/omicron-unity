@@ -22,18 +22,7 @@ public class HUDFPS : MonoBehaviour
 	private float timeleft; // Left time for current interval
 	
 	public bool showOnlyOnMaster = true;
-	
-	getReal3D.ClusterView clusterView;
-	public void Awake()
-	{
-		clusterView = gameObject.AddComponent<getReal3D.ClusterView>();
-		clusterView.observed = this;
-	}
-	
-	public void OnSerializeClusterView(getReal3D.ClusterStream stream)
-	{
-		//stream.Serialize( ref showOnlyOnMaster );
-	}
+
 	
 	void Start()
 	{
@@ -48,16 +37,10 @@ public class HUDFPS : MonoBehaviour
 	
 	void OnGUI()
 	{
-		if (getReal3D.Cluster.isMaster)
-		{
-			bool lastState = showOnlyOnMaster;
-			showOnlyOnMaster = GUI.Toggle (new Rect (Screen.width - 250 - 25, Screen.height - 20 - (20 * 0 + 15), 250, 20), showOnlyOnMaster, "FPS Only On Master");
-			if( clusterView && lastState != showOnlyOnMaster )
-				clusterView.RPC ("ToggleShowOnMaster", showOnlyOnMaster );
-		}
+		bool lastState = showOnlyOnMaster;
+		showOnlyOnMaster = GUI.Toggle (new Rect (Screen.width - 250 - 25, Screen.height - 20 - (20 * 0 + 15), 250, 20), showOnlyOnMaster, "FPS Only On Master");
 	}
-	
-	[getReal3D.RPC]
+
 	void ToggleShowOnMaster(bool value)
 	{
 		showOnlyOnMaster = value;
@@ -65,7 +48,7 @@ public class HUDFPS : MonoBehaviour
 	
 	void Update()
 	{
-		if( showOnlyOnMaster && !getReal3D.Cluster.isMaster )
+		if( showOnlyOnMaster )
 		{
 			guiText.text = "";
 			return;

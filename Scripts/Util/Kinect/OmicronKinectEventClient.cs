@@ -54,30 +54,12 @@ public class OmicronKinectEventClient : OmicronEventClient {
 	public float timeout = 5;
 	float lastUpdateTime;
 
-	// Standard getReal3D Code Block ----------------------------------------------
-	getReal3D.ClusterView clusterView;
-	public void Awake()
-	{
-		getReal3D.ClusterView.AddClusterViewToObject(gameObject, true);
-		clusterView = gameObject.GetComponent<getReal3D.ClusterView>();
-	}
-	
-	public void OnSerializeClusterView(getReal3D.ClusterStream stream)
-	{
-		stream.Serialize( ref lastUpdateTime );
-		stream.Serialize( ref leftHandState );
-		stream.Serialize( ref rightHandState );
-		stream.Serialize( ref lastUpdateTime );
-	}
-	// ----------------------------------------------------------------------------
-
 	// Use this for initialization
 	new void Start () {
 		InitOmicron ();
 		lastUpdateTime = Time.time;
 	}
 
-	[getReal3D.RPC]
 	void InitializeJoints( int jointCount )
 	{
 		joints = new GameObject[jointCount];
@@ -104,7 +86,6 @@ public class OmicronKinectEventClient : OmicronEventClient {
 		jointsInitialized = true;
 	}
 
-	[getReal3D.RPC]
 	void RemoveBody()
 	{
 		kinectManager.RemoveBody(bodyID);
@@ -112,7 +93,6 @@ public class OmicronKinectEventClient : OmicronEventClient {
 		Destroy( gameObject );
 	}
 
-	[getReal3D.RPC]
 	void SetJointVisible(int jointID, bool value)
 	{
 		joints[jointID].renderer.enabled = value;
@@ -155,12 +135,9 @@ public class OmicronKinectEventClient : OmicronEventClient {
 			rightHandStateMarker.GetComponent<KinectHandGrabber>().handState = rightHandState;
 		}
 
-		if ( getReal3D.Cluster.isMaster && Time.time > lastUpdateTime + timeout )
+		if ( Time.time > lastUpdateTime + timeout )
 		{
-			if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
-				clusterView.RPC("RemoveBody");
-			else
-				RemoveBody();
+			RemoveBody();
 		}
 	}
 	
@@ -182,10 +159,7 @@ public class OmicronKinectEventClient : OmicronEventClient {
 
 			if( !jointsInitialized )
 			{
-				if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
-					clusterView.RPC("InitializeJoints", jointCount);
-				else
-					InitializeJoints(jointCount);
+				InitializeJoints(jointCount);
 			}
 			for( int i = 0; i < jointCount; i++ )
 			{
@@ -199,17 +173,11 @@ public class OmicronKinectEventClient : OmicronEventClient {
 				// Hide unused/inactive joints
 				if( posArray[0] == 0 && posArray[1] == 0 && posArray[2] == 0 )
 				{
-					if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
-						clusterView.RPC("SetJointVisible", i, false);
-					else
-						SetJointVisible(i, false);
+					SetJointVisible(i, false);
 				}
 				else if( !joints[i].renderer.enabled )
 				{
-					if( Application.HasProLicense() && Application.platform == RuntimePlatform.WindowsPlayer )
-						clusterView.RPC("SetJointVisible", i, true);
-					else
-						SetJointVisible(i, true);
+					SetJointVisible(i, true);
 				}
 			}
 
