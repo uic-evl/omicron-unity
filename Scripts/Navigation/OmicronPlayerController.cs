@@ -94,7 +94,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	// Use this for initialization
 	new void Start () {
 		InitOmicron();
-		gameObject.tag = "CAVE";
+		gameObject.tag = "PlayerController";
 
 		playerCollider = gameObject.GetComponent<CapsuleCollider> ();
 	}
@@ -283,6 +283,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 			nextPos.x += strafe * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad*(forwardAngle+90));
 
 			transform.position = nextPos;
+			transform.Rotate( new Vector3( 0, lookAround.y, 0) * Time.deltaTime * turnSpeed );
 			//transform.Translate( new Vector3(strafe, 0, forward) * Time.deltaTime );
 		}
 		else if( horizontalMovementMode == HorizonalMovementMode.Turn )
@@ -303,31 +304,6 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		{
 			transform.eulerAngles = new Vector3( 0, transform.eulerAngles.y, 0 );
 		}
-		
-		/*
-		motor.enabled = true;
-		controller.enabled = true;
-			
-		if(controller.isGrounded)
-		{
-			if( horizontalMovementMode == HorizonalMovementMode.Strafe )
-	    		moveDirection = new Vector3(strafe, 0, forward);
-			else
-				moveDirection = new Vector3(0, 0, forward);
-	    	moveDirection = transform.TransformDirection(moveDirection); 
-			
-			if( autoLevelMode == AutoLevelMode.OnGroundCollision )
-			{
-				transform.localEulerAngles = new Vector3( 0, transform.localEulerAngles.y, 0 );
-			}
-	    }
-	    controller.Move(moveDirection * Time.deltaTime);
-		
-		if( horizontalMovementMode == HorizonalMovementMode.Turn )
-		{
-			transform.Rotate( new Vector3( 0, strafe, 0) * Time.deltaTime * turnSpeed );
-		}
-		*/
 	}
 	
 	void SetNavigationMode( int val )
@@ -339,41 +315,48 @@ public class OmicronPlayerController : OmicronWandUpdater {
     string[] navStrings = new string[] {"Walk", "Drive", "Freefly"};
 	string[] horzStrings = new string[] {"Strafe", "Turn"};
 	string[] forwardRefStrings = new string[] {"CAVE", "Head", "Wand"};
+	Vector2 GUIOffset;
+
+	public void SetGUIOffSet( Vector2 offset )
+	{
+		GUIOffset = offset;
+	}
 
 	void OnGUI()
 	{
 		if( showGUI )
 		{	
-			windowRect = GUI.Window(-1, windowRect, OnWindow, "Omicron Player Controller "+version);			
+			GUIOffset = Vector2.zero;
+            windowRect = GUI.Window(-1, windowRect, OnWindow, "Omicron Player Controller "+version);			
 		}
     }
 
-	void OnWindow(int windowID)
+	public void OnWindow(int windowID)
 	{
-		GUI.Label(new Rect(25, 20 * 1, 200, 20), "Position: " + transform.position);
-		GUI.Label(new Rect(25, 20 * 2, 200, 20), "Head Position: " + headPosition);
-		GUI.Label(new Rect(25, 20 * 3, 200, 20), "Wand Position: " + wandPosition);
+		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 1, 200, 20), "Position: " + transform.position);
+		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 2, 200, 20), "Head Position: " + headPosition);
+		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 3, 200, 20), "Wand Position: " + wandPosition);
 		
-		GUI.Label(new Rect(25, 20 * 4, 200, 20), "Navigation Mode: ");
-		navMode = (NavigationMode)GUI.SelectionGrid(new Rect(25, 20 * 5, 200, 20), (int)navMode, navStrings, 3);
+		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 4, 200, 20), "Navigation Mode: ");
+		navMode = (NavigationMode)GUI.SelectionGrid(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 5, 200, 20), (int)navMode, navStrings, 3);
 
-		GUI.Label(new Rect(25, 20 * 6, 200, 20), "Forward Reference: ");
-		forwardReference = (ForwardRef)GUI.SelectionGrid(new Rect(25, 20 * 7, 200, 20), (int)forwardReference, forwardRefStrings, 3);
+		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 6, 200, 20), "Forward Reference: ");
+		forwardReference = (ForwardRef)GUI.SelectionGrid(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 7, 200, 20), (int)forwardReference, forwardRefStrings, 3);
 
 
-		GUI.Label(new Rect(25, 20 * 8, 200, 20), "Left Analog LR Mode: ");
-		horizontalMovementMode = (HorizonalMovementMode)GUI.SelectionGrid(new Rect(25, 20 * 9, 200, 20), (int)horizontalMovementMode, horzStrings, 3);
+		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 8, 200, 20), "Left Analog LR Mode: ");
+		horizontalMovementMode = (HorizonalMovementMode)GUI.SelectionGrid(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 9, 200, 20), (int)horizontalMovementMode, horzStrings, 3);
 		
-		GUI.Label(new Rect(25, 20 * 10 + 5, 120, 20), "Walk Nav Scale: ");
-	    movementScale = float.Parse(GUI.TextField(new Rect(150, 20 * 10 + 5, 75, 20), movementScale.ToString(), 25));
+		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 10 + 5, 120, 20), "Walk Nav Scale: ");
+		movementScale = float.Parse(GUI.TextField(new Rect(GUIOffset.x + 150, GUIOffset.y + 20 * 10 + 5, 75, 20), movementScale.ToString(), 25));
 		
-		GUI.Label(new Rect(25, 20 * 11 + 10, 120, 20), "Drive/Fly Nav Scale: ");
-	    flyMovementScale = float.Parse(GUI.TextField(new Rect(150, 20 * 11 + 10, 75, 20), flyMovementScale.ToString(), 25));
+		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 11 + 10, 120, 20), "Drive/Fly Nav Scale: ");
+		flyMovementScale = float.Parse(GUI.TextField(new Rect(GUIOffset.x + 150, GUIOffset.y + 20 * 11 + 10, 75, 20), flyMovementScale.ToString(), 25));
 			
-		GUI.Label(new Rect(25, 20 * 12 + 15, 120, 20), "Rotate Scale: ");
-	    turnSpeed = float.Parse(GUI.TextField(new Rect(150, 20 * 12 + 15, 75, 20), turnSpeed.ToString(), 25));
+		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 12 + 15, 120, 20), "Rotate Scale: ");
+		turnSpeed = float.Parse(GUI.TextField(new Rect(GUIOffset.x + 150, GUIOffset.y + 20 * 12 + 15, 75, 20), turnSpeed.ToString(), 25));
 
-	    if( GUI.Toggle(new Rect(25, 20 * 13 + 15, 250, 200), (autoLevelMode == AutoLevelMode.OnGroundCollision), " Auto Level On Ground Collision") )
+		if( GUI.Toggle(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 13 + 15, 250, 200), (autoLevelMode == AutoLevelMode.OnGroundCollision), " Auto Level On Ground Collision") )
 			autoLevelMode = AutoLevelMode.OnGroundCollision;
 		else
 			autoLevelMode = AutoLevelMode.Disabled;

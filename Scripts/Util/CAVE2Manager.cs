@@ -98,11 +98,15 @@ public class CAVE2Manager : OmicronEventClient {
 
 	public enum TrackerEmulated { CAVE, Head, Wand };
 	public enum TrackerEmulationMode { Translate, Rotate };
+	string[] trackerEmuStrings = {"CAVE", "Head", "Wand1"};
+	string[] trackerEmuModeStrings = {"Translate", "Rotate" };
 
 	public TrackerEmulated WASDkeys = TrackerEmulated.CAVE;
+	public TrackerEmulationMode WASDkeyMode = TrackerEmulationMode.Translate;
+
 	public TrackerEmulated IJKLkeys = TrackerEmulated.Head;
 	public TrackerEmulationMode IJKLkeyMode = TrackerEmulationMode.Translate;
-
+	
 	public float emulatedTranslateSpeed = 0.05f;
 	public float emulatedRotationSpeed = 0.05f;
 
@@ -142,7 +146,8 @@ public class CAVE2Manager : OmicronEventClient {
 		{
 			float vertical = Input.GetAxis("Vertical") * axisSensitivity;
 			float horizontal = Input.GetAxis("Horizontal") * axisSensitivity;
-			
+			float lookHorizontal = Input.GetAxis("LookHorizontal") * axisSensitivity;
+
 			uint flags = 0;
 			
 			// Arrow keys -> DPad
@@ -163,15 +168,23 @@ public class CAVE2Manager : OmicronEventClient {
 				flags += (int)EventBase.Flags.Button3;
 
 			Vector2 wandAnalog = new Vector2();
-
+			Vector2 wandAnalog2 = new Vector2();
 			if( WASDkeys == TrackerEmulated.CAVE )
+			{
 				wandAnalog = new Vector2(horizontal,vertical);
+				wandAnalog2 = new Vector2(lookHorizontal,0);
+			}
 			else if( WASDkeys == TrackerEmulated.Head )
 			{
-				headEmulatedPosition += new Vector3( horizontal, 0, vertical ) * Time.deltaTime;
+				if( WASDkeyMode == TrackerEmulationMode.Translate )
+				{
+					headEmulatedPosition += new Vector3( horizontal, 0, vertical ) * Time.deltaTime;
+				}
+				else if( WASDkeyMode == TrackerEmulationMode.Rotate )
+					headEmulatedRotation += new Vector3( vertical, horizontal, 0 );
 			}
 
-			wand1.UpdateController( flags, wandAnalog , Vector2.zero, Vector2.zero );
+			wand1.UpdateController( flags, wandAnalog , wandAnalog2, Vector2.zero );
 
 			float headForward = 0;
 			float headStrafe = 0;
@@ -216,19 +229,17 @@ public class CAVE2Manager : OmicronEventClient {
 
 		if( mocapEmulation )
 		{
-			Vector3 lookAround = new Vector3( -wand1.GetAxis(Axis.RightAnalogStickUD), wand1.GetAxis(Axis.RightAnalogStickLR), 0 );
-			lookAround *= 2;
-			headEmulatedRotation += lookAround;
-
-			if( lockWandToHeadTransform )
-			{
-				wandEmulatedPosition = headEmulatedPosition;
-				wandEmulatedRotation = headEmulatedRotation;
-			}
+			//Vector3 lookAround = new Vector3( -wand1.GetAxis(Axis.RightAnalogStickUD), wand1.GetAxis(Axis.RightAnalogStickLR), 0 );
+			//lookAround *= 2;
+			//headEmulatedRotation += lookAround;
 
 			// Update emulated positions/rotations
 			head1.Update( headEmulatedPosition , Quaternion.Euler(headEmulatedRotation) );
-			wand1.UpdateMocap( wandEmulatedPosition , Quaternion.Euler(wandEmulatedRotation) );
+
+			if( lockWandToHeadTransform )
+				wand1.UpdateMocap( headEmulatedPosition , Quaternion.Euler(headEmulatedRotation) );
+			else
+				wand1.UpdateMocap( wandEmulatedPosition , Quaternion.Euler(wandEmulatedRotation) );
 			
 			GameObject.FindGameObjectWithTag("CameraController").transform.localPosition = headEmulatedPosition;
 			GameObject.FindGameObjectWithTag("CameraController").transform.localEulerAngles = headEmulatedRotation;
@@ -317,4 +328,30 @@ public class CAVE2Manager : OmicronEventClient {
 			return wand1;
 		}
 	}
+
+	Vector2 GUIOffset;
+	
+	public void SetGUIOffSet( Vector2 offset )
+	{
+		GUIOffset = offset;
+    }
+	
+    public void OnWindow(int windowID)
+	{
+		float rowHeight = 25;
+
+		keyboardEventEmulation = GUI.Toggle (new Rect (GUIOffset.x + 20, GUIOffset.y + rowHeight * 0, 250, 20), keyboardEventEmulation, "Keyboard Event Emulation");
+		wandMousePointerEmulation = GUI.Toggle (new Rect (GUIOffset.x + 20, GUIOffset.y + rowHeight * 1, 250, 20), wandMousePointerEmulation, "Wand-Mouse Pointer");
+		mocapEmulation = GUI.Toggle (new Rect (GUIOffset.x + 20, GUIOffset.y + rowHeight * 2, 250, 20), mocapEmulation, "Mocap Emulation");
+		lockWandToHeadTransform = GUI.Toggle (new Rect (GUIOffset.x + 20, GUIOffset.y + rowHeight * 3, 250, 20), lockWandToHeadTransform, "Lock Wand to Head Transform");
+
+		GUI.Label(new Rect(GUIOffset.x + 20, GUIOffset.y + rowHeight * 4, 200, 20), "WASD Keys: ");
+		WASDkeys = (TrackerEmulated)GUI.SelectionGrid(new Rect(GUIOffset.x + 100, GUIOffset.y + rowHeight * 4, 200, 20), (int)WASDkeys, trackerEmuStrings, 3);
+		WASDkeyMode = (TrackerEmulationMode)GUI.SelectionGrid(new Rect(GUIOffset.x + 100, GUIOffset.y + rowHeight * 5, 200, 20), (int)WASDkeyMode, trackerEmuModeStrings, 3);
+
+		GUI.Label(new Rect(GUIOffset.x + 20, GUIOffset.y + rowHeight * 6, 200, 20), "IJKL Keys: ");
+		IJKLkeys = (TrackerEmulated)GUI.SelectionGrid(new Rect(GUIOffset.x + 100, GUIOffset.y + rowHeight * 6, 200, 20), (int)IJKLkeys, trackerEmuStrings, 3);
+		IJKLkeyMode = (TrackerEmulationMode)GUI.SelectionGrid(new Rect(GUIOffset.x + 100, GUIOffset.y + rowHeight * 7, 200, 20), (int)IJKLkeyMode, trackerEmuModeStrings, 3);
+
+    }
 }

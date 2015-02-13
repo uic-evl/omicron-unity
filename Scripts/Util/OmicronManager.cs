@@ -134,7 +134,10 @@ class OmicronManager : MonoBehaviour
 	private ArrayList eventList;
 	
 	private ArrayList omicronClients;
+
 	
+	int connectStatus = 0;
+
 	// Initializations
 	public void Start()
 	{
@@ -147,7 +150,7 @@ class OmicronManager : MonoBehaviour
 		
 		if( connectToServer )
 		{
-			omicronManager.Connect( serverIP, serverMsgPort, dataPort );
+			ConnectToServer();
 
 			CAVE2Manager cave2Manager = GameObject.FindGameObjectWithTag("OmicronManager").GetComponent<CAVE2Manager>();
 			cave2Manager.keyboardEventEmulation = false;
@@ -166,7 +169,27 @@ class OmicronManager : MonoBehaviour
 			*/
 		}
 	}// start
-	
+
+	public bool ConnectToServer()
+	{
+		connectToServer = omicronManager.Connect( serverIP, serverMsgPort, dataPort );
+
+		if( connectToServer )
+			connectStatus = 1;
+		else
+			connectStatus = -1;
+
+		return connectToServer;
+	}
+
+	public void DisconnectServer()
+	{
+		omicronManager.Dispose ();
+		connectStatus = 0;
+		connectToServer = false;
+		Debug.Log("InputService: Disconnected");
+	}
+
 	public void AddClient( OmicronEventClient c )
 	{
 		if( omicronClients != null )
@@ -269,9 +292,71 @@ class OmicronManager : MonoBehaviour
 	void OnApplicationQuit()
     {
 		if( connectToServer ){
-			omicronManager.Dispose();
-			
-			Debug.Log("InputService: Disconnected");
+			DisconnectServer();
 		}
     }
+
+	// GUI
+	Rect windowRect = new Rect(0, 0, 250 , 300);
+	string[] navStrings = new string[] {"Walk", "Drive", "Freefly"};
+	string[] horzStrings = new string[] {"Strafe", "Turn"};
+	string[] forwardRefStrings = new string[] {"CAVE", "Head", "Wand"};
+
+	GUIStyle idleStatus = new GUIStyle();
+	GUIStyle activeStatus = new GUIStyle();
+	GUIStyle errorStatus = new GUIStyle();
+	GUIStyle currentStatus;
+	Vector2 GUIOffset;
+	
+	public void SetGUIOffSet( Vector2 offset )
+	{
+		GUIOffset = offset;
+    }
+
+	void OnGUI()
+	{
+		//windowRect = GUI.Window(-1, windowRect, OnWindow, "OmicronManager");			
+	}
+
+	public void OnWindow(int windowID)
+	{
+		float rowHeight = 25;
+
+		idleStatus.normal.textColor = Color.white;
+		activeStatus.normal.textColor = Color.green;
+		errorStatus.normal.textColor = Color.red;
+
+		if( GUI.Toggle (new Rect (GUIOffset.x + 20, GUIOffset.y + rowHeight * 0, 250, 20), connectToServer, "Connect to Server:") )
+		{
+			if( currentStatus != activeStatus )
+				ConnectToServer();
+		}
+		else
+		{
+			if( currentStatus == activeStatus )
+				DisconnectServer();
+        }
+
+		currentStatus = idleStatus;
+
+		string statusText = "UNKNOWN";
+		switch (connectStatus)
+		{
+			case(0): currentStatus = idleStatus; statusText = "Not Connected"; break;
+			case(1): currentStatus = activeStatus; statusText = "Connected"; break;
+			case(-1): currentStatus = errorStatus; statusText = "Failed to Connect"; break;
+        }
+        GUI.Label (new Rect (GUIOffset.x + 150, GUIOffset.y + rowHeight * 0 + 3, 250, 200), statusText, currentStatus);
+
+
+		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + rowHeight * 1, 120, 20), "Omicron Server IP:");
+		serverIP = GUI.TextField(new Rect(GUIOffset.x + 150, GUIOffset.y + rowHeight * 1, 200, 20), serverIP, 25);
+
+		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + rowHeight * 2, 120, 20), "Server Message Port:");
+		serverMsgPort = int.Parse(GUI.TextField(new Rect(GUIOffset.x + 150, GUIOffset.y + rowHeight * 2, 200, 20), serverMsgPort.ToString(), 25));
+
+		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + rowHeight * 3, 120, 20), "Data Port:");
+		dataPort = int.Parse(GUI.TextField(new Rect(GUIOffset.x + 150, GUIOffset.y + rowHeight * 3, 200, 20), dataPort.ToString(), 25));
+
+	}
 }// class

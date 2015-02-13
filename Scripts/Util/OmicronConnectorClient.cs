@@ -407,7 +407,7 @@ namespace omicronConnector
             listener = clistener;
         }
 
-        public void Connect(string serverIP, int msgPort, int dataPort)
+        public bool Connect(string serverIP, int msgPort, int dataPort)
         {
             if (EnableInputService)
             {
@@ -438,18 +438,21 @@ namespace omicronConnector
                     // Creates a separate thread to listen for incoming data
                     listenerThread = new Thread(Listen);
                     listenerThread.Start();
+
+					return true;
                 }
                 catch (ArgumentNullException e)
                 {
                     Debug.LogError("ArgumentNullException: " + e);
-					Dispose();
+					return false;
                 }
                 catch (SocketException e)
                 {
                     Debug.LogError("SocketException: " + e);
-					Dispose();
+					return false;
                 }
             }
+			return false;
         }// CTOR
 
         public void Dispose() 
