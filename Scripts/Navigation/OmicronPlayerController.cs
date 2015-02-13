@@ -129,7 +129,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	
 	// Update is called once per frame
 	void Update () {
-		
+
 		wandPosition = cave2Manager.getWand(wandID).GetPosition();
 		wandRotation = cave2Manager.getWand(wandID).GetRotation();
 			
@@ -165,17 +165,14 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		{
 			transform.localEulerAngles = new Vector3( 0, transform.localEulerAngles.y, 0 );
 		}
-			
-		if( CAVEFloor && !CAVEFloor.activeSelf )
-			CAVEFloor.SetActive(true);
+		
+        if (CAVEFloor && !CAVEFloor.activeSelf)
+            CAVEFloor.SetActive(true);
 
-		if( CAVEFloor && showCAVEFloorOnlyOnMaster && CAVEFloor.activeSelf )
-			CAVEFloor.SetActive(false);
-		else if( CAVEFloor && !showCAVEFloorOnlyOnMaster && !CAVEFloor.activeSelf )
-			CAVEFloor.SetActive(true);
-
-
-
+        if (CAVEFloor && showCAVEFloorOnlyOnMaster && CAVEFloor.activeSelf)
+            CAVEFloor.SetActive(false);
+        else if (CAVEFloor && !showCAVEFloorOnlyOnMaster && !CAVEFloor.activeSelf)
+            CAVEFloor.SetActive(true);
 	}
 	
 	void UpdateFreeflyMovement()
@@ -248,7 +245,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 			nextPos.x += strafe * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad*(forwardAngle+90));
 
 			transform.position = nextPos;
-			//transform.Translate( new Vector3(strafe, 0, forward) * Time.deltaTime );
+			transform.Rotate( new Vector3( 0, lookAround.y, 0) * Time.deltaTime * turnSpeed );
 		}
 		else if( horizontalMovementMode == HorizonalMovementMode.Turn )
 		{
