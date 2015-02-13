@@ -19,6 +19,14 @@ public class DebugGUIManager : MonoBehaviour {
 
 	public bool showGUI = false;
 
+	public bool showFPS = false;
+	public bool showOnlyOnMaster = false;
+	public  float FPS_updateInterval = 0.5F;
+	
+	private float accum   = 0; // FPS accumulated over the interval
+	private int   frames  = 0; // Frames drawn over the interval
+	private float timeleft; // Left time for current interval
+
 	void Start()
 	{
 		omgManager = GameObject.FindGameObjectWithTag ("OmicronManager").GetComponent<OmicronManager> ();
@@ -30,6 +38,38 @@ public class DebugGUIManager : MonoBehaviour {
 	{
 		if ( (Input.GetKey(KeyCode.LeftAlt)||Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.F11))
 			showGUI = !showGUI;
+
+		if( showFPS )
+		{
+			timeleft -= Time.deltaTime;
+			accum += Time.timeScale/Time.deltaTime;
+			++frames;
+			
+			// Interval ended - update GUI text and start new interval
+			if( timeleft <= 0.0 )
+			{
+				// display two fractional digits (f2 format)
+				float fps = accum/frames;
+				string format = System.String.Format("{0:F2} FPS",fps);
+				guiText.text = format;
+				
+				if(fps < 30)
+					guiText.material.color = Color.yellow;
+				else 
+					if(fps < 10)
+						guiText.material.color = Color.red;
+				else
+					guiText.material.color = Color.green;
+				//	DebugConsole.Log(format,level);
+				timeleft = FPS_updateInterval;
+				accum = 0.0F;
+				frames = 0;
+			}
+		}
+		else
+		{
+			guiText.text = "";
+		}
 	}
 
 	void OnGUI() {
@@ -38,6 +78,7 @@ public class DebugGUIManager : MonoBehaviour {
 			mainWindow = GUI.Window(0, mainWindow, OnMainWindow, "Omicron Debug Manager");
 		}
 	}
+
 	void OnMainWindow(int windowID) {
 		GUI.DragWindow (new Rect (0, 0, 10000, 20));
 

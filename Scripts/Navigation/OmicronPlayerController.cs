@@ -41,7 +41,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	public float strafe;
 	public Vector2 lookAround = new Vector2();
 	public float movementScale = 2;
-	public float flyMovementScale = 100;
+	public float flyMovementScale = 10;
 	public float turnSpeed = 50;
 	
 	public Vector3 moveDirection;
@@ -236,13 +236,13 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		else if( forwardReference == ForwardRef.Wand )
 			forwardAngle += wandRotation.eulerAngles.y;
 
-		nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad*forwardAngle);
-		nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad*forwardAngle);
+		nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad*forwardAngle)* flyMovementScale;
+		nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad*forwardAngle)* flyMovementScale;
 
 		if( horizontalMovementMode == HorizonalMovementMode.Strafe )
 		{
-			nextPos.z += strafe * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad*(forwardAngle+90));
-			nextPos.x += strafe * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad*(forwardAngle+90));
+			nextPos.z += strafe * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad*(forwardAngle+90))* flyMovementScale;
+			nextPos.x += strafe * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad*(forwardAngle+90))* flyMovementScale;
 
 			transform.position = nextPos;
 			transform.Rotate( new Vector3( 0, lookAround.y, 0) * Time.deltaTime * turnSpeed );

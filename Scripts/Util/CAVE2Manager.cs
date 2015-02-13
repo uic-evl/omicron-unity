@@ -61,7 +61,8 @@ public class HeadTrackerState
 }
 
 public class CAVE2Manager : OmicronEventClient {
-	
+
+	public bool CAVE2QuickSettings = false;
 	HeadTrackerState head1;
 	HeadTrackerState head2;
 	
@@ -139,6 +140,16 @@ public class CAVE2Manager : OmicronEventClient {
 
 	// Update is called once per frame
 	void Update () {
+		if( CAVE2QuickSettings )
+		{
+			keyboardEventEmulation = false;
+			wandMousePointerEmulation = false;
+			mocapEmulation = false;
+			lockWandToHeadTransform = false;
+
+
+		}
+
 		wand1.UpdateState(Wand1, Wand1Mocap);
 		wand2.UpdateState(Wand2, Wand2Mocap);
 		
