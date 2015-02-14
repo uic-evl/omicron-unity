@@ -326,6 +326,16 @@ class OmicronManager : MonoBehaviour
 		activeStatus.normal.textColor = Color.green;
 		errorStatus.normal.textColor = Color.red;
 
+        currentStatus = idleStatus;
+        
+        string statusText = "UNKNOWN";
+        switch (connectStatus)
+        {
+            case(0): currentStatus = idleStatus; statusText = "Not Connected"; break;
+            case(1): currentStatus = activeStatus; statusText = "Connected"; break;
+            case(-1): currentStatus = errorStatus; statusText = "Failed to Connect"; break;
+        }
+
 		if( GUI.Toggle (new Rect (GUIOffset.x + 20, GUIOffset.y + rowHeight * 0, 250, 20), connectToServer, "Connect to Server:") )
 		{
 			if( currentStatus != activeStatus )
@@ -337,17 +347,7 @@ class OmicronManager : MonoBehaviour
 				DisconnectServer();
         }
 
-		currentStatus = idleStatus;
-
-		string statusText = "UNKNOWN";
-		switch (connectStatus)
-		{
-			case(0): currentStatus = idleStatus; statusText = "Not Connected"; break;
-			case(1): currentStatus = activeStatus; statusText = "Connected"; break;
-			case(-1): currentStatus = errorStatus; statusText = "Failed to Connect"; break;
-        }
         GUI.Label (new Rect (GUIOffset.x + 150, GUIOffset.y + rowHeight * 0 + 3, 250, 200), statusText, currentStatus);
-
 
 		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + rowHeight * 1, 120, 20), "Omicron Server IP:");
 		serverIP = GUI.TextField(new Rect(GUIOffset.x + 150, GUIOffset.y + rowHeight * 1, 200, 20), serverIP, 25);

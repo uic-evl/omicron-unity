@@ -32,6 +32,11 @@ public class DebugGUIManager : MonoBehaviour {
 		omgManager = GameObject.FindGameObjectWithTag ("OmicronManager").GetComponent<OmicronManager> ();
 		cave2manager = GameObject.FindGameObjectWithTag ("OmicronManager").GetComponent<CAVE2Manager> ();
 		playerController = GameObject.FindGameObjectWithTag ("PlayerController").GetComponent<OmicronPlayerController> ();
+
+        if (guiText == null)
+            gameObject.AddComponent<GUIText>();
+
+        transform.position = new Vector3(0.01f, 0.04f, 0);
 	}
 
 	void Update()
@@ -83,6 +88,9 @@ public class DebugGUIManager : MonoBehaviour {
 		GUI.DragWindow (new Rect (0, 0, 10000, 20));
 
 		currentWindow = (DebugWindow)GUI.SelectionGrid(new Rect(10, 20, 350, 24), (int)currentWindow, windowStrings, 3);
+
+        showFPS = GUI.Toggle(new Rect(20, 25 * 7, 250, 20), showFPS, "Show FPS");
+        showOnlyOnMaster = GUI.Toggle(new Rect(20, 25 * 8, 250, 20), showOnlyOnMaster, "Show FPS only on master");
 
 		if (currentWindow == DebugWindow.Main )
 		{

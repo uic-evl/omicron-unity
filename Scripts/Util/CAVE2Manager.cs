@@ -147,7 +147,9 @@ public class CAVE2Manager : OmicronEventClient {
 			mocapEmulation = false;
 			lockWandToHeadTransform = false;
 
-
+            OmicronManager omgManager = GetComponent<OmicronManager>();
+            if( !omgManager.connectToServer )
+                omgManager.ConnectToServer();
 		}
 
 		wand1.UpdateState(Wand1, Wand1Mocap);
