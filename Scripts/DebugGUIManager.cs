@@ -3,16 +3,17 @@ using System.Collections;
 
 public class DebugGUIManager : MonoBehaviour {
 
-	Rect mainWindow = new Rect(20, 20, 400, 350);
+	Rect mainWindow = new Rect(20, 20, 512, 350);
 
-	public enum DebugWindow { Main, CAVE2, PlayerController };
-	string[] windowStrings = new string[] {"OmicronManager", "CAVE2 Simulator", "PlayerController"};
+	public enum DebugWindow { App, Omicron, CAVE2, PlayerController };
+	string[] windowStrings = new string[] {"App", "OmicronManager", "CAVE2 Simulator", "PlayerController"};
 
-	public DebugWindow currentWindow = DebugWindow.Main;
+    public DebugWindow currentWindow = DebugWindow.App;
 
 	OmicronManager omgManager;
 	CAVE2Manager cave2manager;
 	OmicronPlayerController playerController;
+    public MonoBehaviour appMenu;
 
 	Rect omicronWindow;
 	Rect playerWindow;
@@ -80,24 +81,26 @@ public class DebugGUIManager : MonoBehaviour {
 	void OnGUI() {
 		if( showGUI )
 		{
-			mainWindow = GUI.Window(0, mainWindow, OnMainWindow, "Omicron Debug Manager");
+			mainWindow = GUI.Window(0, mainWindow, OnMainWindow, "Omicron Debug Manager (Alt-F11)");
 		}
 	}
 
 	void OnMainWindow(int windowID) {
 		GUI.DragWindow (new Rect (0, 0, 10000, 20));
 
-		currentWindow = (DebugWindow)GUI.SelectionGrid(new Rect(10, 20, 350, 24), (int)currentWindow, windowStrings, 3);
+		currentWindow = (DebugWindow)GUI.SelectionGrid(new Rect(10, 20, 480, 24), (int)currentWindow, windowStrings, 4);
 
-        showFPS = GUI.Toggle(new Rect(20, 25 * 7, 250, 20), showFPS, "Show FPS");
-        showOnlyOnMaster = GUI.Toggle(new Rect(20, 25 * 8, 250, 20), showOnlyOnMaster, "Show FPS only on master");
 
-		if (currentWindow == DebugWindow.Main )
+
+		if (currentWindow == DebugWindow.Omicron )
 		{
 			if( omgManager != null )
 			{
 				omgManager.SetGUIOffSet(new Vector2(0,50));
                 omgManager.OnWindow(windowID);
+
+                showFPS = GUI.Toggle(new Rect(20, 25 * 7, 250, 20), showFPS, "Show FPS");
+                showOnlyOnMaster = GUI.Toggle(new Rect(20, 25 * 8, 250, 20), showOnlyOnMaster, "Show FPS only on master");
 	        }
 	        else
 				GUI.Label(new Rect(0,50,256,24), "This Feature is Not Currently Available");
@@ -121,6 +124,16 @@ public class DebugGUIManager : MonoBehaviour {
 			}
 			else
 				GUI.Label(new Rect(20,50,256,24), "This Feature is Not Currently Available");
+        }
+        else if (currentWindow == DebugWindow.App )
+        {
+            if( appMenu != null )
+            {
+                appMenu.SendMessage("SetGUIOffSet", new Vector2(0,25));
+                appMenu.SendMessage("OnWindow",windowID);
+            }
+            else
+                GUI.Label(new Rect(20,50,256,24), "This Feature is Not Currently Available");
         }
     }
 }
