@@ -158,7 +158,7 @@ class OmicronManager : MonoBehaviour
 		}
 		else if( !connectToServer )
 		{
-			/*
+			
 			getRealCameraUpdater getRealCam = Camera.main.GetComponent<getRealCameraUpdater>();
 			if( getRealCam )
 			{
@@ -166,7 +166,7 @@ class OmicronManager : MonoBehaviour
 				getRealCam.applyHeadRotation = false;
 				getRealCam.applyCameraProjection = false;
 			}
-			*/
+			
 		}
 	}// start
 

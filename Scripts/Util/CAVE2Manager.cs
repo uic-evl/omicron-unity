@@ -160,6 +160,7 @@ public class CAVE2Manager : OmicronEventClient {
 			float vertical = Input.GetAxis("Vertical") * axisSensitivity;
 			float horizontal = Input.GetAxis("Horizontal") * axisSensitivity;
 			float lookHorizontal = Input.GetAxis("LookHorizontal") * axisSensitivity;
+            float forward = Input.GetAxis("Forward") * axisSensitivity;
 
 			uint flags = 0;
 			
@@ -182,10 +183,12 @@ public class CAVE2Manager : OmicronEventClient {
 
 			Vector2 wandAnalog = new Vector2();
 			Vector2 wandAnalog2 = new Vector2();
+            Vector2 wandAnalog3 = new Vector2();
 			if( WASDkeys == TrackerEmulated.CAVE )
 			{
 				wandAnalog = new Vector2(horizontal,vertical);
 				wandAnalog2 = new Vector2(lookHorizontal,0);
+                wandAnalog3 = new Vector2(forward,0);
 			}
 			else if( WASDkeys == TrackerEmulated.Head )
 			{
@@ -197,7 +200,7 @@ public class CAVE2Manager : OmicronEventClient {
 					headEmulatedRotation += new Vector3( vertical, horizontal, 0 );
 			}
 
-			wand1.UpdateController( flags, wandAnalog , wandAnalog2, Vector2.zero );
+            wand1.UpdateController( flags, wandAnalog , wandAnalog2, wandAnalog3 );
 
 			float headForward = 0;
 			float headStrafe = 0;

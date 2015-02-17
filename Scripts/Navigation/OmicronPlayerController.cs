@@ -36,9 +36,11 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	public CAVE2Manager.Axis strafeAxis = CAVE2Manager.Axis.LeftAnalogStickLR;
 	public CAVE2Manager.Axis lookUDAxis = CAVE2Manager.Axis.RightAnalogStickUD;
 	public CAVE2Manager.Axis lookLRAxis = CAVE2Manager.Axis.RightAnalogStickLR;
+    public CAVE2Manager.Axis verticalAxis = CAVE2Manager.Axis.AnalogTriggerL;
 
 	public float forward;
 	public float strafe;
+    public float vertical;
 	public Vector2 lookAround = new Vector2();
 	public float movementScale = 2;
 	public float flyMovementScale = 10;
@@ -148,6 +150,9 @@ public class OmicronPlayerController : OmicronWandUpdater {
 			lookAround.x *= movementScale;
 			lookAround.y = cave2Manager.getWand(wandID).GetAxis(lookLRAxis);
 			lookAround.y *= movementScale;
+
+            vertical = cave2Manager.getWand(wandID).GetAxis(verticalAxis);
+            vertical *= movementScale;
 		}
 			
 		freeflyButtonDown = cave2Manager.getWand(wandID).GetButton(freeFlyButton);
@@ -238,6 +243,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 
 		nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad*forwardAngle)* flyMovementScale;
 		nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad*forwardAngle)* flyMovementScale;
+        nextPos.y += vertical * Time.deltaTime * flyMovementScale;
 
 		if( horizontalMovementMode == HorizonalMovementMode.Strafe )
 		{
