@@ -110,7 +110,9 @@ public class CAVE2Manager : OmicronEventClient {
 		Application.targetFrameRate = framerateCap;
 	}
 
-	[getReal3D.RPC]
+    #if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+    [getReal3D.RPC]
+    #endif
 	void UpdateWandState()
 	{
 		wand1.UpdateState(Wand1, Wand1Mocap);
@@ -317,7 +319,9 @@ public class CAVE2Manager : OmicronEventClient {
 		}
 	}
 
-	[getReal3D.RPC]
+    #if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+    [getReal3D.RPC]
+    #endif
 	void UpdateMocap(uint sourceId, Vector3 unityPos, Quaternion unityRot)
 	{
 		if( sourceId == head1.mocapID )
@@ -337,8 +341,9 @@ public class CAVE2Manager : OmicronEventClient {
 			wand2.UpdateMocap( unityPos, unityRot );
 		}
 	}
-
-	[getReal3D.RPC]
+    #if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+    [getReal3D.RPC]
+    #endif
 	void UpdateController(uint sourceId, uint flags, Vector2 leftAnalogStick, Vector2 rightAnalogStick, Vector2 analogTrigger)
 	{
 		if( sourceId == wand1.sourceID )
