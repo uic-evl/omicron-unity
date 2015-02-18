@@ -39,6 +39,11 @@ public class OmicronWandUpdater : MonoBehaviour {
 	{
 		cave2Manager = GameObject.FindGameObjectWithTag("OmicronManager").GetComponent<CAVE2Manager>();
 		wand = cave2Manager.getWand(wandID);
+
+		// Ignore physics collisions with player controller and player objects (head/wand)
+		GameObject playerController = GameObject.FindGameObjectWithTag("PlayerController");
+		if( playerController != gameObject ) // OmicronPlayerController is a derived class of OmicronWandUpdater
+			Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), playerController.GetComponent<Collider>() );
 	}
 	
 	// Use this for initialization

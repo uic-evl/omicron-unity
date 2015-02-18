@@ -4,12 +4,9 @@ using omicron;
 using omicronConnector;
 using System;
 
-public class WandState : MonoBehaviour
+public class WandState : MocapState
 {
 	public int sourceID;
-	public int mocapID;
-	public Vector3 position;
-	public Quaternion rotation;
 	public int flags;
 	
 	public Vector2 leftAnalogStick;
@@ -38,12 +35,9 @@ public class WandState : MonoBehaviour
 		
 	public bool RPCButtonEvents = false;
 
-	public void Start()
+	public WandState( int ID, int mocapID ) : base (mocapID)
 	{
-	}
 
-	public WandState( int ID, int mocapID )
-	{
 		sourceID = ID;
 		this.mocapID = mocapID;
 		
@@ -55,21 +49,6 @@ public class WandState : MonoBehaviour
 		rightAnalogStick = new Vector2();
 		analogTrigger = new Vector2();
 	}
-	/*
-	void OnGUI() {
-
-		GUI.Box(new Rect(0, 0, 250 , 250 ), "Dynamic Tile Generator");
-			
-		GUI.Label(new Rect(25, 20 * 12, 200, 20), "B1: " + button1);
-		GUI.Label(new Rect(25, 20 * 13, 200, 20), "B2: " + button2);
-		GUI.Label(new Rect(25, 20 * 14, 200, 20), "B3: " + button3);
-		GUI.Label(new Rect(25, 20 * 15, 200, 20), "B4: " + button4);
-		GUI.Label(new Rect(25, 20 * 16, 200, 20), "B5: " + button5);
-		GUI.Label(new Rect(25, 20 * 17, 200, 20), "B6: " + button6);
-		GUI.Label(new Rect(25, 20 * 18, 200, 20), "B6: " + button7);
-		GUI.Label(new Rect(25, 20 * 19, 200, 20), "B7: " + button8);
-    }
-    */
 
 	public Vector3 GetPosition()
 	{
@@ -219,36 +198,30 @@ public class WandState : MonoBehaviour
 			default: return buttonNull;
 		}
 	}
-	
-	public void UpdateMocap( Vector3 position, Quaternion orientation )
-	{
-		this.position = position;
-		this.rotation = orientation;
-	}
-	
+
 	public void UpdateButton( int buttonID, int buttonState )
 	{		
 		switch(buttonID)
 		{
-			case((int)CAVE2Manager.Button.Button1): button1 = (ButtonState)buttonState; break;
-			case((int)CAVE2Manager.Button.Button2): button2 = (ButtonState)buttonState; break;
-			case((int)CAVE2Manager.Button.Button3): button3 = (ButtonState)buttonState; break;
-			case((int)CAVE2Manager.Button.Button4): button4 = (ButtonState)buttonState; break;
-			case((int)CAVE2Manager.Button.Button5): button5 = (ButtonState)buttonState; break;
-			case((int)CAVE2Manager.Button.Button6): button6 = (ButtonState)buttonState; break;
-			case((int)CAVE2Manager.Button.Button7): button7 = (ButtonState)buttonState; break;
-			case((int)CAVE2Manager.Button.Button8): button8 = (ButtonState)buttonState; break;
-			case((int)CAVE2Manager.Button.Button9): button9 = (ButtonState)buttonState; break;
-			case((int)CAVE2Manager.Button.SpecialButton1): buttonSP1 = (ButtonState)buttonState; break;
-			case((int)CAVE2Manager.Button.SpecialButton2): buttonSP2 = (ButtonState)buttonState; break;
-			case((int)CAVE2Manager.Button.SpecialButton3): buttonSP3 = (ButtonState)buttonState; break;
-			case((int)CAVE2Manager.Button.ButtonUp): buttonUp = (ButtonState)buttonState; break;
-			case((int)CAVE2Manager.Button.ButtonDown): buttonDown = (ButtonState)buttonState; break;
-			case((int)CAVE2Manager.Button.ButtonLeft): buttonLeft = (ButtonState)buttonState; break;
-			case((int)CAVE2Manager.Button.ButtonRight): buttonRight = (ButtonState)buttonState; break;
+		case((int)CAVE2Manager.Button.Button1): button1 = (ButtonState)buttonState; break;
+		case((int)CAVE2Manager.Button.Button2): button2 = (ButtonState)buttonState; break;
+		case((int)CAVE2Manager.Button.Button3): button3 = (ButtonState)buttonState; break;
+		case((int)CAVE2Manager.Button.Button4): button4 = (ButtonState)buttonState; break;
+		case((int)CAVE2Manager.Button.Button5): button5 = (ButtonState)buttonState; break;
+		case((int)CAVE2Manager.Button.Button6): button6 = (ButtonState)buttonState; break;
+		case((int)CAVE2Manager.Button.Button7): button7 = (ButtonState)buttonState; break;
+		case((int)CAVE2Manager.Button.Button8): button8 = (ButtonState)buttonState; break;
+		case((int)CAVE2Manager.Button.Button9): button9 = (ButtonState)buttonState; break;
+		case((int)CAVE2Manager.Button.SpecialButton1): buttonSP1 = (ButtonState)buttonState; break;
+		case((int)CAVE2Manager.Button.SpecialButton2): buttonSP2 = (ButtonState)buttonState; break;
+		case((int)CAVE2Manager.Button.SpecialButton3): buttonSP3 = (ButtonState)buttonState; break;
+		case((int)CAVE2Manager.Button.ButtonUp): buttonUp = (ButtonState)buttonState; break;
+		case((int)CAVE2Manager.Button.ButtonDown): buttonDown = (ButtonState)buttonState; break;
+		case((int)CAVE2Manager.Button.ButtonLeft): buttonLeft = (ButtonState)buttonState; break;
+		case((int)CAVE2Manager.Button.ButtonRight): buttonRight = (ButtonState)buttonState; break;
 		}
 	}
-	
+
 	public void UpdateController( uint flags, Vector2 leftAnalogStick, Vector2 rightAnalogStick, Vector2 analogTrigger )
 	{
 		this.leftAnalogStick = leftAnalogStick;

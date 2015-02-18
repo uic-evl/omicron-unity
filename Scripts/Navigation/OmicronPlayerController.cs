@@ -151,8 +151,12 @@ public class OmicronPlayerController : OmicronWandUpdater {
 			lookAround.y = cave2Manager.getWand(wandID).GetAxis(lookLRAxis);
 			lookAround.y *= movementScale;
 
-            vertical = cave2Manager.getWand(wandID).GetAxis(verticalAxis);
-            vertical *= movementScale;
+			// Only enable in emulator mode, otherwise conflicts with normal wand 6DOF navigation
+			if( GameObject.FindGameObjectWithTag("OmicronManager").GetComponent<CAVE2Manager>().keyboardEventEmulation )
+			{
+           		vertical = cave2Manager.getWand(wandID).GetAxis(verticalAxis);
+            	vertical *= movementScale;
+			}
 		}
 			
 		freeflyButtonDown = cave2Manager.getWand(wandID).GetButton(freeFlyButton);

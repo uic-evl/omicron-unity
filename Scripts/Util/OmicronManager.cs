@@ -141,32 +141,23 @@ class OmicronManager : MonoBehaviour
 	// Initializations
 	public void Start()
 	{
-		omicronListener = new EventListener(this);
-		omicronManager = new OmicronConnectorClient(omicronListener);
-		
-		eventList = new ArrayList();
-		
-		gameObject.tag = "OmicronManager";
-		
-		if( connectToServer )
+		if( getReal3D.Cluster.isMaster )
 		{
-			ConnectToServer();
-
-			CAVE2Manager cave2Manager = GameObject.FindGameObjectWithTag("OmicronManager").GetComponent<CAVE2Manager>();
-			cave2Manager.keyboardEventEmulation = false;
-			cave2Manager.wandMousePointerEmulation = false;
-		}
-		else if( !connectToServer )
-		{
+			omicronListener = new EventListener(this);
+			omicronManager = new OmicronConnectorClient(omicronListener);
 			
-			getRealCameraUpdater getRealCam = Camera.main.GetComponent<getRealCameraUpdater>();
-			if( getRealCam )
+			eventList = new ArrayList();
+			
+			gameObject.tag = "OmicronManager";
+			
+			if( connectToServer )
 			{
-				getRealCam.applyHeadPosition = false;
-				getRealCam.applyHeadRotation = false;
-				getRealCam.applyCameraProjection = false;
+				ConnectToServer();
+
+				CAVE2Manager cave2Manager = GameObject.FindGameObjectWithTag("OmicronManager").GetComponent<CAVE2Manager>();
+				cave2Manager.keyboardEventEmulation = false;
+				cave2Manager.wandMousePointerEmulation = false;
 			}
-			
 		}
 	}// start
 

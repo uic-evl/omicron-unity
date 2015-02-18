@@ -30,7 +30,7 @@ using System.Collections;
 using omicron;
 using omicronConnector;
 
-public class OmicronEventClient : MonoBehaviour {
+public class OmicronEventClient : getReal3D.MonoBehaviourWithRpc {
 	OmicronManager omicronManager;
 
 	bool flagForRemoval = false;

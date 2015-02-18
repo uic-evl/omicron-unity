@@ -37,6 +37,10 @@ public class OmicronHeadUpdater : MonoBehaviour {
 	// Use this for initialization
 	public void Start () {
 		cave2Manager = GameObject.FindGameObjectWithTag("OmicronManager").GetComponent<CAVE2Manager>();
+
+		// Ignore physics collisions with player controller and player objects (head/wand)
+		GameObject playerController = GameObject.FindGameObjectWithTag("PlayerController");
+		Physics.IgnoreCollision(GetComponent<SphereCollider>(), playerController.GetComponent<CapsuleCollider>() );
 	}
 	
 	// Update is called once per frame
