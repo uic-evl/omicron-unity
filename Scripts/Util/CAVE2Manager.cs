@@ -140,8 +140,11 @@ public class CAVE2Manager : OmicronEventClient {
 			CAVE2QuickSettings = false;
 		}
 
+        #if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
 		getReal3D.RpcManager.call ("UpdateWandState");
-		
+        #else
+        UpdateWandState();
+        #endif
 		if( keyboardEventEmulation )
 		{
 			float vertical = Input.GetAxis("Vertical") * axisSensitivity;
@@ -187,7 +190,11 @@ public class CAVE2Manager : OmicronEventClient {
 					headEmulatedRotation += new Vector3( vertical, horizontal, 0 );
 			}
 
-            wand1.UpdateController( flags, wandAnalog , wandAnalog2, wandAnalog3 );
+            #if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+            getReal3D.RpcManager.call ("UpdateController", (uint)1, flags, wandAnalog , wandAnalog2, wandAnalog3);
+            #else
+            UpdateController(1, flags, wandAnalog , wandAnalog2, wandAnalog3);
+            #endif
 
 			float headForward = 0;
 			float headStrafe = 0;
@@ -258,8 +265,12 @@ public class CAVE2Manager : OmicronEventClient {
 			Vector3 unityPos = new Vector3(e.posx, e.posy, -e.posz);
 			Quaternion unityRot = new Quaternion(-e.orx, -e.ory, e.orz, e.orw);
 
-			getReal3D.RpcManager.call ("UpdateMocap", e.sourceId, unityPos, unityRot );
-
+			
+            #if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+            getReal3D.RpcManager.call ("UpdateMocap", e.sourceId, unityPos, unityRot );
+            #else
+            UpdateMocap(e.sourceId, unityPos, unityRot );
+            #endif
 			/*
 			if( e.sourceId == head1.mocapID )
 			{
@@ -298,18 +309,11 @@ public class CAVE2Manager : OmicronEventClient {
 			if( Mathf.Abs(rightAnalogStick.y) < axisDeadzone )
 				rightAnalogStick.y = 0;
 
-			getReal3D.RpcManager.call ("UpdateController", e.sourceId, e.flags, leftAnalogStick, rightAnalogStick, analogTrigger);
-			//UpdateController(e.sourceId, e.flags, leftAnalogStick, rightAnalogStick, analogTrigger);
-			/*
-			if( e.sourceId == wand1.sourceID )
-			{
-				wand1.UpdateController( e.flags, leftAnalogStick, rightAnalogStick, analogTrigger );
-			}
-			else if( e.sourceId == wand2.sourceID )
-			{
-				wand2.UpdateController( e.flags, leftAnalogStick, rightAnalogStick, analogTrigger );
-			}
-			*/
+            #if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+            getReal3D.RpcManager.call ("UpdateController", e.sourceId, e.flags, leftAnalogStick, rightAnalogStick, analogTrigger);
+            #else
+            UpdateController(e.sourceId, e.flags, leftAnalogStick, rightAnalogStick, analogTrigger);
+            #endif
 		}
 	}
 
@@ -337,7 +341,6 @@ public class CAVE2Manager : OmicronEventClient {
 	[getReal3D.RPC]
 	void UpdateController(uint sourceId, uint flags, Vector2 leftAnalogStick, Vector2 rightAnalogStick, Vector2 analogTrigger)
 	{
-		Debug.Log(flags);
 		if( sourceId == wand1.sourceID )
 		{
 			wand1.UpdateController( flags, leftAnalogStick, rightAnalogStick, analogTrigger );

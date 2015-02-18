@@ -30,7 +30,12 @@ using System.Collections;
 using omicron;
 using omicronConnector;
 
+#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
 public class OmicronEventClient : getReal3D.MonoBehaviourWithRpc {
+#else
+public class OmicronEventClient : MonoBehaviour {
+#endif
+
 	OmicronManager omicronManager;
 
 	bool flagForRemoval = false;

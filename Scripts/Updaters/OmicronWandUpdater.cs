@@ -42,7 +42,7 @@ public class OmicronWandUpdater : MonoBehaviour {
 
 		// Ignore physics collisions with player controller and player objects (head/wand)
 		GameObject playerController = GameObject.FindGameObjectWithTag("PlayerController");
-		if( playerController != gameObject ) // OmicronPlayerController is a derived class of OmicronWandUpdater
+        if( playerController != gameObject && gameObject.GetComponent<Collider>() ) // OmicronPlayerController is a derived class of OmicronWandUpdater
 			Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), playerController.GetComponent<Collider>() );
 	}
 	

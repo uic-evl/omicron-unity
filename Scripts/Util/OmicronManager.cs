@@ -141,9 +141,11 @@ class OmicronManager : MonoBehaviour
 	// Initializations
 	public void Start()
 	{
+        #if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
 		if( getReal3D.Cluster.isMaster )
 		{
-			omicronListener = new EventListener(this);
+        #endif
+            omicronListener = new EventListener(this);
 			omicronManager = new OmicronConnectorClient(omicronListener);
 			
 			eventList = new ArrayList();
@@ -158,7 +160,9 @@ class OmicronManager : MonoBehaviour
 				cave2Manager.keyboardEventEmulation = false;
 				cave2Manager.wandMousePointerEmulation = false;
 			}
+        #if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
 		}
+        #endif
 	}// start
 
 	public bool ConnectToServer()
