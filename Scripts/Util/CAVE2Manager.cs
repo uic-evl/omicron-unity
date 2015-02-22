@@ -137,7 +137,7 @@ public class CAVE2Manager : OmicronEventClient {
 	void Update () {
 		getRealCameraUpdater getRealCam = Camera.main.GetComponent<getRealCameraUpdater>();
 		#if UNITY_PRO_LICENSE && UNITY_STANDALONE_WIN
-		if( getReal3D.Cluster.isOn )
+		if( getReal3D.Cluster.isClientAndClusterOn )
 			CAVE2QuickSettings = true;
 		#endif
 		if( CAVE2QuickSettings )
