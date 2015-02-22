@@ -297,7 +297,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		{
 			nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad*forwardAngle);
 			nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad*forwardAngle);
-			//transform.position = nextPos;
+			transform.position = nextPos;
 
 			transform.RotateAround( headObject.transform.position, Vector3.up, strafe * Time.deltaTime * turnSpeed);
 
@@ -347,25 +347,96 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 4, 200, 20), "Navigation Mode: ");
 		navMode = (NavigationMode)GUI.SelectionGrid(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 5, 200, 20), (int)navMode, navStrings, 3);
 
+		#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+		getReal3D.RpcManager.call ("SetNavMode", navMode);
+		#endif
+
 		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 6, 200, 20), "Forward Reference: ");
 		forwardReference = (ForwardRef)GUI.SelectionGrid(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 7, 200, 20), (int)forwardReference, forwardRefStrings, 3);
 
+		#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+		getReal3D.RpcManager.call ("SetForwardReference", forwardReference);
+		#endif
 
 		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 8, 200, 20), "Left Analog LR Mode: ");
 		horizontalMovementMode = (HorizonalMovementMode)GUI.SelectionGrid(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 9, 200, 20), (int)horizontalMovementMode, horzStrings, 3);
-		
+
+		#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+		getReal3D.RpcManager.call ("SetHorizontalMovementMode", horizontalMovementMode);
+		#endif
+
 		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 10 + 5, 120, 20), "Walk Nav Scale: ");
 		movementScale = float.Parse(GUI.TextField(new Rect(GUIOffset.x + 150, GUIOffset.y + 20 * 10 + 5, 75, 20), movementScale.ToString(), 25));
-		
+
+		#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+		getReal3D.RpcManager.call ("SetMovementScale", movementScale);
+		#endif
+
 		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 11 + 10, 120, 20), "Drive/Fly Nav Scale: ");
 		flyMovementScale = float.Parse(GUI.TextField(new Rect(GUIOffset.x + 150, GUIOffset.y + 20 * 11 + 10, 75, 20), flyMovementScale.ToString(), 25));
-			
+
+		#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+		getReal3D.RpcManager.call ("SetFlyMovementScale", flyMovementScale);
+		#endif
+
 		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 12 + 15, 120, 20), "Rotate Scale: ");
 		turnSpeed = float.Parse(GUI.TextField(new Rect(GUIOffset.x + 150, GUIOffset.y + 20 * 12 + 15, 75, 20), turnSpeed.ToString(), 25));
+
+		#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+		getReal3D.RpcManager.call ("SetTurnSpeed", turnSpeed);
+		#endif
 
 		if( GUI.Toggle(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 13 + 15, 250, 200), (autoLevelMode == AutoLevelMode.OnGroundCollision), " Auto Level On Ground Collision") )
 			autoLevelMode = AutoLevelMode.OnGroundCollision;
 		else
 			autoLevelMode = AutoLevelMode.Disabled;
+
+		#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+		getReal3D.RpcManager.call ("SetAutoLevelMode", autoLevelMode);
+		#endif
 	}
+	#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+	[getReal3D.RPC]
+	void SetNavMode( NavigationMode val )
+	{
+		navMode = val;
+	}
+
+	[getReal3D.RPC]
+	void SetForwardReference( ForwardRef val )
+	{
+		forwardReference = val;
+	}
+
+	[getReal3D.RPC]
+	void SetHorizontalMovementMode( HorizonalMovementMode val )
+	{
+		horizontalMovementMode = val;
+	}
+
+	[getReal3D.RPC]
+	void SetMovementScale( float val )
+	{
+		movementScale = val;
+	}
+
+	[getReal3D.RPC]
+	void SetFlyMovementScale( float val )
+	{
+		flyMovementScale = val;
+	}
+
+	[getReal3D.RPC]
+	void SetTurnSpeed( float val )
+	{
+		turnSpeed = val;
+	}
+
+	[getReal3D.RPC]
+	void SetAutoLevelMode( AutoLevelMode val )
+	{
+		autoLevelMode = val;
+	}
+
+	#endif
 }

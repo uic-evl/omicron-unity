@@ -108,7 +108,21 @@ public class CAVE2Manager : OmicronEventClient {
 		}
 
 		Application.targetFrameRate = framerateCap;
+
+		#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+		if( getReal3D.Cluster.isMaster )
+			getReal3D.RpcManager.call("SetClusterRandomSeed", Random.seed );
+		#endif
+		
 	}
+
+	#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+	[getReal3D.RPC]
+	void SetClusterRandomSeed(int seed)
+	{
+		Random.seed = seed;
+	}
+	#endif
 
     #if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
     [getReal3D.RPC]
@@ -122,6 +136,10 @@ public class CAVE2Manager : OmicronEventClient {
 	// Update is called once per frame
 	void Update () {
 		getRealCameraUpdater getRealCam = Camera.main.GetComponent<getRealCameraUpdater>();
+		#if UNITY_PRO_LICENSE && UNITY_STANDALONE_WIN
+		if( getReal3D.Cluster.isOn )
+			CAVE2QuickSettings = true;
+		#endif
 		if( CAVE2QuickSettings )
 		{
 			keyboardEventEmulation = false;
@@ -133,15 +151,17 @@ public class CAVE2Manager : OmicronEventClient {
             if( !omgManager.connectToServer )
                 omgManager.ConnectToServer();
 
-			if( getRealCam )
-			{
-				getRealCam.applyHeadPosition = true;
-				getRealCam.applyHeadRotation = true;
-				getRealCam.applyCameraProjection = true;
-			}
 			CAVE2QuickSettings = false;
 		}
-
+		else
+		{
+			if( getRealCam )
+			{
+				getRealCam.applyHeadPosition = false;
+				getRealCam.applyHeadRotation = false;
+				getRealCam.applyCameraProjection = false;
+			}
+		}
         #if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
 		getReal3D.RpcManager.call ("UpdateWandState");
         #else
