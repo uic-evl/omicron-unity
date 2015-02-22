@@ -135,8 +135,9 @@ public class CAVE2Manager : OmicronEventClient {
 
 	// Update is called once per frame
 	void Update () {
-		getRealCameraUpdater getRealCam = Camera.main.GetComponent<getRealCameraUpdater>();
 		#if UNITY_PRO_LICENSE && UNITY_STANDALONE_WIN
+		getRealCameraUpdater getRealCam = Camera.main.GetComponent<getRealCameraUpdater>();
+
 		if( getReal3D.Cluster.isClientAndClusterOn )
 			CAVE2QuickSettings = true;
 		#endif
@@ -155,12 +156,14 @@ public class CAVE2Manager : OmicronEventClient {
 		}
 		else
 		{
+			#if UNITY_PRO_LICENSE && UNITY_STANDALONE_WIN
 			if( getRealCam )
 			{
 				getRealCam.applyHeadPosition = false;
 				getRealCam.applyHeadRotation = false;
 				getRealCam.applyCameraProjection = false;
 			}
+			#endif
 		}
         #if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
 		getReal3D.RpcManager.call ("UpdateWandState");
