@@ -156,7 +156,7 @@ public class CAVE2Manager : OmicronEventClient {
 		}
 		else
 		{
-			#if UNITY_PRO_LICENSE && UNITY_STANDALONE_WIN
+			#if UNITY_PRO_LICENSE && UNITY_EDITOR_WIN
 			if( getRealCam )
 			{
 				getRealCam.applyHeadPosition = false;

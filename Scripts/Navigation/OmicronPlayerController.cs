@@ -156,6 +156,9 @@ public class OmicronPlayerController : OmicronWandUpdater {
 			{
            		vertical = cave2Manager.getWand(wandID).GetAxis(verticalAxis);
             	vertical *= movementScale;
+
+				forwardReference = ForwardRef.CAVEFront;
+				horizontalMovementMode = HorizonalMovementMode.Strafe;
 			}
 		}
 			
