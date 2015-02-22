@@ -33,7 +33,7 @@ public class CAVE2FarCameraManager : MonoBehaviour {
 			CAVE2SkyBox.SetActive(true);
 			MainCamera.SetActive(true);
             skyBox.SetActive(true);
-            SetLayerInChildren(skyBox, skyboxDefaultLayer);
+            //SetLayerInChildren(skyBox, skyboxDefaultLayer);
             enable = true;
 		}
         else if( !enableCAVE2FarCamera && enable)
@@ -42,8 +42,8 @@ public class CAVE2FarCameraManager : MonoBehaviour {
 			NearMainCamera.SetActive(true);
 			FarCamera.SetActive(true);
 			MainCamera.SetActive(false);
-            skyBox.transform.localScale = new Vector3(10000000000000000,10000000000000000,10000000000000000);
-            SetLayerInChildren(skyBox, 0);
+            //skyBox.transform.localScale = new Vector3(10000000000000000,10000000000000000,10000000000000000);
+            //SetLayerInChildren(skyBox, 0);
             enable = false;
 		}
 	}

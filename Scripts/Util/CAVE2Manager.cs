@@ -169,6 +169,10 @@ public class CAVE2Manager : OmicronEventClient {
 		getReal3D.RpcManager.call ("UpdateWandState");
         #else
         UpdateWandState();
+
+		GameObject grm = GameObject.Find("GetRealManager");
+		if( grm )
+			grm.SetActive(false);
         #endif
 		if( keyboardEventEmulation )
 		{
