@@ -219,7 +219,7 @@ public class CAVE2Manager : OmicronEventClient {
 					headEmulatedRotation += new Vector3( vertical, horizontal, 0 );
 			}
 
-            #if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+			#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
             getReal3D.RpcManager.call ("UpdateController", (uint)1, flags, wandAnalog , wandAnalog2, wandAnalog3);
             #else
             UpdateController(1, flags, wandAnalog , wandAnalog2, wandAnalog3);
@@ -294,7 +294,6 @@ public class CAVE2Manager : OmicronEventClient {
 			Vector3 unityPos = new Vector3(e.posx, e.posy, -e.posz);
 			Quaternion unityRot = new Quaternion(-e.orx, -e.ory, e.orz, e.orw);
 
-			
             #if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
             getReal3D.RpcManager.call ("UpdateMocap", e.sourceId, unityPos, unityRot );
             #else
@@ -338,7 +337,7 @@ public class CAVE2Manager : OmicronEventClient {
 			if( Mathf.Abs(rightAnalogStick.y) < axisDeadzone )
 				rightAnalogStick.y = 0;
 
-            #if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+			#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
             getReal3D.RpcManager.call ("UpdateController", e.sourceId, e.flags, leftAnalogStick, rightAnalogStick, analogTrigger);
             #else
             UpdateController(e.sourceId, e.flags, leftAnalogStick, rightAnalogStick, analogTrigger);

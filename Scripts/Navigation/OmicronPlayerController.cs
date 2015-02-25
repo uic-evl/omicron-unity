@@ -119,24 +119,35 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		if( visualColliderObject )
 			visualColliderObject.transform.localPosition = playerCollider.center;
 
-		if( navMode == NavigationMode.Drive || navMode == NavigationMode.Freefly )
+		if( getReal3D.Cluster.isMaster )
 		{
-			UpdateFreeflyMovement();
-		}
-		else
-		{
-			UpdateWalkMovement();
+			if( navMode == NavigationMode.Drive || navMode == NavigationMode.Freefly )
+			{
+				UpdateFreeflyMovement();
+			}
+			else
+			{
+				UpdateWalkMovement();
+			}
+			getReal3D.RpcManager.call("UpdatePlayerControllerTransform", transform.position, transform.rotation);
 		}
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
-		wandPosition = cave2Manager.getWand(wandID).GetPosition();
-		wandRotation = cave2Manager.getWand(wandID).GetRotation();
+
+		if( getReal3D.Cluster.isMaster )
+		{
+			wandPosition = cave2Manager.getWand(wandID).GetPosition();
+			wandRotation = cave2Manager.getWand(wandID).GetRotation();
 			
-		headPosition = cave2Manager.getHead(headID).GetPosition();
-		headRotation = cave2Manager.getHead(headID).GetRotation().eulerAngles;
+			headPosition = cave2Manager.getHead(headID).GetPosition();
+			headRotation = cave2Manager.getHead(headID).GetRotation().eulerAngles;
+
+			getReal3D.RpcManager.call("UpdatePlayerControllerHeadTransform", headPosition, headRotation);
+			getReal3D.RpcManager.call("UpdatePlayerControllerWandTransform", wandPosition, wandRotation);
+		}
 
 		if( !freezeMovement )
 		{
@@ -186,7 +197,28 @@ public class OmicronPlayerController : OmicronWandUpdater {
         else if (CAVEFloor && !showCAVEFloorOnlyOnMaster && !CAVEFloor.activeSelf)
             CAVEFloor.SetActive(true);
 	}
-	
+
+	[getReal3D.RPC]
+	void UpdatePlayerControllerTransform( Vector3 pos, Quaternion rot )
+	{
+		transform.position = pos;
+		transform.rotation = rot;
+	}
+
+	[getReal3D.RPC]
+	void UpdatePlayerControllerHeadTransform( Vector3 pos, Vector3 rot )
+	{
+		headPosition = pos;
+		headRotation = rot;
+	}
+
+	[getReal3D.RPC]
+	void UpdatePlayerControllerWandTransform( Vector3 pos, Quaternion rot )
+	{
+		wandPosition = pos;
+		wandRotation = rot;
+	}
+
 	void UpdateFreeflyMovement()
 	{
 		rigidbody.useGravity = false;
