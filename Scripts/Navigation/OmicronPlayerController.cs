@@ -119,35 +119,24 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		if( visualColliderObject )
 			visualColliderObject.transform.localPosition = playerCollider.center;
 
-		if( getReal3D.Cluster.isMaster )
+		if( navMode == NavigationMode.Drive || navMode == NavigationMode.Freefly )
 		{
-			if( navMode == NavigationMode.Drive || navMode == NavigationMode.Freefly )
-			{
-				UpdateFreeflyMovement();
-			}
-			else
-			{
-				UpdateWalkMovement();
-			}
-			getReal3D.RpcManager.call("UpdatePlayerControllerTransform", transform.position, transform.rotation);
+			UpdateFreeflyMovement();
+		}
+		else
+		{
+			UpdateWalkMovement();
 		}
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
-
-		if( getReal3D.Cluster.isMaster )
-		{
-			wandPosition = cave2Manager.getWand(wandID).GetPosition();
-			wandRotation = cave2Manager.getWand(wandID).GetRotation();
+		wandPosition = cave2Manager.getWand(wandID).GetPosition();
+		wandRotation = cave2Manager.getWand(wandID).GetRotation();
 			
-			headPosition = cave2Manager.getHead(headID).GetPosition();
-			headRotation = cave2Manager.getHead(headID).GetRotation().eulerAngles;
-
-			getReal3D.RpcManager.call("UpdatePlayerControllerHeadTransform", headPosition, headRotation);
-			getReal3D.RpcManager.call("UpdatePlayerControllerWandTransform", wandPosition, wandRotation);
-		}
+		headPosition = cave2Manager.getHead(headID).GetPosition();
+		headRotation = cave2Manager.getHead(headID).GetRotation().eulerAngles;
 
 		if( !freezeMovement )
 		{
@@ -198,21 +187,18 @@ public class OmicronPlayerController : OmicronWandUpdater {
             CAVEFloor.SetActive(true);
 	}
 
-	[getReal3D.RPC]
 	void UpdatePlayerControllerTransform( Vector3 pos, Quaternion rot )
 	{
 		transform.position = pos;
 		transform.rotation = rot;
 	}
 
-	[getReal3D.RPC]
 	void UpdatePlayerControllerHeadTransform( Vector3 pos, Vector3 rot )
 	{
 		headPosition = pos;
 		headRotation = rot;
 	}
 
-	[getReal3D.RPC]
 	void UpdatePlayerControllerWandTransform( Vector3 pos, Quaternion rot )
 	{
 		wandPosition = pos;
@@ -382,54 +368,55 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 4, 200, 20), "Navigation Mode: ");
 		navMode = (NavigationMode)GUI.SelectionGrid(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 5, 200, 20), (int)navMode, navStrings, 3);
 
-		#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
-		getReal3D.RpcManager.call ("SetNavMode", navMode);
-		#endif
-
 		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 6, 200, 20), "Forward Reference: ");
 		forwardReference = (ForwardRef)GUI.SelectionGrid(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 7, 200, 20), (int)forwardReference, forwardRefStrings, 3);
-
-		#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
-		getReal3D.RpcManager.call ("SetForwardReference", forwardReference);
-		#endif
 
 		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 8, 200, 20), "Left Analog LR Mode: ");
 		horizontalMovementMode = (HorizonalMovementMode)GUI.SelectionGrid(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 9, 200, 20), (int)horizontalMovementMode, horzStrings, 3);
 
-		#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
-		getReal3D.RpcManager.call ("SetHorizontalMovementMode", horizontalMovementMode);
-		#endif
-
 		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 10 + 5, 120, 20), "Walk Nav Scale: ");
 		movementScale = float.Parse(GUI.TextField(new Rect(GUIOffset.x + 150, GUIOffset.y + 20 * 10 + 5, 75, 20), movementScale.ToString(), 25));
-
-		#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
-		getReal3D.RpcManager.call ("SetMovementScale", movementScale);
-		#endif
 
 		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 11 + 10, 120, 20), "Drive/Fly Nav Scale: ");
 		flyMovementScale = float.Parse(GUI.TextField(new Rect(GUIOffset.x + 150, GUIOffset.y + 20 * 11 + 10, 75, 20), flyMovementScale.ToString(), 25));
 
-		#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
-		getReal3D.RpcManager.call ("SetFlyMovementScale", flyMovementScale);
-		#endif
-
 		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 12 + 15, 120, 20), "Rotate Scale: ");
 		turnSpeed = float.Parse(GUI.TextField(new Rect(GUIOffset.x + 150, GUIOffset.y + 20 * 12 + 15, 75, 20), turnSpeed.ToString(), 25));
-
-		#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
-		getReal3D.RpcManager.call ("SetTurnSpeed", turnSpeed);
-		#endif
 
 		if( GUI.Toggle(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 13 + 15, 250, 200), (autoLevelMode == AutoLevelMode.OnGroundCollision), " Auto Level On Ground Collision") )
 			autoLevelMode = AutoLevelMode.OnGroundCollision;
 		else
 			autoLevelMode = AutoLevelMode.Disabled;
 
-		#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
-		getReal3D.RpcManager.call ("SetAutoLevelMode", autoLevelMode);
-		#endif
+		//#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+		//getReal3D.RpcManager.call ("SetNavMode", navMode);
+		//#endif
+
+		//#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+		//getReal3D.RpcManager.call ("SetForwardReference", forwardReference);
+		//#endif
+
+		//#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+		//getReal3D.RpcManager.call ("SetHorizontalMovementMode", horizontalMovementMode);
+		//#endif
+
+		//#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+		//getReal3D.RpcManager.call ("SetMovementScale", movementScale);
+		//#endif
+
+		//#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+		//getReal3D.RpcManager.call ("SetFlyMovementScale", flyMovementScale);
+		//#endif
+
+		//#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+		//getReal3D.RpcManager.call ("SetTurnSpeed", turnSpeed);
+		//#endif
+
+		//#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
+		//getReal3D.RpcManager.call ("SetAutoLevelMode", autoLevelMode);
+		//#endif
 	}
+	/*
 	#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
 	[getReal3D.RPC]
 	void SetNavMode( NavigationMode val )
@@ -474,4 +461,5 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	}
 
 	#endif
+	*/
 }

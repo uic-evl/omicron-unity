@@ -30,11 +30,8 @@ using System.Collections;
 using omicron;
 using omicronConnector;
 
-#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
-public class OmicronWandUpdater : getReal3D.MonoBehaviourWithRpc {
-#else
 public class OmicronWandUpdater : MonoBehaviour {
-#endif
+
 	public CAVE2Manager cave2Manager;
 	public int wandID = 1;
 	public WandState wand;
