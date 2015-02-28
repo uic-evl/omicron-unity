@@ -16,6 +16,7 @@ public class WandPointer : OmicronWandUpdater {
 	ParticleSystem laserParticle;
 
 	public bool drawLaser = true;
+    public LayerMask wandLayerMask;
 
 	// getReal3D v2.2 Standard ClusterView block
 	getReal3D.ClusterView clusterView;
@@ -65,7 +66,7 @@ public class WandPointer : OmicronWandUpdater {
 			RaycastHit hit;
 
 			// Get the first collider that was hit by the ray
-			wandHit = Physics.Raycast(ray, out hit, 100);
+			wandHit = Physics.Raycast(ray, out hit, 100, wandLayerMask);
 			Debug.DrawLine(ray.origin, hit.point); // Draws a line in the editor
 
 			if( wandHit ) // The wand is pointed at a collider

@@ -35,7 +35,8 @@ public class OmicronWandUpdater : MonoBehaviour {
 	public CAVE2Manager cave2Manager;
 	public int wandID = 1;
 	public WandState wand;
-	
+    public LayerMask wandPointerLayerMask;
+
 	public void InitOmicron()
 	{
 		cave2Manager = GameObject.FindGameObjectWithTag("OmicronManager").GetComponent<CAVE2Manager>();
@@ -87,7 +88,7 @@ public class OmicronWandUpdater : MonoBehaviour {
 				// Ray extending from main camera into screen from touch point
 				Ray ray = Camera.main.ScreenPointToRay(position);
 				RaycastHit hit;
-				if (Physics.Raycast(ray, out hit, 100))
+                if (Physics.Raycast(ray, out hit, 100, wandPointerLayerMask))
 				{
 					transform.LookAt( hit.point );
 				}
