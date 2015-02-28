@@ -55,6 +55,8 @@ public class OmicronWandUpdater : MonoBehaviour {
 	// Update is called once per frame
 	void Update() {
 
+		if( getReal3D.Cluster.isMaster )
+		{
 			if( !cave2Manager.wandMousePointerEmulation )
 			{
 				if( rigidbody )
@@ -96,5 +98,6 @@ public class OmicronWandUpdater : MonoBehaviour {
 				// Update the wandSate rotation (opposite of normal since this object is determining the rotation)
 				cave2Manager.wandEmulatedRotation = transform.eulerAngles;
 			}
+		}
 	}
 }

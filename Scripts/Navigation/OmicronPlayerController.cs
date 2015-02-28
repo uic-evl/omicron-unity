@@ -105,6 +105,9 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	// Should be used with dealing with RigidBodies
 	void FixedUpdate()
 	{
+		if( !getReal3D.Cluster.isMaster )
+			return;
+
 		playerCollider.height = headPosition.y - 0.25f; // Player height - head size
 
 		if( colliderMode == ColliderMode.Head )
@@ -131,6 +134,9 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	
 	// Update is called once per frame
 	void Update () {
+
+		if( !getReal3D.Cluster.isMaster )
+			return;
 
 		wandPosition = cave2Manager.getWand(wandID).GetPosition();
 		wandRotation = cave2Manager.getWand(wandID).GetRotation();

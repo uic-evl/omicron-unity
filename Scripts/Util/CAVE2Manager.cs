@@ -83,6 +83,19 @@ public class CAVE2Manager : OmicronEventClient {
 
 	public int framerateCap = 60;
 
+	// getReal3D v2.2 Standard ClusterView block
+	protected getReal3D.ClusterView clusterView;
+	void Awake()
+	{
+		clusterView = gameObject.AddComponent<getReal3D.ClusterView>();
+		clusterView.observed = this;
+	}
+	void OnSerializeClusterView(getReal3D.ClusterStream stream)
+	{
+		//stream.Serialize( ref laserActivated );
+	}
+	// -----------------------------------------
+
 	// Use this for initialization
 	new void Start () {
 		base.Start();
@@ -109,13 +122,11 @@ public class CAVE2Manager : OmicronEventClient {
 
 		Application.targetFrameRate = framerateCap;
 
-		//#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
-		//if( getReal3D.Cluster.isMaster )
-		//	getReal3D.RpcManager.call("SetClusterRandomSeed", Random.seed );
-		//#endif
-		
+		if( getReal3D.Cluster.isMaster )
+			clusterView.RPC("SetClusterRandomSeed", Random.seed );
 	}
-	
+
+	[getReal3D.RPC]
 	void SetClusterRandomSeed(int seed)
 	{
 		Random.seed = seed;
@@ -129,143 +140,146 @@ public class CAVE2Manager : OmicronEventClient {
 
 	// Update is called once per frame
 	void Update () {
-		//#if UNITY_PRO_LICENSE && UNITY_STANDALONE_WIN
-		//getRealCameraUpdater getRealCam = Camera.main.GetComponent<getRealCameraUpdater>();
 
+		getRealCameraUpdater getRealCam = Camera.main.GetComponent<getRealCameraUpdater>();
+		
 		//if( getReal3D.Cluster.isClientAndClusterOn )
 		//	CAVE2QuickSettings = true;
-		//#endif
+		
 		if( CAVE2QuickSettings )
 		{
 			keyboardEventEmulation = false;
 			wandMousePointerEmulation = false;
 			mocapEmulation = false;
 			lockWandToHeadTransform = false;
-
-            OmicronManager omgManager = GetComponent<OmicronManager>();
-            if( !omgManager.connectToServer )
-                omgManager.ConnectToServer();
-
+			
+			OmicronManager omgManager = GetComponent<OmicronManager>();
+			if( !omgManager.connectToServer )
+				omgManager.ConnectToServer();
+			
 			CAVE2QuickSettings = false;
 		}
 		else
 		{
-			//#if UNITY_PRO_LICENSE && UNITY_EDITOR_WIN
-			//if( getRealCam )
-			//{
-			//	getRealCam.applyHeadPosition = false;
-			//	getRealCam.applyHeadRotation = false;
-			//	getRealCam.applyCameraProjection = false;
-			//}
-			//#endif
+			if( getRealCam && mocapEmulation )
+			{
+				getRealCam.applyHeadPosition = false;
+				getRealCam.applyHeadRotation = false;
+				getRealCam.applyCameraProjection = false;
+				getRealCam.transform.localPosition = Vector3.zero;
+				getRealCam.transform.localRotation = Quaternion.identity;
+			}
 		}
 
-        UpdateWandState();
-
-		if( keyboardEventEmulation )
+		if( getReal3D.Cluster.isMaster )
 		{
-			float vertical = Input.GetAxis("Vertical") * axisSensitivity;
-			float horizontal = Input.GetAxis("Horizontal") * axisSensitivity;
-			float lookHorizontal = Input.GetAxis("LookHorizontal") * axisSensitivity;
-            float forward = Input.GetAxis("Forward") * axisSensitivity;
+			UpdateWandState();
 
-			uint flags = 0;
-			
-			// Arrow keys -> DPad
-			if( Input.GetKey( KeyCode.UpArrow ) )
-				flags += (int)EventBase.Flags.ButtonUp;
-			if( Input.GetKey( KeyCode.DownArrow ) )
-				flags += (int)EventBase.Flags.ButtonDown;
-			if( Input.GetKey( KeyCode.LeftArrow ) )
-				flags += (int)EventBase.Flags.ButtonLeft;
-			if( Input.GetKey( KeyCode.RightArrow ) )
-				flags += (int)EventBase.Flags.ButtonRight;
-			
-			// F -> Wand Button 2 (Circle)
-			if( Input.GetKey( KeyCode.F ) || Input.GetMouseButton(1) )
-				flags += (int)EventBase.Flags.Button2;
-			// R -> Wand Button 3 (Cross)
-			if( Input.GetKey( KeyCode.R ) || Input.GetMouseButton(0) )
-				flags += (int)EventBase.Flags.Button3;
+			if( keyboardEventEmulation )
+			{
+				float vertical = Input.GetAxis("Vertical") * axisSensitivity;
+				float horizontal = Input.GetAxis("Horizontal") * axisSensitivity;
+				float lookHorizontal = Input.GetAxis("LookHorizontal") * axisSensitivity;
+	            float forward = Input.GetAxis("Forward") * axisSensitivity;
 
-			Vector2 wandAnalog = new Vector2();
-			Vector2 wandAnalog2 = new Vector2();
-            Vector2 wandAnalog3 = new Vector2();
-			if( WASDkeys == TrackerEmulated.CAVE )
-			{
-				wandAnalog = new Vector2(horizontal,vertical);
-				wandAnalog2 = new Vector2(lookHorizontal,0);
-                wandAnalog3 = new Vector2(forward,0);
-			}
-			else if( WASDkeys == TrackerEmulated.Head )
-			{
-				if( WASDkeyMode == TrackerEmulationMode.Translate )
+				uint flags = 0;
+				
+				// Arrow keys -> DPad
+				if( Input.GetKey( KeyCode.UpArrow ) )
+					flags += (int)EventBase.Flags.ButtonUp;
+				if( Input.GetKey( KeyCode.DownArrow ) )
+					flags += (int)EventBase.Flags.ButtonDown;
+				if( Input.GetKey( KeyCode.LeftArrow ) )
+					flags += (int)EventBase.Flags.ButtonLeft;
+				if( Input.GetKey( KeyCode.RightArrow ) )
+					flags += (int)EventBase.Flags.ButtonRight;
+				
+				// F -> Wand Button 2 (Circle)
+				if( Input.GetKey( KeyCode.F ) || Input.GetMouseButton(1) )
+					flags += (int)EventBase.Flags.Button2;
+				// R -> Wand Button 3 (Cross)
+				if( Input.GetKey( KeyCode.R ) || Input.GetMouseButton(0) )
+					flags += (int)EventBase.Flags.Button3;
+
+				Vector2 wandAnalog = new Vector2();
+				Vector2 wandAnalog2 = new Vector2();
+	            Vector2 wandAnalog3 = new Vector2();
+				if( WASDkeys == TrackerEmulated.CAVE )
 				{
-					headEmulatedPosition += new Vector3( horizontal, 0, vertical ) * Time.deltaTime;
+					wandAnalog = new Vector2(horizontal,vertical);
+					wandAnalog2 = new Vector2(lookHorizontal,0);
+	                wandAnalog3 = new Vector2(forward,0);
 				}
-				else if( WASDkeyMode == TrackerEmulationMode.Rotate )
-					headEmulatedRotation += new Vector3( vertical, horizontal, 0 );
-			}
+				else if( WASDkeys == TrackerEmulated.Head )
+				{
+					if( WASDkeyMode == TrackerEmulationMode.Translate )
+					{
+						headEmulatedPosition += new Vector3( horizontal, 0, vertical ) * Time.deltaTime;
+					}
+					else if( WASDkeyMode == TrackerEmulationMode.Rotate )
+						headEmulatedRotation += new Vector3( vertical, horizontal, 0 );
+				}
 
-            UpdateController(1, flags, wandAnalog , wandAnalog2, wandAnalog3);
+	            UpdateController(1, flags, wandAnalog , wandAnalog2, wandAnalog3);
 
-			float headForward = 0;
-			float headStrafe = 0;
-			float headVertical = 0;
-			
-			float speed = emulatedTranslateSpeed;
-			if( IJKLkeyMode == TrackerEmulationMode.Translate )
-				speed = emulatedTranslateSpeed;
-			else if( IJKLkeyMode == TrackerEmulationMode.Rotate )
-				speed = emulatedRotationSpeed;
-			
-			if( Input.GetKey(KeyCode.I) )
-				headForward += speed;
-			else if( Input.GetKey(KeyCode.K) )
-				headForward -= speed;
-			if( Input.GetKey(KeyCode.J) )
-				headStrafe -= speed;
-			else if( Input.GetKey(KeyCode.L) )
-				headStrafe += speed;
-			if( Input.GetKey(KeyCode.U) )
-				headVertical += speed;
-			else if( Input.GetKey(KeyCode.O) )
-				headVertical -= speed;
-
-			if( IJKLkeys == TrackerEmulated.Head )
-			{
+				float headForward = 0;
+				float headStrafe = 0;
+				float headVertical = 0;
+				
+				float speed = emulatedTranslateSpeed;
 				if( IJKLkeyMode == TrackerEmulationMode.Translate )
-					headEmulatedPosition += new Vector3( headStrafe, headVertical, headForward );
+					speed = emulatedTranslateSpeed;
 				else if( IJKLkeyMode == TrackerEmulationMode.Rotate )
-					headEmulatedRotation += new Vector3( headForward, headStrafe, headVertical );
+					speed = emulatedRotationSpeed;
+				
+				if( Input.GetKey(KeyCode.I) )
+					headForward += speed;
+				else if( Input.GetKey(KeyCode.K) )
+					headForward -= speed;
+				if( Input.GetKey(KeyCode.J) )
+					headStrafe -= speed;
+				else if( Input.GetKey(KeyCode.L) )
+					headStrafe += speed;
+				if( Input.GetKey(KeyCode.U) )
+					headVertical += speed;
+				else if( Input.GetKey(KeyCode.O) )
+					headVertical -= speed;
+
+				if( IJKLkeys == TrackerEmulated.Head )
+				{
+					if( IJKLkeyMode == TrackerEmulationMode.Translate )
+						headEmulatedPosition += new Vector3( headStrafe, headVertical, headForward );
+					else if( IJKLkeyMode == TrackerEmulationMode.Rotate )
+						headEmulatedRotation += new Vector3( headForward, headStrafe, headVertical );
+				}
+				else if( IJKLkeys == TrackerEmulated.Wand )
+				{
+					if( IJKLkeyMode == TrackerEmulationMode.Translate )
+						wandEmulatedPosition += new Vector3( headStrafe, headVertical, headForward );
+					else if( IJKLkeyMode == TrackerEmulationMode.Rotate )
+						wandEmulatedRotation += new Vector3( headForward, headStrafe, headVertical );
+				}
+
+
 			}
-			else if( IJKLkeys == TrackerEmulated.Wand )
+
+			if( mocapEmulation )
 			{
-				if( IJKLkeyMode == TrackerEmulationMode.Translate )
-					wandEmulatedPosition += new Vector3( headStrafe, headVertical, headForward );
-				else if( IJKLkeyMode == TrackerEmulationMode.Rotate )
-					wandEmulatedRotation += new Vector3( headForward, headStrafe, headVertical );
+				//Vector3 lookAround = new Vector3( -wand1.GetAxis(Axis.RightAnalogStickUD), wand1.GetAxis(Axis.RightAnalogStickLR), 0 );
+				//lookAround *= 2;
+				//headEmulatedRotation += lookAround;
+
+				// Update emulated positions/rotations
+				head1.UpdateMocap( headEmulatedPosition , Quaternion.Euler(headEmulatedRotation) );
+
+				if( lockWandToHeadTransform )
+					wand1.UpdateMocap( headEmulatedPosition , Quaternion.Euler(headEmulatedRotation) );
+				else
+					wand1.UpdateMocap( wandEmulatedPosition , Quaternion.Euler(wandEmulatedRotation) );
+				
+				GameObject.FindGameObjectWithTag("CameraController").transform.localPosition = headEmulatedPosition;
+				GameObject.FindGameObjectWithTag("CameraController").transform.localEulerAngles = headEmulatedRotation;
 			}
-
-
-		}
-
-		if( mocapEmulation )
-		{
-			//Vector3 lookAround = new Vector3( -wand1.GetAxis(Axis.RightAnalogStickUD), wand1.GetAxis(Axis.RightAnalogStickLR), 0 );
-			//lookAround *= 2;
-			//headEmulatedRotation += lookAround;
-
-			// Update emulated positions/rotations
-			head1.UpdateMocap( headEmulatedPosition , Quaternion.Euler(headEmulatedRotation) );
-
-			if( lockWandToHeadTransform )
-				wand1.UpdateMocap( headEmulatedPosition , Quaternion.Euler(headEmulatedRotation) );
-			else
-				wand1.UpdateMocap( wandEmulatedPosition , Quaternion.Euler(wandEmulatedRotation) );
-			
-			GameObject.FindGameObjectWithTag("CameraController").transform.localPosition = headEmulatedPosition;
-			GameObject.FindGameObjectWithTag("CameraController").transform.localEulerAngles = headEmulatedRotation;
 		}
 	}
 

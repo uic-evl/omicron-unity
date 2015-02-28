@@ -17,6 +17,22 @@ public class WandPointer : OmicronWandUpdater {
 
 	public bool drawLaser = true;
 
+	// getReal3D v2.2 Standard ClusterView block
+	getReal3D.ClusterView clusterView;
+	void Awake()
+	{
+		clusterView = gameObject.AddComponent<getReal3D.ClusterView>();
+		clusterView.observed = this;
+	}
+	void OnSerializeClusterView(getReal3D.ClusterStream stream)
+	{
+		stream.Serialize( ref laserActivated );
+		stream.Serialize( ref wandHit );
+		stream.Serialize( ref laserPosition );
+		stream.Serialize( ref laserDistance );
+	}
+	// -----------------------------------------
+
 	// Use this for initialization
 	new void Start () {
 		InitOmicron();
@@ -39,45 +55,48 @@ public class WandPointer : OmicronWandUpdater {
 		GetComponent<SphereCollider>().enabled = false; // Disable sphere collider for raycast
 
 		// Checking inputs should only be done on master node
-		laserActivated = cave2Manager.getWand(wandID).GetButton(CAVE2Manager.Button.Button3);
-		laser.enabled = laserActivated;
-
-		// Shoot a ray from the wand
-		Ray ray = new Ray( transform.position, transform.TransformDirection(Vector3.forward) );
-		RaycastHit hit;
-
-		// Get the first collider that was hit by the ray
-		wandHit = Physics.Raycast(ray, out hit, 100);
-		Debug.DrawLine(ray.origin, hit.point); // Draws a line in the editor
-
-		if( wandHit ) // The wand is pointed at a collider
+		if( getReal3D.Cluster.isMaster )
 		{
-			// Send a message to the hit object telling it that the wand is hovering over it
-			hit.collider.gameObject.SendMessage("OnWandOver", SendMessageOptions.DontRequireReceiver );
+			laserActivated = cave2Manager.getWand(wandID).GetButton(CAVE2Manager.Button.Button3);
+			laser.enabled = laserActivated;
 
-			// If the laser button has just been pressed, tell the hit object
-			if( cave2Manager.getWand(wandID).GetButtonDown(CAVE2Manager.Button.Button3) )
+			// Shoot a ray from the wand
+			Ray ray = new Ray( transform.position, transform.TransformDirection(Vector3.forward) );
+			RaycastHit hit;
+
+			// Get the first collider that was hit by the ray
+			wandHit = Physics.Raycast(ray, out hit, 100);
+			Debug.DrawLine(ray.origin, hit.point); // Draws a line in the editor
+
+			if( wandHit ) // The wand is pointed at a collider
 			{
-				hit.collider.gameObject.SendMessage("OnWandButtonClick", SendMessageOptions.DontRequireReceiver );
-			}
+				// Send a message to the hit object telling it that the wand is hovering over it
+				hit.collider.gameObject.SendMessage("OnWandOver", SendMessageOptions.DontRequireReceiver );
 
-			// Laser button is held down
-			if( laserActivated )
+				// If the laser button has just been pressed, tell the hit object
+				if( cave2Manager.getWand(wandID).GetButtonDown(CAVE2Manager.Button.Button3) )
+				{
+					hit.collider.gameObject.SendMessage("OnWandButtonClick", SendMessageOptions.DontRequireReceiver );
+				}
+
+				// Laser button is held down
+				if( laserActivated )
+				{
+					// Tell hit object laser button is held down
+					hit.collider.gameObject.SendMessage("OnWandButtonHold", SendMessageOptions.DontRequireReceiver );
+					Debug.DrawLine(ray.origin, hit.point);
+
+					// Set the laser distance at the collision point
+					laserDistance = hit.distance;
+					laserPosition = hit.point;
+				}
+			}
+			else if( laserActivated )
 			{
-				// Tell hit object laser button is held down
-				hit.collider.gameObject.SendMessage("OnWandButtonHold", SendMessageOptions.DontRequireReceiver );
-				Debug.DrawLine(ray.origin, hit.point);
-
-				// Set the laser distance at the collision point
-				laserDistance = hit.distance;
-				laserPosition = hit.point;
+				// The laser button is pressed, but not pointed at valid target
+				// Set laser distance far away
+				laserDistance = 1000;
 			}
-		}
-		else if( laserActivated )
-		{
-			// The laser button is pressed, but not pointed at valid target
-			// Set laser distance far away
-			laserDistance = 1000;
 		}
 
 		// Do this on all nodes
