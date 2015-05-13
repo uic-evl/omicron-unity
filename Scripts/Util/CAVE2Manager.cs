@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
 *-------------------------------------------------------------------------------------------------
-* Copyright 2010-2014             Electronic Visualization Laboratory, University of Illinois at Chicago
+* Copyright 2010-2015             Electronic Visualization Laboratory, University of Illinois at Chicago
 * Authors:                                                                                
 * Arthur Nishimoto                anishimoto42@gmail.com
 *-------------------------------------------------------------------------------------------------
-* Copyright (c) 2010-2014, Electronic Visualization Laboratory, University of Illinois at Chicago
+* Copyright (c) 2010-2015, Electronic Visualization Laboratory, University of Illinois at Chicago
 * All rights reserved.
 * Redistribution and use in source and binary forms, with or without modification, are permitted
 * provided that the following conditions are met:
@@ -112,6 +112,7 @@ public class CAVE2Manager : OmicronEventClient {
 	public float emulatedRotationSpeed = 0.05f;
 
 	public int framerateCap = 60;
+	public static string machineName;
 
 	// Use this for initialization
 	new void Start () {
@@ -136,6 +137,45 @@ public class CAVE2Manager : OmicronEventClient {
 		}
 
 		Application.targetFrameRate = framerateCap;
+		machineName = System.Environment.MachineName;
+	}
+
+	public static bool UsingGetReal3D()
+	{
+		if( Application.HasProLicense() && (Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor) )
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	public static bool OnCAVE2Master()
+	{
+		machineName = System.Environment.MachineName;
+		if( machineName.Equals("LYRA-WIN") )
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	public static bool OnCAVE2Display()
+	{
+		machineName = System.Environment.MachineName;
+		if( machineName.Contains("LYRA") && !getReal3D.Cluster.isMaster )
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	// Update is called once per frame
