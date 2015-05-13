@@ -152,6 +152,15 @@ public class CAVE2Manager : OmicronEventClient {
 		}
 	}
 
+	public static bool IsMaster()
+	{
+		#if USING_GETREAL3D
+		return getReal3D.Cluster.isMaster;
+		#else
+		return (machineName.Equals("LYRA-WIN") || !machineName.Contains("LYRA") );
+		#endif
+	}
+
 	public static bool OnCAVE2Master()
 	{
 		machineName = System.Environment.MachineName;
@@ -168,7 +177,7 @@ public class CAVE2Manager : OmicronEventClient {
 	public static bool OnCAVE2Display()
 	{
 		machineName = System.Environment.MachineName;
-		if( machineName.Contains("LYRA") && !getReal3D.Cluster.isMaster )
+		if( machineName.Contains("LYRA") && !IsMaster() )
 		{
 			return true;
 		}

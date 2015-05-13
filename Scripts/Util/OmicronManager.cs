@@ -156,18 +156,6 @@ class OmicronManager : MonoBehaviour
 			cave2Manager.keyboardEventEmulation = false;
 			cave2Manager.wandMousePointerEmulation = false;
 		}
-		else if( !connectToServer )
-		{
-			
-			getRealCameraUpdater getRealCam = Camera.main.GetComponent<getRealCameraUpdater>();
-			if( getRealCam )
-			{
-				getRealCam.applyHeadPosition = false;
-				getRealCam.applyHeadRotation = false;
-				getRealCam.applyCameraProjection = false;
-			}
-			
-		}
 	}// start
 
 	public bool ConnectToServer()
