@@ -24,6 +24,7 @@
 * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************/
+#define USING_GETREAL3D
 
 using UnityEngine;
 using System.Collections;
@@ -138,6 +139,8 @@ public class CAVE2Manager : OmicronEventClient {
 
 		Application.targetFrameRate = framerateCap;
 		machineName = System.Environment.MachineName;
+
+		Random.seed = 1138;
 	}
 
 	public static bool UsingGetReal3D()
@@ -203,7 +206,37 @@ public class CAVE2Manager : OmicronEventClient {
 
 		wand1.UpdateState(Wand1, Wand1Mocap);
 		wand2.UpdateState(Wand2, Wand2Mocap);
-		
+
+#if USING_GETREAL3D
+		uint getReal_flags = 0;
+
+		if( getReal3D.Input.GetButton("WandButton") ) // Omicron Button 2
+			getReal_flags += (int)EventBase.Flags.Button2;
+		if( getReal3D.Input.GetButton("ChangeWand") ) // Omicron Button 4
+			getReal_flags += (int)EventBase.Flags.Button4;
+		if( getReal3D.Input.GetButton("Reset") ) // Omicron Button 3
+			getReal_flags += (int)EventBase.Flags.Button3;
+		if( getReal3D.Input.GetButton("Jump") ) // Omicron Button 1
+			getReal_flags += (int)EventBase.Flags.Button1;
+		if( getReal3D.Input.GetButton("WandLook") ) // Omicron Button 8
+			getReal_flags += (int)EventBase.Flags.Button8;
+		if( getReal3D.Input.GetButton("NavSpeed") ) // Omicron Button 5
+			getReal_flags += (int)EventBase.Flags.Button5;
+		// Note the following are in the CAVE2 getReal config,
+		// but are not in the default getReal3D config
+		/*
+		if( getReal3D.Input.GetButton("L3") ) // Omicron Button 6
+			getReal_flags += (int)EventBase.Flags.Button6;
+		if( getReal3D.Input.GetButton("R3") ) // Omicron Button 9
+			getReal_flags += (int)EventBase.Flags.Button9;
+		if( getReal3D.Input.GetButton("Back") ) // Omicron Special Button 1
+			getReal_flags += (int)EventBase.Flags.SpecialButton1;
+		if( getReal3D.Input.GetButton("Start") ) // Omicron Special Button 2
+			getReal_flags += (int)EventBase.Flags.SpecialButton2;
+		*/
+		wand1.UpdateController( getReal_flags, new Vector2(getReal3D.Input.GetAxis("Yaw"),-getReal3D.Input.GetAxis("Forward")) , new Vector2(getReal3D.Input.GetAxis("Strafe"),0), new Vector2() );
+#endif
+
 		if( keyboardEventEmulation )
 		{
 			float vertical = Input.GetAxis("Vertical") * axisSensitivity;
