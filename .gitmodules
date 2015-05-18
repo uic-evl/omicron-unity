@@ -1,0 +1,3 @@
+[submodule "Assets/module-omicron"]
+	path = Assets/module-omicron
+	url = https://github.com/arthurnishimoto/module-omicron.git
