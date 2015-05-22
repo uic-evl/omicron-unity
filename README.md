@@ -7,4 +7,14 @@ This Unity3D package has two primary functions. The first is to provide access t
 
 The second function of this package is to provide a series of tools to aid in the development of Unity applications for virtual reality environments such as the Electronic Visualization Laboratory's CAVE2(TM).
 
+## Installation
+
+This repository is a wrapper for the main Omicron Unity module available at https://github.com/arthurnishimoto/module-omicron. Download from here for use as a Unity example project. Use the previous link for use as a submodule of an existing project.
+
+If you are cloning using Git, remember to remember to use the recursive flag:
+
+`git clone --recursive https://github.com/arthurnishimoto/omicron-unity.git`
+
+Alternativly when available, you can use one of the .unitypackage release files.
+
 CAVE2 is a trademark of the University of Illinois Board of Trustees
