@@ -38,10 +38,9 @@
       <head index="0" y="0"/>
       <left_eye  x="-1.375"/>
       <right_eye x=" 1.375"/>
-      <wand index="1" y="0" z="0"/>
+      <wand index="2" y="0" z="0"/>
     </tracker>
     <controller key="4127"/>
-    <controller key="4128"/>
   </devices>
   <display world_to_vr_scale="1.0">
     <screen space="HEAD" name="screen">
