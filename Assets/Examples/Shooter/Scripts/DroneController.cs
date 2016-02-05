@@ -11,16 +11,19 @@ public class DroneController : MonoBehaviour {
     public Transform goal;
     public GameObject explosionEffect;
 
+	NavMeshAgent agent;
+
 	// Use this for initialization
 	void Start () {
         goal = GameObject.FindGameObjectWithTag("Player").transform;
 
-        NavMeshAgent agent = GetComponent<NavMeshAgent>();
-        agent.destination = goal.position; 
+        agent = GetComponent<NavMeshAgent>();
+        
 	}
 	
 	// Update is called once per frame
 	void Update () {
+		agent.destination = goal.position; 
         if (fire && laserPrefab)
         {
             GameObject laser = Instantiate(laserPrefab, barrel.position, barrel.rotation) as GameObject;
