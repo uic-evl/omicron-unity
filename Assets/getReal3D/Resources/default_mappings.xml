@@ -1,0 +1,36 @@
+<unity>
+  <map_button index="2" name="WandButton"/>
+  <!-- B -->
+  <map_button index="3" name="ChangeWand"/>
+  <!-- X -->
+  <map_button index="6" name="Reset"/>
+  <!-- A -->
+  <map_button index="4" name="Jump"/>
+  <!-- Y -->
+  <map_button index="5" name="WandLook" />
+  <!-- RB -->
+  <map_button index="1" name="NavSpeed" />
+  <!-- LB -->
+  <map_button index="7" name="WandDrive" />
+  <!-- LT -->
+  <map_button index="8" name="RT" />
+  <!-- RT -->
+  <map_button index="9" name="L3" />
+  <!-- L3 (Left analog button)-->
+  <map_button index="10" name="R3" />
+  <!-- R3 (Right analog button)-->
+  <map_button index="11" name="Back" />
+  <!-- Back -->
+  <map_button index="12" name="Start" />
+  <!-- Start -->
+
+  <map_valuator dead_zone=".1" index="1" name="Yaw"/>
+  <map_valuator dead_zone=".1" index="2" name="Forward"/>
+  <map_valuator dead_zone=".1" index="3" name="Strafe" />
+  <map_valuator dead_zone=".1" index="4" name="Pitch" />
+  <map_valuator dead_zone=".1" index="5" name="DPadLR" />
+  <map_valuator dead_zone=".1" index="6" name="DPadUD" />
+
+  <map_tracker index="1" name="Head" />
+  <map_tracker index="3" name="Wand" />
+</unity>
