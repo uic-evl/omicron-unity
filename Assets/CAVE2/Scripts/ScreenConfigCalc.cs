@@ -301,7 +301,7 @@ public class ScreenConfigCalc : MonoBehaviour {
         mesh.vertices = CAVE2ScreenMaskVerticies.ToArray();
         mesh.uv = CAVE2ScreenMaskUV.ToArray();
         mesh.triangles = CAVE2ScreenMaskTriangles.ToArray();
-
+#if UNITY_EDITOR
         if (generateScreenMaskAsset)
         {
             if (!Directory.Exists(Application.dataPath + "/Resources/"))
@@ -318,7 +318,7 @@ public class ScreenConfigCalc : MonoBehaviour {
 
             UnityEditor.PrefabUtility.CreatePrefab("Assets/Resources/CAVE2/CAVE2ScreenMask.prefab", screenMask);
         }
-
+#endif
         if (outputConfig == ConfigOutput.All || outputConfig == ConfigOutput.getReal3D)
         {
             string[] getReal3DConfigArray = (string[])getReal3DConfig.ToArray(typeof(string));
