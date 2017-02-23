@@ -1,0 +1,71 @@
+<?xml version='1.0'?>
+<!-- Configuration file for getReal3D for Unity3D -->
+<!-- Mechdyne (c) 2011, 2012, 2013, 2014, 2015 -->
+<vr_cluster version="4" name="Unity sample configuration">
+  <startup bin="%UNITY_BIN_SET_BY_LAUNCHER%" working_dir="%UNITY_DIR_SET_BY_LAUNCHER%">
+    <env_var value="SGXLOG_INFO" name="SGXLOG_LEVEL"/>
+  </startup>
+  <app_config name="Unity Cluster">
+    <unity>
+      <map_button index="2" name="WandButton"/>
+      <!-- B -->
+      <map_button index="3" name="ChangeWand"/>
+      <!-- X -->
+      <map_button index="6" name="Reset"/>
+      <!-- A -->
+      <map_button index="4" name="Jump"/>
+      <!-- Y -->
+      <map_button index="5" name="WandLook" />
+      <!-- RB -->
+      <map_button index="1" name="NavSpeed" />
+      <!-- LB -->
+      <map_button index="7" name="WandDrive" />
+      <!-- LT -->
+      <map_button index="8" name="RT" />
+      <!-- RT -->
+      <map_button index="9" name="L3" />
+      <!-- L3 (Left analog button)-->
+      <map_button index="10" name="R3" />
+      <!-- R3 (Right analog button)-->
+      <map_button index="11" name="Back" />
+      <!-- Back -->
+      <map_button index="12" name="Start" />
+      <!-- Start -->
+
+      <map_valuator dead_zone=".1" index="1" name="Yaw"/>
+      <map_valuator dead_zone=".1" index="2" name="Forward"/>
+      <map_valuator dead_zone=".1" index="3" name="Strafe" />
+      <map_valuator dead_zone=".1" index="4" name="Pitch" />
+      <map_valuator dead_zone=".1" index="5" name="DPadLR" />
+      <map_valuator dead_zone=".1" index="6" name="DPadUD" />
+
+      <map_tracker index="1" name="Head" />
+      <map_tracker index="3" name="Wand" />
+    </unity>
+  </app_config>
+  <devices>
+    <tracker key="4126">
+      <head index="0" y="0"/>
+      <left_eye  x="-1.375"/>
+      <right_eye x=" 1.375"/>
+      <wand index="2" y="0" z="0"/>
+    </tracker>
+    <controller key="4127"/>
+  </devices>
+  <display world_to_vr_scale="1.0">
+    <screen space="HEAD" name="screen">
+      <ul x="-10.45" y=" 5.88" z="-18"/>
+      <ll x="-10.45" y="-5.88" z="-18"/>
+      <lr x=" 10.45" y="-5.88" z="-18"/>
+    </screen>
+  </display>
+  <sync_config port="6001" host="127.0.0.1"/>
+  <vr_node host="127.0.0.1">
+    <vr_config w="800" x="0" h="450" y="  0" shows_ui="1" border="false" topmost="false" gpu_affinity="1">
+      <screen_ref eye="mono" name="screen"/>
+    </vr_config>
+    <vr_config w="800" x="0" h="450" y="450" shows_ui="1" border="false" topmost="false" gpu_affinity="1">
+      <screen_ref eye="mono" name="screen"/>
+    </vr_config>
+  </vr_node>
+</vr_cluster>
