@@ -10,8 +10,7 @@
 		Cull Off
 		ZTest [_ZTest]
 		ZWrite On
-		Blend SrcAlpha OneMinusSrcAlpha
-
+		
 		CGPROGRAM
 		#pragma surface surf Lambert
 
