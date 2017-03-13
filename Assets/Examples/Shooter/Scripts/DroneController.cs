@@ -32,7 +32,7 @@ public class DroneController : MonoBehaviour {
         }
 	}
 
-    void OnWandButtonHoldTrigger(CAVE2Manager.Button button)
+    void OnWandButtonHoldTrigger(CAVE2.Button button)
     {
         if (explosionEffect)
         {

@@ -13,7 +13,7 @@ public class WandTrigger : MonoBehaviour {
 	
 	}
 
-    void OnWandButtonHold( CAVE2Manager.Button button )
+    void OnWandButtonHold( CAVE2.Button button )
     {
         SendMessageUpwards("OnWandButtonHoldTrigger", button);
     }
