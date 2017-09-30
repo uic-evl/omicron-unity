@@ -1,6 +1,3 @@
 [submodule "Assets/module-omicron"]
 	path = Assets/module-omicron
 	url = https://github.com/arthurnishimoto/module-omicron.git
-[submodule "Assets/CAVE2-Standard Demos"]
-	path = Assets/CAVE2-Standard Demos
-	url = git@bitbucket.org:arthurnishimoto/cave2-unity-standard-demos.git
