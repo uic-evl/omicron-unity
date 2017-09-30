@@ -7,48 +7,29 @@
   </startup>
   <app_config name="Unity Cluster">
     <unity>
-      <map_button index="2" name="WandButton"/>
-      <!-- B -->
-      <map_button index="3" name="ChangeWand"/>
-      <!-- X -->
-      <map_button index="6" name="Reset"/>
-      <!-- A -->
-      <map_button index="4" name="Jump"/>
-      <!-- Y -->
+      <!-- defaults are as follows:
+      <map_button index="1" name="WandButton" unity_button="Fire1" />
+      <map_button index="2" name="ChangeWand" unity_button="Fire2" />
+      <map_button index="3" name="Reset" unity_button="Fire3" />
+      <map_button index="4" name="Jump" unity_button="Jump" />
       <map_button index="5" name="WandLook" />
-      <!-- RB -->
-      <map_button index="1" name="NavSpeed" />
-      <!-- LB -->
+      <map_button index="6" name="NavSpeed" />
       <map_button index="7" name="WandDrive" />
-      <!-- LT -->
-      <map_button index="8" name="RT" />
-      <!-- RT -->
-      <map_button index="9" name="L3" />
-      <!-- L3 (Left analog button)-->
-      <map_button index="10" name="R3" />
-      <!-- R3 (Right analog button)-->
-      <map_button index="11" name="Back" />
-      <!-- Back -->
-      <map_button index="12" name="Start" />
-      <!-- Start -->
-
-      <map_valuator dead_zone=".1" index="1" name="Yaw"/>
-      <map_valuator dead_zone=".1" index="2" name="Forward"/>
+      <map_valuator dead_zone=".1" index="1" name="Yaw" unity_axis="Horizontal" />
+      <map_valuator dead_zone=".1" index="2" name="Forward" unity_axis="Vertical" />
       <map_valuator dead_zone=".1" index="3" name="Strafe" />
       <map_valuator dead_zone=".1" index="4" name="Pitch" />
-      <map_valuator dead_zone=".1" index="5" name="DPadLR" />
-      <map_valuator dead_zone=".1" index="6" name="DPadUD" />
-
       <map_tracker index="1" name="Head" />
-      <map_tracker index="3" name="Wand" />
+      <map_tracker index="2" name="Wand" />
+      -->
     </unity>
   </app_config>
   <devices>
     <tracker key="4126">
-      <head index="0" y="0"/>
+      <head index="0" y="5.5"/>
       <left_eye  x="-1.375"/>
       <right_eye x=" 1.375"/>
-      <wand index="1" y="0" z="0"/>
+      <wand index="1" y="3.5" z="1"/>
     </tracker>
     <controller key="4127"/>
   </devices>
@@ -59,7 +40,7 @@
       <lr x=" 10.45" y="-5.88" z="-18"/>
     </screen>
   </display>
-  <sync_config port="6001" host="127.0.0.1"/>
+  <sync_config host="127.0.0.1"/>
   <vr_node host="127.0.0.1">
     <vr_config w="800" x="0" h="450" y="  0" shows_ui="1" border="false" topmost="false" gpu_affinity="1">
       <screen_ref eye="mono" name="screen"/>
