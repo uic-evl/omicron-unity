@@ -11,13 +11,13 @@ public class DroneController : MonoBehaviour {
     public Transform goal;
     public GameObject explosionEffect;
 
-	NavMeshAgent agent;
+	UnityEngine.AI.NavMeshAgent agent;
 
 	// Use this for initialization
 	void Start () {
         goal = GameObject.FindGameObjectWithTag("Player").transform;
 
-        agent = GetComponent<NavMeshAgent>();
+        agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         
 	}
 	

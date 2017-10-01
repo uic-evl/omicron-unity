@@ -57,9 +57,9 @@ public class ScreenConfigCalc : MonoBehaviour {
     } 
 
     void GenerateCAVE2() {
-        if( transform.FindChild("Floor") )
+        if( transform.Find("Floor") )
         {
-            transform.FindChild("Floor").transform.localScale = new Vector3(frontDisplayToTrackingOrigin, 0, frontDisplayToTrackingOrigin) / 500.0f;
+            transform.Find("Floor").transform.localScale = new Vector3(frontDisplayToTrackingOrigin, 0, frontDisplayToTrackingOrigin) / 500.0f;
         }
 
         angle = 2.0f * Mathf.Atan(displayWidthIncBorders / 2.0f / frontDisplayToTrackingOrigin);
