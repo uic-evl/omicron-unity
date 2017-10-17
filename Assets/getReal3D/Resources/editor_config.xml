@@ -7,29 +7,50 @@
   </startup>
   <app_config name="Unity Cluster">
     <unity>
-      <!-- defaults are as follows:
-      <map_button index="1" name="WandButton" unity_button="Fire1" />
-      <map_button index="2" name="ChangeWand" unity_button="Fire2" />
-      <map_button index="3" name="Reset" unity_button="Fire3" />
-      <map_button index="4" name="Jump" unity_button="Jump" />
+      <!-- CAVE2 Default Button Mapping-->
+      <map_button index="2" name="WandButton"/>
+      <!-- B -->
+      <map_button index="3" name="ChangeWand"/>
+      <!-- X -->
+      <map_button index="6" name="Reset"/>
+      <!-- A -->
+      <map_button index="4" name="Jump"/>
+      <!-- Y -->
       <map_button index="5" name="WandLook" />
-      <map_button index="6" name="NavSpeed" />
+      <!-- RB -->
+      <map_button index="1" name="NavSpeed" />
+      <!-- LB -->
       <map_button index="7" name="WandDrive" />
-      <map_valuator dead_zone=".1" index="1" name="Yaw" unity_axis="Horizontal" />
-      <map_valuator dead_zone=".1" index="2" name="Forward" unity_axis="Vertical" />
+      <!-- LT -->
+      <map_button index="8" name="RT" />
+      <!-- RT -->
+      <map_button index="9" name="L3" />
+      <!-- L3 (Left analog button)-->
+      <map_button index="10" name="R3" />
+      <!-- R3 (Right analog button)-->
+      <map_button index="11" name="Back" />
+      <!-- Back -->
+      <map_button index="12" name="Start" />
+      <!-- Start -->
+
+      <map_valuator dead_zone=".1" index="1" name="Yaw"/>
+      <map_valuator dead_zone=".1" index="2" name="Forward"/>
       <map_valuator dead_zone=".1" index="3" name="Strafe" />
       <map_valuator dead_zone=".1" index="4" name="Pitch" />
-      <map_tracker index="1" name="Head" />
-      <map_tracker index="2" name="Wand" />
-      -->
+      <map_valuator dead_zone=".1" index="5" name="DPadLR" />
+      <map_valuator dead_zone=".1" index="6" name="DPadUD" />
+
+      <map_tracker index="0" name="Head" />
+      <map_tracker index="3" name="Wand" />
+      <map_tracker index="4" name="Wand2" />
     </unity>
   </app_config>
   <devices>
     <tracker key="4126">
-      <head index="0" y="5.5"/>
+      <head index="0" y="0"/>
       <left_eye  x="-1.375"/>
       <right_eye x=" 1.375"/>
-      <wand index="1" y="3.5" z="1"/>
+      <wand index="2" y="0" z="0"/>
     </tracker>
     <controller key="4127"/>
   </devices>
