@@ -4,3 +4,8 @@ Assembly-CSharp.csproj
 omicron-unity.sln
 omicron-unity.userprefs
 Library
+/.vs/omicron-unity/v14/.suo
+/Assembly-CSharp-Editor.csproj
+/omicron-unity.CSharp.Editor.csproj
+/omicron-unity.CSharp.csproj
+/Build
