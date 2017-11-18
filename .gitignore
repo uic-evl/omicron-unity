@@ -4,3 +4,22 @@ Assembly-CSharp.csproj
 omicron-unity.sln
 omicron-unity.userprefs
 Library
+/Assets/Apartment Scene.meta
+/Assets/Apartment Scene
+/.vs/omicron-unity/v14/.suo
+/Assets/getReal3D
+
+/Assets/Plugins/gr_plugin.dll
+/Assets/Plugins/gr_plugin.dll.meta
+/Assets/Plugins/x86_64/gr_plugin64.dll
+/Assets/Plugins/x86_64/gr_plugin64.dll.meta
+
+/Assets/_Shaders
+
+/Assets/_Shaders.meta
+
+/*.csproj
+
+/*.sln
+
+/.vs/omicron-unity (release build)/v14/*.suo
