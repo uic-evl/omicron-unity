@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Nishimoto"
+  given-names: "Arthur"
+  orcid: "https://orcid.org/0000-0002-9541-0218"
+title: "omicron-unity CAVE2 Simulator"
+version: 3.10
+date-released: 2016-2-5
+url: "https://github.com/uic-evl/omicron-unity"
