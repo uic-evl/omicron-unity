@@ -7,6 +7,8 @@ A example project for developing Unity3D applications for virtual reality enviro
 
 [CAVE2 Unity Tips and Examples](https://github.com/uic-evl/omicron-unity/wiki/CAVE2-Unity-Tips-and-Examples)
 
+[Guide for Running Unity in Continuum](https://github.com/uic-evl/omicron-unity/wiki/Guide-for-running-Unity-in-Continuum)
+
 ## Installation
 
 This repository is a wrapper for the main Omicron-Unity module available at https://github.com/arthurnishimoto/module-omicron. Download from here for use as a Unity example project. Use the previous link for use as a submodule of an existing project.
